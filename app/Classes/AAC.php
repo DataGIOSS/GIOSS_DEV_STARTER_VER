@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Log;
 
 class AAC extends FileValidator {
 
-
+  // Clase constructora para el Archivo Validador de AAC
 
   function __construct($pathfolder, $fileName, $consecutive) {
     $filePath = $pathfolder.$fileName;
