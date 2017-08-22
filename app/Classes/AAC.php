@@ -45,12 +45,12 @@ class AAC extends FileValidator {
 
   }
 
-  // Función ara el manejo  las validaciones de los registros
+  // Función para el manejo  las validaciones de los registros
 
   public function manageContent() {
 
 		try {
-      // se validad la existencia del archivo
+      // se valida la existencia del archivo
       $isValidFile = true;
       $fileid = 0;
 
