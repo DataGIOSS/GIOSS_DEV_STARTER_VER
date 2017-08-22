@@ -45,6 +45,8 @@ class AAC extends FileValidator {
 
   }
 
+  // Función ara el manejo  las validaciones de los registros
+
   public function manageContent() {
 
 		try {
