@@ -1,0 +1,3 @@
+[26-Jul-2017 19:54:28 UTC] PHP Parse error:  syntax error, unexpected '/', expecting identifier (T_STRING) or namespace (T_NAMESPACE) or \\ (T_NS_SEPARATOR) in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\database\seeds\protocoloMedicamentosSeeder.php on line 42
+[26-Jul-2017 20:10:48 UTC] PHP Fatal error:  Call to undefined method stdClass::pluck() in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\database\seeds\protocoloMedicamentosSeeder.php on line 38
+[26-Jul-2017 20:50:15 UTC] PHP Parse error:  syntax error, unexpected 'Log' (T_STRING) in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\database\seeds\protocoloMedicamentosSeeder.php on line 28
