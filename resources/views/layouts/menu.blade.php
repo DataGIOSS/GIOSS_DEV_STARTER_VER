@@ -14,22 +14,19 @@
         <!-- {{ Html::script(asset("js/menu.js")) }} -->
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Styles -->
-        <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet">  -->
-        {{ Html::style(asset("css/bootstrap-3.3.7-dist/css/bootstrap.min.css")) }}
-        {{ Html::style(asset("css/font-awesome.css")) }}
-        {{ Html::style(asset("css/menu.css")) }}
-
-        <script src="https://use.fontawesome.com/fa8c2f9ced.js"></script>
+        <!-- Fonts Design and Styles-->
         
-        <!-- Fonts Design-->
-        
-        <link href="https://fonts.googleapis.com/css?family=Lemonada" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
 
+        {{ Html::style(asset("css/bootstrap-3.3.7-dist/css/bootstrap.min.css")) }}
+        {{ Html::style(asset("css/font-awesome.css")) }}
+        {{ Html::style(asset("css/font-awesome.min.css")) }}
+        {{ Html::style(asset("css/menu.css")) }}
+
+        <script src="https://use.fontawesome.com/fa8c2f9ced.js"></script>
+        
         <!-- Scripts -->
         <script>
             window.Laravel = {!! json_encode([

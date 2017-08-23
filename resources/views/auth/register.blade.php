@@ -12,7 +12,7 @@
                     <form class="form-horizontal" role="form" method="POST" action="{{ url('registro') }}" novalidate>
                         {{ csrf_field() }}
 
-                        <div class="row" id="info_usuario" style="margin: auto auto auto auto;">
+                        <div class="row" id="info_usuario" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px">
                             <h3><kbd> Información de Usuario </kbd></h3>
                             <div class="form-group" style="margin: auto auto auto auto;">
                                 @if(session()->has('success'))
@@ -112,7 +112,7 @@
                         <hr id="separador_usuario">
                         
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-5">
+                            <div style="padding-left: 45%">
                                 <button type="submit" class="btn btn-primary" style="font-family: 'Jura', sans-serif; font-size: 13px">
                                     Registrar
                                 </button>
