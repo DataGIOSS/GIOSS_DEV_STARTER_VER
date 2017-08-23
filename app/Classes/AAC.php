@@ -346,7 +346,7 @@ class AAC extends FileValidator {
     if(isset($consultSection[19])) {
         if(!preg_match("/^\d{2}$/", $consultSection[19])){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
         }
     }else{
       $isValidRow = false;
