@@ -18,7 +18,6 @@ use App\Models\VacunaCup;
 use App\Models\HomologosCupsCodigo;
 use App\Models\GiossArchivoAvaCfvl;
 
-
 class AVA extends FileValidator {
 
   function __construct($pathfolder, $fileName,$consecutive) {
@@ -43,7 +42,7 @@ class AVA extends FileValidator {
 
     try {
 
-      // se validad la existencia del archivo
+      // se valida la existencia del archivo
       $isValidFile = true;
       $fileid = 0;
 
@@ -109,7 +108,7 @@ class AVA extends FileValidator {
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
           $this->validateAVA($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true));
 
-          if ($isValidRow) // se validan cohenrencia entre fechas
+          if ($isValidRow) // se valida la cohenrencia entre fechas
           { 
             $this->validateDates($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, $firstRow,$data);
           }
@@ -146,7 +145,6 @@ class AVA extends FileValidator {
                 $tabla->fecha_hora_validacion = time() ;
                 $tabla->save();
 
-              //
               // alamacena en la dimension
               $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
@@ -177,8 +175,6 @@ class AVA extends FileValidator {
                 $ipsuser->save();
                 $useripsid = $ipsuser->id_user;
               }
-              
-
               //se alamcena la informacion de la relacion registro
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);

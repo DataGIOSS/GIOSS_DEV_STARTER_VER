@@ -270,7 +270,6 @@ class AEH extends FileValidator {
 
   }
 
-
   private function validateAEH(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
 
     //validacion campo 16
