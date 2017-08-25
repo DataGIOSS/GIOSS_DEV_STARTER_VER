@@ -530,7 +530,8 @@ class AAC extends FileValidator {
     Log::info("----------------------- Campo 29 ---------------------------------");
     //validacion campo 29
     if(isset($consultSection[28])) {
-        if(!preg_match("/^((0[1-9])|(10)|(99))$/", $consultSection[28])){
+      if($consultSection[28] != '') {
+        if(!preg_match("/^(([1-9])|(0[1-9])|(10)|(99))$/", $consultSection[28])){
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo debe ser un valor numérico de 2 dígitos y debe corresponder a una finalidad de consulta válida"]);
         }/*else{
@@ -540,6 +541,7 @@ class AAC extends FileValidator {
             array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El valor del campo no corresponde a un número de identificación de finalidad de consulta válido."]);
           }
         }*/
+      }
     }else{
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo no debe ser nulo"]);
