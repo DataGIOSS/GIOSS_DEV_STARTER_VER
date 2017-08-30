@@ -14,7 +14,7 @@ class tipoIdentificacionSeeder extends Seeder
     {
         TipoIdentificacionUser::create([
         	'id_tipo_ident'=>'TI',
-        	'descripcion' => ' Tarjeta de Identidad'
+        	'descripcion' => 'Tarjeta de Identidad'
         ]);
 
         TipoIdentificacionUser::create([
@@ -34,7 +34,7 @@ class tipoIdentificacionSeeder extends Seeder
 
         TipoIdentificacionUser::create([
         	'id_tipo_ident'=>'MS',
-        	'descripcion' => ' Menor sin identificación'
+        	'descripcion' => 'Menor sin identificación'
         ]);
 
         TipoIdentificacionUser::create([
@@ -55,6 +55,11 @@ class tipoIdentificacionSeeder extends Seeder
         TipoIdentificacionUser::create([
             'id_tipo_ident'=>'RC',
             'descripcion' => 'Registro Civil'
+        ]);
+
+        TipoIdentificacionUser::create([
+            'id_tipo_ident'=>'NU',
+            'descripcion' => 'Número Único'
         ]);
 
         return true;
