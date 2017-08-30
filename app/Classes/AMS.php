@@ -331,7 +331,7 @@ class AMS extends FileValidator {
             $exists = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
             if(!$exists){
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamentos atc válido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamentos ATC válido"]);
             }
             break;
 
