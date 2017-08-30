@@ -304,9 +304,9 @@ class AMS extends FileValidator {
 
     //validacion campo 17
     if(isset($consultSection[16])) {
-        if(strlen(trim($consultSection[16])) != 20){
+        if(strlen(trim($consultSection[16])) > 20){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud igual a 20 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud de máximo 20 caracteres"]);
         }
         
     }else{

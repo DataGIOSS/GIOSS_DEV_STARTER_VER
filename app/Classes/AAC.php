@@ -371,7 +371,7 @@ class AAC extends FileValidator {
                 $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[17])->first();
                 if(!$exists){
                   $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor del campo no corresponde a un codigo de consulta ni cups ni homologo  válido"]);
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta ni cups ni homologo  válido"]);
                 }else{
                   $consultSection[19] = $exists->cod_cups;
                 }
