@@ -380,14 +380,11 @@ class APS extends FileValidator {
 
     //validación campo 21
     if(isset($consultSection[20])) {
-        if($diagPrinConfirm){ //diagnostico principal confirmado
           $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[20])->first();
           if(!$exists){
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El valor no corresponde a un valor código de diagnóstico valido"]);
           }
-        }
-        
         
     }else{
       $isValidRow = false;
