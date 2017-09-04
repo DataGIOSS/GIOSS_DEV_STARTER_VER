@@ -1,0 +1,78 @@
+890101,ATENCION VISITA DOMICILIARIA POR MEDICINA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890102,ATENCION VISITA DOMICILIARIA POR MEDICINA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890103,ATENCION VISITA DOMICILIARIA POR ODONTOLOGIA GENERAL º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890105,ATENCION VISITA DOMICILIARIA POR ENFERMERIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890106,ATENCION VISITA DOMICILIARIA POR NUTRICION Y DIETETICA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890108,ATENCION VISITA DOMICILIARIA POR PSICOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890109,ATENCION VISITA DOMICILIARIA POR TRABAJO SOCIAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890110,ATENCION VISITA DOMICILIARIA POR FONIATRIA Y FONOAUDIOLOGÍA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890111,ATENCION VISITA DOMICILIARIA POR FISIOTERAPIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890112,ATENCION VISITA DOMICILIARIA POR TERAPIA RESPIRATORIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890113,ATENCION VISITA DOMICILIARIA POR TERAPIA OCUPACIONAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890114,ATENCION VISITA DOMICILIARIA POR PROMOTOR DE LA SALUD ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890115,ATENCION VISITA DOMICILIARIA POR EQUIPO INTERDISCIPLINARIO ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890116,ATENCION VISITA DOMICILIARIA POR OTRO PROFESIONAL DE LA SALUD NCOC ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890120,ATENCION VISITA AL SITIO DE TRABAJO POR TERAPIA OCUPACIONAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890125,ATENCION VISITA AL SITIO DE TRABAJO POR EQUIPO INTERDISCIPLINARIO,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,D,A,SD
+890201,CONSULTA DE PRIMERA VEZ POR MEDICINA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890202,CONSULTA DE PRIMERA VEZ POR MEDICINA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890203,CONSULTA DE PRIMERA VEZ POR ODONTOLOGIA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890204,CONSULTA DE PRIMERA VEZ POR ODONTOLOGIA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890205,CONSULTA DE PRIMERA VEZ POR ENFERMERIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890206,CONSULTA DE PRIMERA VEZ POR NUTRICION Y DIETETICA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890207,CONSULTA DE PRIMERA VEZ POR OPTOMETRIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890208,CONSULTA DE PRIMERA VEZ POR PSICOLOGIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890209,CONSULTA DE PRIMERA VEZ POR TRABAJO SOCIAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890210,CONSULTA DE PRIMERA VEZ POR FONIATRIA Y FONOAUDIOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890211,CONSULTA DE PRIMERA VEZ POR FISIOTERAPIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890212,CONSULTA DE PRIMERA VEZ POR TERAPIA RESPIRATORIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890213,CONSULTA DE PRIMERA VEZ POR TERAPIA OCUPACIONAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890214,CONSULTA DE PRIMERA VEZ POR TERAPIAS ALTERNATIVAS,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890215,CONSULTA DE PRIMERA VEZ POR EQUIPO INTERDISCIPLINARIO,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890301,CONSULTA DE CONTROL O DE SEGUIMIENTO POR MEDICINA GENERAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890302,CONSULTA DE CONTROL O DE SEGUIMIENTO POR MEDICINA ESPECIALIZADA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890303,CONSULTA DE CONTROL O DE SEGUIMIENTO POR ODONTOLOGIA GENERAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890304,CONSULTA DE CONTROL O DE SEGUIMIENTO POR ODONTOLOGIA ESPECIALIZADA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890305,CONSULTA DE CONTROL O DE SEGUIMIENTO POR ENFERMERIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890306,CONSULTA DE CONTROL O DE SEGUIMIENTO POR NUTRICION Y DIETETICA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890307,CONSULTA DE CONTROL O DE SEGUIMIENTO POR OPTOMETRIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890308,CONSULTA DE CONTROL O DE SEGUIMIENTO POR PSICOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890309,CONSULTA DE CONTROL O DE SEGUIMIENTO POR TRABAJO SOCIAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890310,CONSULTA DE CONTROL O DE SEGUIMIENTO POR FONIATRIA Y FONOAUDIOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890311,CONSULTA DE CONTROL O DE SEGUIMIENTO POR FISIOTERAPIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890312,CONSULTA DE CONTROL O DE SEGUIMIENTO POR TERAPIA RESPIRATORIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890313,CONSULTA DE CONTROL O DE SEGUIMIENTO POR TERAPIA OCUPACIONAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890314,CONSULTA DE CONTROL O DE SEGUIMIENTO POR TERAPIAS ALTERNATIVAS ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890315,CONSULTA INTEGRAL DE CONTROL O DE SEGUIMIENTO POR EQUIPO INTERDISCIPLINARIO ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,A,A,SD
+890402,INTERCONSULTA POR MEDICINA ESPECIALIZADA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890403,INTERCONSULTA POR ODONTOLOGÍA GENERAL º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890404,INTERCONSULTA POR ODONTOLOGÍA ESPECIALIZADA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890406,INTERCONSULTA POR NUTRICIÓN Y DIET?TICA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890408,INTERCONSULTA POR PSICOLOGÍA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890409,INTERCONSULTA POR TRABAJO SOCIAL º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890410,INTERCONSULTA POR FONIATRIA Y FONOAUDIOLOGÍA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890411,INTERCONSULTA POR TERAPIA FISICA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890412,INTERCONSULTA POR TERAPIA RESPIRATORIA º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890413,INTERCONSULTA POR TERAPIA OCUPACIONAL º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890501,PARTICIPACION EN JUNTA MEDICA POR MEDICINA GENERAL Y CASO PACIENTE ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890502,PARTICIPACION EN JUNTA MEDICA POR MEDICINA ESPECIALIZADA Y CASO PACIENTE ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890503,PARTICIPACION EN JUNTA MEDICA POR OTRO PROFESIONAL DE LA SALUD Y CASO PACIENTE ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,Z,A,SD
+890601,CUIDADO MANEJO INTRAHOSPITALARIO POR MEDICINA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890602,CUIDADO MANEJ O INTRAHOSPITALARIO POR MEDICINA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890604,CUIDADO MANEJO INTRAHOSPITALARIO POR ODONTOLOGIA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890605,ASISTENCIA INTRAHOSPITALARIA POR ENFERMERIA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890606,ASISTENCIA INTRAHOSPITALARIA POR NUTRICION Y DIETETICA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890608,ASISTENCIA INTRAHOSPITALARIA POR PSICOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890609,ASISTENCIA INTRAHOSPITALARIA POR TRABAJO SOCIAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890610,ASISTENCIA INTRAHOSPITALARIA POR TERAPIA FONIATRIA Y FONOAUDIOLOGIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890611,ASISTENCIA INTRAHOSPITALARIA POR TERAPIA FISICA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890612,ASISTENCIA INTRAHOSPITALARIA POR TERAPIA RESPIRATORIA ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890613,ASISTENCIA INTRAHOSPITALARIA POR TERAPIA OCUPACIONAL ,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890615,ASISTENCIA INTRAHOSPITALARIA POR EQUIPO INTERDISCIPLINARIO º,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,H,A,SD
+890701,CONSULTA DE URGENCIAS POR MEDICINA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,U,A,SD
+890702,CONSULTA DE URGENCIAS POR MEDICINA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,U,A,SD
+890703,CONSULTA DE URGENCIAS POR ODONTOLOGIA GENERAL,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,U,A,SD
+890704,CONSULTA DE URGENCIAS POR ODONTOLOGIA ESPECIALIZADA,16,Consulta  Monitorización y Procedimientos Diagnosticos,2,Consulta Medica,U,A,SD
+S01100,CONSULTA EXTERNA DE COMPLEJIDAD BAJA SOD º,28,Servicios Hospitalarios,2,Consulta Medica,A,A,1
+S01200,CONSULTA EXTERNA DE COMPLEJIDAD MEDIANA SOD º,28,Servicios Hospitalarios,2,Consulta Medica,A,A,2
+S01300,CONSULTA EXTERNA DE COMPLEJIDAD ALTA SOD º,28,Servicios Hospitalarios,2,Consulta Medica,A,A,3

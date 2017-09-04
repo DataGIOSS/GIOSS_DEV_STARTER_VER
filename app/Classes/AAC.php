@@ -6,6 +6,7 @@ use App\Classes\FileValidator;
 use App\Traits\ToolsForFilesController;
 use App\Models\Ambito;
 use App\Models\ConsultaCup;
+use App\Models\GiossConsultaCup;
 use App\Models\HomologosCupsCodigo;
 use App\Models\DiagnosticoCiex;
 use App\Models\TipoDiagnostico;
@@ -20,7 +21,6 @@ use App\Models\EntidadesSectorSalud;
 use App\Models\GiossArchivoAacCfvl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 
 class AAC extends FileValidator {
 
@@ -332,15 +332,15 @@ class AAC extends FileValidator {
     }
     Log::info("----------------------- Campo 18 ---------------------------------");
     //validacion campo 18
-    if(isset($consultSection[17])) {
-        if(strlen(trim($consultSection[17])) < 6){
-          $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener una longitud de mínimo 6 caracteres"]);
-        }
-    }else{
-      $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
-    }
+    // if(isset($consultSection[17])) {
+    //     if(strlen(trim($consultSection[17])) >= 10){
+    //       $isValidRow = false;
+    //     array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener una longitud menor o igual a 10 caracteres"]);
+    //     }
+    // }else{
+    //   $isValidRow = false;
+    //   array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+    // }
     Log::info("----------------------- Campo 20 ---------------------------------");
     //validacion campo 20
     if(isset($consultSection[19])) {
@@ -362,36 +362,77 @@ class AAC extends FileValidator {
         }else{
           switch ($consultSection[18]) {
             case '1':
-              $arregloTemp = explode('-', $consultSection[17]);
-              $exists = ConsultaCup::where('cod_consulta', $arregloTemp[0])->first();
-              if(!$exists){
+              if (ctype_alpha(trim($consultSection[17]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consultas cups válido"]);
-              }else{
-                $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[17])->first();
-                if(!$exists){
-                  $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta ni cups ni homologo  válido"]);
+                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
+              } else {
+                if(isset($consultSection[17])) {
+                    if(strlen(trim($consultSection[17])) > 6){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 6 caracteres"]);
+                    } else {
+                      $exists = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
+                      if(!$exists){
+                        $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
+                        if(!$exists){
+                          $isValidRow = false;
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
+                        }else{
+                          $esConsulta = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
+                          if(!$esConsulta){
+                            $isValidRow = false;
+                            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
+                          }
+                        }
+                      }
+                    }
                 }else{
-                  $consultSection[19] = $exists->cod_cups;
+                  $isValidRow = false;
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
                 }
               }
+
               break;
-            
+
             case '4':
-              $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[19])->first();
-              if(!$exists){
+
+              if (ctype_alpha(trim($consultSection[17]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor del campo no corresponde a un codigo de consutla homologo  válido"]);
-              }else{
-                $consultSection[19] = $exists->cod_cups;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
+              } else {
+                
+                if(isset($consultSection[17])) {
+                    if(strlen(trim($consultSection[17])) > 10){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
+                    } else {
+                      $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
+                      if(!$exists){
+                        $exists = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
+                        if(!$exists){
+                          $isValidRow = false;
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo  válido"]);
+                        }
+                       }else{
+                          $esConsulta = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
+                          if(!$esConsulta){
+                            $isValidRow = false;
+                            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
+                          }
+                      }
+                    }
+                }else{
+                  $isValidRow = false;
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+                }
+
               }
+
               break;
 
             default:
                 $isValidRow = false;
                 array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser 1 o 4."]);
-              break;
           }
 
         }
