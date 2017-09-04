@@ -283,7 +283,7 @@ class AEH extends FileValidator {
         }
         else{
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe tener el formato AAAA-MM-DD"]);
         }
     }else{
       $isValidRow = false;
@@ -292,9 +292,9 @@ class AEH extends FileValidator {
 
     //validacion campo 17
     if(isset($consultSection[16])) {
-        if(!preg_match("/^(2[0-3]|[01][0-9]):([0-5][0-9])$/", $consultSection[16])){
+        if(!preg_match("/^(2[0-3]|[0-1][0-9]):([0-5][0-9])$/", $consultSection[16])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe terner el formato HH:MM(Hora Militar)"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener el formato HH:MM(Hora Militar)"]);
         }
     }else{
       $isValidRow = false;
@@ -303,7 +303,7 @@ class AEH extends FileValidator {
 
     //validacion campo 18
     if(isset($consultSection[17])) {
-        if(preg_match("/^([0-9]{4}-(0[0-9]|1[0-2])-(0[0-9]|[1-2][0-9]|3[0-1])|(0000-00-00))$/", $consultSection[17])) {
+        if(preg_match("/^([0-9]{4}-(0[0-9]|1[0-2])-(0[0-9]|[1-2][0-9]|3[0-1]))$/", $consultSection[17])) {
           $date = explode('-', $consultSection[17]);
           if(!checkdate($date[1], $date[2], $date[0])){
             $isValidRow = false;
@@ -320,9 +320,9 @@ class AEH extends FileValidator {
 
     //validacion campo 19
     if(isset($consultSection[18])) {
-        if(!preg_match("/^(2[0-3]|[01][0-9]):([0-5][0-9])$/", $consultSection[18])){
+        if(!preg_match("/^(2[0-3]|[0-1][0-9]):([0-5][0-9])$/", $consultSection[18])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener el formato HH:MM(Hora Militar)"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener el formato HH:MM (Hora Militar)"]);
         }
     }else{
       $isValidRow = false;
@@ -331,14 +331,14 @@ class AEH extends FileValidator {
 
     //validacion campo 20
     if(isset($consultSection[19])) {
-        if(strlen(trim($consultSection[19])) != 4){
+        if(strlen(trim($consultSection[19])) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no puede ser vacío y debe tener un longitud de 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no puede ser vacío y debe tener un longitud menor o igual a 4 caracteres."]);
         }else{
-          $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[19])->first();
+          $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[19])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor no corresponde a un valor código de diagnóstico CIEX valido"]);
           }
         }
     }else{
@@ -360,9 +360,9 @@ class AEH extends FileValidator {
 
     //validacion campo 22
     if(isset($consultSection[21])) {
-        if(strlen(trim($consultSection[21])) != 4) {
+        if(strlen(trim($consultSection[21])) > 4) {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no puede ser vacío y debe tener una longitud de 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no puede ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
         }else{
           $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[21])->first();
           if(!$exists){
@@ -379,7 +379,7 @@ class AEH extends FileValidator {
     if(isset($consultSection[22])) {
         if(strlen(trim($consultSection[22])) > 50 && trim($consultSection[22]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no dede ser vacio y debe tener una longitud menor o igual a 50"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no puede ser vacio y debe tener una longitud menor o igual a 50"]);
         }
     }else{
       $isValidRow = false;
@@ -390,14 +390,14 @@ class AEH extends FileValidator {
     if(isset($consultSection[23])) {
         if(strlen(trim($consultSection[23])) != ''){
 
-          if(strlen(trim($consultSection[23])) != 4){
+          if(strlen(trim($consultSection[23])) > 4){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud de 4 caracteres."]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud menor o igual a 4 caracteres."]);
           }else{
-            $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[23])->first();
+            $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[23])->first();
             if(!$exists){
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico valido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico CIEX valido"]);
             }
           }
 
@@ -412,14 +412,14 @@ class AEH extends FileValidator {
     if(isset($consultSection[24])) {
         if(strlen(trim($consultSection[24])) != ''){
 
-          if(strlen(trim($consultSection[24])) != 4){
+          if(strlen(trim($consultSection[24])) > 4){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo debe tener un longitud de 4 caracteres."]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo debe tener un longitud menor o igual a 4 caracteres."]);
           }else{
             $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[24])->first();
             if(!$exists){
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El valor no corresponde a un valor código de diagnóstico valido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El valor no corresponde a un valor código de diagnóstico CIEX valido"]);
             }
           }
 
@@ -445,14 +445,14 @@ class AEH extends FileValidator {
     if(isset($consultSection[26])) {
         if(trim($consultSection[25]) == 2){ //si el anterior registro lo reporta como muerto (2)
 
-          if(strlen($consultSection[26]) != 4 || trim($consultSection[26]) == ''){
+          if(strlen($consultSection[26]) > 4 || trim($consultSection[26]) == ''){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no puede ser vacío y debe tener una longitud de 4 caracteres."]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no puede ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
           }else{
             $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[26])->first();
             if(!$exists){
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El valor no corresponde a un valor código de diagnóstico valido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El valor no corresponde a un valor código de diagnóstico CIEX valido"]);
             }
           }
 
@@ -465,10 +465,13 @@ class AEH extends FileValidator {
 
     //validacion campo 28
     if(isset($consultSection[27])) {
-        if(strlen(trim($consultSection[27])) > 50 && trim($consultSection[27]) == ''){
-          $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no dede ser vacio y debe tener una longitud menor o igual a 50"]);
+        if (trim($consultSection[26]) != '') {
+          if(strlen(trim($consultSection[27])) > 50 || trim($consultSection[27]) == ''){
+            $isValidRow = false;
+            array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no puede ser vacío ya que hay diagnóstico de muerte y debe tener una longitud menor o igual a 50 caracteres."]);
+          }
         }
+        
     }else{
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no debe ser nulo"]);

@@ -306,7 +306,7 @@ class AMS extends FileValidator {
     if(isset($consultSection[16])) {
         if(strlen(trim($consultSection[16])) > 20){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud de máximo 20 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud menor o igual a 20 caracteres"]);
         }
         
     }else{
@@ -320,35 +320,45 @@ class AMS extends FileValidator {
         
         switch ($consultSection[17]) {
           case '1':
-            $exists = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
+            if (trim($consultSection[16]) != '') {
+              $exists = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$exists){
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM válido"]);
+              }
+            } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamentos CUM válido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío"]);
             }
+            
             break;
           
           case '2':
-            $exists = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
+            if (trim($consultSection[16]) != '') {
+              $exists = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$exists){
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC válido"]);
+              }
+            } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamentos ATC válido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío"]);
             }
+
             break;
 
           case '3':
-            $exists = MedicamentosR::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
+            if (trim($consultSection[16]) != '') {
+              $exists = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$exists){
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento Homólogo válido"]);
+              }
+            } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correspondea un codigo de medicamentos registro sanitario válido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo de medicamento no puede estar vacío"]);
             }
-            break;
 
-          case '4':
-            $exists = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
-              $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamentos homologo válido"]);
-            }
             break;
 
           default:
@@ -366,9 +376,9 @@ class AMS extends FileValidator {
 
     //validacion campo 19
     if(isset($consultSection[18])) {
-        if(!is_numeric(trim($consultSection[18]))){
+        if(!ctype_digit(trim($consultSection[18])) || strlen(trim($consultSection[18])) > 3){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un valor entero ".$consultSection[18]]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un valor entero de máximo 3 dígitos"]);
         }
     }else{
       $isValidRow = false;
@@ -394,12 +404,9 @@ class AMS extends FileValidator {
     }
     Log::info("termino validacion camp 20 ");
 
-
   }
 
-
-  protected function validateDates(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$firstRow ,$data)
-  {
+  protected function validateDates(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$firstRow ,$data) {
  
 
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){

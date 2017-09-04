@@ -290,7 +290,7 @@ class APS extends FileValidator {
 
     //validacion campo 17
     if(isset($consultSection[16])) {
-        if(strlen(trim($consultSection[16])) != 8){
+        if(strlen(trim($consultSection[16])) > 8){
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud igual a 8 caracteres"]);
         }
@@ -305,29 +305,73 @@ class APS extends FileValidator {
         
         switch ($consultSection[17]) {
           case '1':
-            $exists = ProcedimientoCup::where('cod_procedimiento', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
-              $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups válido"]);
-            }else{
-              $exists = HomologosCupsCodigo::where('cod_homologo', ltrim($consultSection[16], '0'))->first();
-              if(!$exists){
+
+            //Adaptación de la validación inicial para garantizar la existencia del código y que corresponda  a un CUP.
+            //Además se valida el tipo del dato recibido.
+            if (ctype_alpha(trim($consultSection[16]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correspondea a un codigo de procedimiento homologo válido"]);
-              }else{
-                $consultSection[16] = $exists->cod_cups;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
+              } else {
+                if(isset($consultSection[16])) {
+                    if(strlen(trim($consultSection[16])) > 8){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 8 caracteres"]);
+                    } else {
+                      $exists = ProcedimientoCup::where('cod_procedimiento', str_replace('-', '', $consultSection[16]))->first();
+                      if(!$exists){
+                        $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[16]))->first();
+                        if(!$exists){
+                          $isValidRow = false;
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo válido"]);
+                        }else{
+                          $esConsulta = ProcedimientoCup::where('cod_procedimiento', str_replace('-', '', $exists->cod_cups))->first();
+                          if(!$esConsulta){
+                            $isValidRow = false;
+                            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
+                          }
+                        }
+                      }
+                    }
+                }else{
+                  $isValidRow = false;
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+                }
               }
-            }
-            break;
 
           case '4':
-            $exists = HomologosCupsCodigo::where('cod_homologo', ltrim($consultSection[16], '0'))->first();
-            if(!$exists){
-              $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correspondea a un codigo de procedimiento homologo válido"]);
-            }else{
-              $consultSection[16] = $exists->cod_cups;
-            }
+
+            if (ctype_alpha(trim($consultSection[16]))) {
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
+              } else {
+                
+                if(isset($consultSection[16])) {
+                    if(strlen(trim($consultSection[16])) > 10){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
+                    } else {
+                      $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[16]))->first();
+                      if(!$exists){
+                        $exists = ProcedimientoCup::where('cod_procedimiento', str_replace('-', '', $consultSection[16]))->first();
+                        if(!$exists){
+                          $isValidRow = false;
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo  válido"]);
+                        }
+                       }else{
+                          $esConsulta = ProcedimientoCup::where('cod_procedimiento', str_replace('-', '', $exists->cod_cups))->first();
+                          if(!$esConsulta){
+                            $isValidRow = false;
+                            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
+                          }
+                      }
+                    }
+                }else{
+                  $isValidRow = false;
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+                }
+
+              }
+
             break;
 
           default:

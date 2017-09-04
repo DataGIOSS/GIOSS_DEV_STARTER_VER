@@ -319,9 +319,9 @@ class FileValidator {
 
 		//validación campo 9
     	if(isset($userSection[8])) {
-    		if(strlen(trim($userSection[8])) > 12 || !ctype_alnum($userSection[8])) {
+    		if(strlen(trim($userSection[8])) > 12 || !ctype_digit($userSection[8])) {
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe un numerico con una longitud igual o menor a 12 dígitos."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe un valor numerico con una longitud menor o igual a 12 dígitos."]);
     		}
 		}else{
 			$isValidRow = false;
@@ -341,7 +341,7 @@ class FileValidator {
 
 		//validación campo 11
     	if(isset($userSection[10])) {
-    		if(strlen($userSection[10]) > 30 ){
+    		if(strlen($userSection[10]) > 30){
     			$isValidRow = false;
 				array_push($detail_erros, [$lineCount, $lineCountWF, 11, "El campo debe tener un longitud menor a 30 caracteres."]);
     		}
@@ -363,7 +363,7 @@ class FileValidator {
 
 		//validación campo 13
     	if(isset($userSection[12])) {
-    		if(strlen(trim($userSection[12])) > 30 ){
+    		if(strlen(trim($userSection[12])) > 30){
     			$isValidRow = false;
 				array_push($detail_erros, [$lineCount, $lineCountWF, 13, "El campo debe tener un longitud menor o igual a 30 caracteres."]);
     		}
@@ -400,7 +400,7 @@ class FileValidator {
     			$exists = GenerosUser::where('id_genero',$userSection[14])->first();
     			if(!$exists){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El valor del campo no correponde a un gérenero definido."]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El valor del campo no correponde a un género definido."]);
     			}
     		}
 		}else{
@@ -431,9 +431,9 @@ class FileValidator {
 			} else {
 				if (count($phoneNumbers) == 2) {
 					
-					if(!is_numeric($phoneNumbers[0]) || !is_numeric($phoneNumbers[1])){
+					if(!ctype_digit($phoneNumbers[0]) || !ctype_digit($phoneNumbers[1])){
 						$isValidRow = false;
-						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad dígitos numéricos"]);
+						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos"]);
 
 					} else {
 						if((strlen($phoneNumbers[0]) > 10) || (strlen($phoneNumbers[1]) > 10)){
@@ -447,9 +447,9 @@ class FileValidator {
 
 				} else {
 					
-					if(!is_numeric($phoneNumbers[0])){
+					if(!ctype_digit($phoneNumbers[0])){
 						$isValidRow = false;
-						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad dígitos numéricos"]);
+						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos"]);
 
 					} else {
 						if((strlen($phoneNumbers[0]) > 10)){

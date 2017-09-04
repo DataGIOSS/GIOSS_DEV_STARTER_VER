@@ -22,3 +22,4 @@
 [28-Jul-2017 19:32:47 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Log' not found in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\app\Http\Controllers\DepartamentoController.php on line 12
 [18-Aug-2017 14:05:51 UTC] PHP Parse error:  syntax error, unexpected ')' in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\app\Classes\AAC.php on line 364
 [18-Aug-2017 14:08:14 UTC] PHP Parse error:  syntax error, unexpected '{' in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\app\Classes\AAC.php on line 434
+[04-Sep-2017 21:50:52 UTC] PHP Parse error:  syntax error, unexpected ')', expecting ']' in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\app\Classes\AMS.php on line 395

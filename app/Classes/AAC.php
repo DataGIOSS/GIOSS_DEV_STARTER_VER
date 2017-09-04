@@ -330,28 +330,6 @@ class AAC extends FileValidator {
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
     }
-    Log::info("----------------------- Campo 18 ---------------------------------");
-    //validacion campo 18
-    // if(isset($consultSection[17])) {
-    //     if(strlen(trim($consultSection[17])) >= 10){
-    //       $isValidRow = false;
-    //     array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener una longitud menor o igual a 10 caracteres"]);
-    //     }
-    // }else{
-    //   $isValidRow = false;
-    //   array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
-    // }
-    Log::info("----------------------- Campo 20 ---------------------------------");
-    //validacion campo 20
-    if(isset($consultSection[19])) {
-        if(!preg_match("/^\d{2}$/", $consultSection[19])){
-          $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
-        }
-    }else{
-      $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
-    }
     
     Log::info("----------------------- Campo 18, 19, 20 ---------------------------------");
     //validacion campo 18, 19 y 20
@@ -440,6 +418,19 @@ class AAC extends FileValidator {
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
     }
+
+    Log::info("----------------------- Campo 20 ---------------------------------");
+    //validacion campo 20
+    if(isset($consultSection[19])) {
+        if(!preg_match("/^\d{2}$/", $consultSection[19])){
+          $isValidRow = false;
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
+        }
+    }else{
+      $isValidRow = false;
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
+    }
+
     Log::info("----------------------- Campo 21 ---------------------------------");
     //validacion campo 21
     if(isset($consultSection[20])) {
@@ -457,14 +448,14 @@ class AAC extends FileValidator {
     Log::info("----------------------- Campo 22 ---------------------------------");
     //validacion campo 22
     if(isset($consultSection[21])) {
-        if(strlen($consultSection[21]) != 4){
+        if(strlen($consultSection[21]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser vacío y debe tener una longitud de 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
         }else{
           $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[21])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
           }
         }
     }else{
@@ -474,10 +465,12 @@ class AAC extends FileValidator {
     Log::info("----------------------- Campo 23 ---------------------------------");
     //validacion campo 23
     if(isset($consultSection[22])) {
+
         if(strlen($consultSection[22]) > 50 || trim($consultSection[22]) == '') {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser vacío y debe tener una longitud no mayor a 50 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "Este campo no debe ser vacío ya que el campo 22 no es vacío y debe tener una longitud no mayor a 50 caracteres."]);
         }
+        
     }else{
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo"]);
@@ -487,14 +480,14 @@ class AAC extends FileValidator {
     if(isset($consultSection[23])) {
       if(strlen(trim($consultSection[23])) != '')
       {
-        if(strlen($consultSection[23]) != 4){
+        if(strlen($consultSection[23]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud de 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud menor o igual a 4 caracteres."]);
         }else{
-          $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[23])->first();
+          $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[23])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
           }
         }
       }
@@ -508,9 +501,9 @@ class AAC extends FileValidator {
     if(isset($consultSection[24])) {
       if(strlen(trim($consultSection[23])) != '')
       {
-        if(strlen($consultSection[24]) > 50){
+        if(strlen($consultSection[24]) > 50 || trim($consultSection[24]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo debe tener una longitud menor o igual a 50 caracteres."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 25, "Ya que el campo 24 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres."]);
         }
       }
     }else{
@@ -522,9 +515,9 @@ class AAC extends FileValidator {
     if(isset($consultSection[25])) {
       if(strlen(trim($consultSection[25])) != '')
       {
-        if(strlen($consultSection[25]) != 4){
+        if(strlen($consultSection[25]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe tener un longitud de 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe tener un longitud menor o igual 4 caracteres."]);
         }else{
           $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[25])->first();
           if(!$exists){
@@ -542,9 +535,9 @@ class AAC extends FileValidator {
     if(isset($consultSection[26])) {
       if(strlen(trim($consultSection[25])) != '')
       {
-        if(strlen($consultSection[26]) > 50){
+        if(strlen($consultSection[26]) > 50 || trim($consultSection[26]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo debe tener una longitud menor o igual a 50 caracteres."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 27, "Ya que el campo 26 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.."]);
         }
       }
     }else{
