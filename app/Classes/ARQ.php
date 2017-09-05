@@ -100,7 +100,7 @@ class ARQ extends FileValidator {
       
       $this->validateFirstRow($isValidFirstRow, $this->detail_erros, $firstRow);
 
-      // Si en este punto se ha verificado el el archivo es válido y que además la primera fila ha
+      // Si en este punto se ha verificado el archivo es válido y que además la primera fila ha
       // pasado las validaciones y sigue siendo una fila válida, entonces se continua la
       // construcción del objeto Archivo que será almacenado
       Log::info("manageContent (ARQ - Linea 105)");
