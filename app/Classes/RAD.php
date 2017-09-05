@@ -20,9 +20,7 @@ use App\Models\HomologosCupsCodigo;
 use App\Models\AyudasDiagnostica;
 use App\Models\GiossArchivoRadCfvl;
 
-
 class RAD extends FileValidator {
-
 
   function __construct($pathfolder, $fileName,$consecutive) {
     $filePath = $pathfolder.$fileName;
@@ -277,6 +275,7 @@ class RAD extends FileValidator {
         }else{
           $exists = Ambito::where('cod_ambito',$consultSection[15])->first();
           if(!$exists){
+            $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El valor del campo no correponde a un Ambito valido"]);
           }
         }
@@ -289,8 +288,9 @@ class RAD extends FileValidator {
     if(isset($consultSection[16])) {
       if(strlen(trim($consultSection[16])) == 2)
       {
-        $exists = AyudasDiagnosticasPrueba::where('id_prueba',$consultSection[16])->first();
+        $exists = AyudasDiagnosticasPrueba::where('id_prueba', $consultSection[16])->first();
           if(!$exists){
+            $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a una prueba valida."]);
           }
       }
@@ -307,7 +307,7 @@ class RAD extends FileValidator {
     if(isset($consultSection[18])) {
         if(strlen(trim($consultSection[18])) > 6 || trim($consultSection[18]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 6 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 6 caracteres"]);
         }
     }else{
       $isValidRow = false;
@@ -366,7 +366,7 @@ class RAD extends FileValidator {
     if(isset($consultSection[19])) {
         if(strlen(trim($consultSection[19])) > 100 || trim($consultSection[19]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener una longitud menor a 100 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener una longitud menor a 100 caracteres"]);
         }
     }else{
       $isValidRow = false;
@@ -420,7 +420,7 @@ class RAD extends FileValidator {
     if(isset($consultSection[22])) {
         if(strlen(trim($consultSection[22])) > 20){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener un longitud no mayor a 20 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener un longitud no mayor a 20 caracteres"]);
         }
     }else{
       $isValidRow = false;

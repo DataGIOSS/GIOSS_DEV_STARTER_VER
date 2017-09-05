@@ -282,8 +282,7 @@ class AVA extends FileValidator {
     //validacion campo 17
     if(isset($consultSection[16])) {
         if(strlen(trim($consultSection[16])) > 8){
-          $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres"]);
+          
         }
     }else{
       $isValidRow = false;
@@ -298,30 +297,70 @@ class AVA extends FileValidator {
         }else{
           switch ($consultSection[17]) {
             case '1':
-              $exists = VacunaCup::where('codigo_tipo_vacuna',$consultSection[16])->first();
-              if(!$exists){
+              if (ctype_alpha(trim($consultSection[16]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna cups válido"]);
-              }else{
-                $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[16])->first();
-                if(!$exists){
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética."]);
+              } else {
+                if (strlen(trim($consultSection[16])) > 8) {
                   $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna ni cups ni homologo válida"]);
-                }else{
-                  $consultSection[16] = $exists->cod_cups; 
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres"]);
+                } else {
+                  $exists = VacunaCup::where('codigo_tipo_vacuna',$consultSection[16])->first();
+                  if(!$exists){
+                    $existsHomologo = HomologosCupsCodigo::where('cod_homologo',$consultSection[16])->first();
+                    if(!$existsHomologo){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna ni CUP ni homologo válido"]);
+                    }else{
+                      $esCup = VacunaCup::where('codigo_tipo_vacuna', $existsHomologo->cod_cups)->first();
+                      if (!$esCup) {
+                        $isValidRow = false;
+                        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos."]);
+                      } else {
+                        $consultSection[16] = $exists->cod_cups;
+                      }
+                    }
+
+                  }
                 }
               }
+
               break;
             
             case '4':
-              $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[16])->first();
-              if(!$exists){
+              if (ctype_alpha(trim($consultSection[16]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna homologa válida"]);
-              }else{
-                $consultSection[16] = $exists->cod_cups; 
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética."]);
+              } else {
+                if (strlen(trim($consultSection[16])) > 8) {
+                  $isValidRow = false;
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres"]);
+                } else {
+                  $exists = HomologosCupsCodigo::where('cod_homologo',$consultSection[16])->first();
+                  if(!$exists){
+                    $existsCUP = VacunaCup::where('codigo_tipo_vacuna', $consultSection[16])->first();
+                    if (!$existsCup) {
+                       $isValidRow = false;
+                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna CUP ni a un código de vacuna homologa válida"]);
+                     }
+                  }else{
+                    $esCodigoCup = VacunaCup::where('codigo_tipo_vacuna', $exists->cod_cups)->first();
+                    if (!$esCodigoCup) {
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos."]);
+                    } else {
+                      $consultSection[16] = $exists->cod_cups;
+                    }
+                  }
+                }
               }
+
               break;
+
+            default:
+              $isValidRow = false;
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El tipo de codificación solo puede recibir un valor igual a 1 ó 4."]);
+
           }
 
         }
@@ -330,13 +369,11 @@ class AVA extends FileValidator {
       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
     }
 
-    
-
     //validacion campo 19
     if(isset($consultSection[18])) {
-        if(!is_numeric($consultSection[18]) && (trim($consultSection[18]) > 5 || trim($consultSection[18]) < 1)) {
+        if(!is_numeric($consultSection[18]) && (trim($consultSection[18]) > 2 || trim($consultSection[18]) < 1)) {
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor entre 1 y 5"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor entre 1 y 2"]);
         }
       
         
@@ -351,7 +388,6 @@ class AVA extends FileValidator {
   {
     //se valida que las fecha de nacimiento sea inferior a las fecha correpondientes a los peiodos
     
-
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);

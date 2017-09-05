@@ -310,9 +310,15 @@ class ATP extends FileValidator {
     if(isset($consultSection[17])) {
         if(strlen(trim($consultSection[17])) > 4 || trim($consultSection[17]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 4 caracteres"]);
-        }elseif(!is_numeric($consultSection[17] )){
-          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "campo debe ser un valor numerico(las cifras decimales deben estar separadas por el caracter punto '.')"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 4 caracteres, incluyendo el separador de decimales si es el caso."]);
+        }elseif(!is_numeric($consultSection[17])){
+          $isValidRow = false;
+          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un valor numerico (las cifras decimales deben estar separadas por el caracter punto '.')"]);
+        } elseif($consultSection[17] !='0' && $consultSection[17 != '999']) {
+          if ($consultSection[17] < 0.20 || $consultSection[17] > 250) {
+            $isValidRow = false;
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener un valor mayor a 0.20 y menor a 250"]);
+          }
         }
     }else{
       $isValidRow = false;
@@ -343,16 +349,20 @@ class ATP extends FileValidator {
     if(isset($consultSection[19])) {
         if(strlen(trim($consultSection[19])) > 3 || trim($consultSection[19]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 4 caracteres"]);
-        }elseif(!(int)$consultSection[19] == $consultSection[19]){
-          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un valor entero."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 3 caracteres"]);
+        }elseif(!ctype_digit(trim($consultSection[19]))){
+          $isValidRow = false;
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe ser un valor entero."]);
+        } elseif(trim($consultSection[19]) != '0' && trim($consultSection[19]) != '999') {
+          if ($consultSection[19] < 20 || $consultSection[19] > 225) {
+            $isValidRow = false;
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener un valor mayor a 20 y menor que 225."]);
+          }
         }
     }else{
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
     }
-
-    
 
     //validacion campo 21
     if(isset($consultSection[20])) {
@@ -377,10 +387,11 @@ class ATP extends FileValidator {
 
     //validacion campo 22
     if(isset($consultSection[21])) {
-        if(strlen(trim($consultSection[21])) > 3 || trim($consultSection[21]) == ''){
+        if(strlen(trim($consultSection[21])) > 3 || strlen(trim($consultSection[21])) < 2 || trim($consultSection[21]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 4 caracteres"]);
-        }elseif(!(int)$consultSection[21] == $consultSection[21]){
+          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe no debe ser vacio y debe tener un longitud de 2 o 3 caracteres"]);
+        }elseif(!ctype_digit(trim($consultSection[21]))){
+          $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe ser un valor entero."]);
         }
     }else{
@@ -390,10 +401,11 @@ class ATP extends FileValidator {
 
     //validacion campo 23
     if(isset($consultSection[22])) {
-        if(strlen(trim($consultSection[22])) > 3 || trim($consultSection[22]) == ''){
+        if(strlen(trim($consultSection[22])) > 3 || strlen(trim($consultSection[22])) < 2 || trim($consultSection[22]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 4 caracteres"]);
-        }elseif(!(int)$consultSection[22] == $consultSection[22]){
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe no debe ser vacio y debe tener un longitud de 2 o 3 caracteres"]);
+        }elseif(!ctype_digit($consultSection[22])){
+          $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe ser un valor entero."]);
         }
     }else{

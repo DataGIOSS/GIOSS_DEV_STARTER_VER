@@ -18,17 +18,17 @@ class topsPruebasSeeder extends Seeder
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '02',
-        	'descripcion' => 'Cultivos'
+        	'descripcion' => 'Prueba de Excretas'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '03',
-        	'descripcion' => 'Prueba de excretas'
+        	'descripcion' => 'Prueba de Orina'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '04',
-        	'descripcion' => 'Prueba de Orina'
+        	'descripcion' => 'Prueba de Otros Fluidos'
         ]);
 
         AyudasDiagnosticasPrueba::create([
@@ -43,31 +43,41 @@ class topsPruebasSeeder extends Seeder
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '07',
-        	'descripcion' => 'Radiológica '
+        	'descripcion' => 'Cultivos'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '08',
-        	'descripcion' => 'Medicina Nuclear'
+        	'descripcion' => 'Radiología'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '09',
-        	'descripcion' => 'Ultrasonido'
+        	'descripcion' => 'Medicina Nuclear'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '10',
-        	'descripcion' => 'MRI'
+        	'descripcion' => 'Ultrasonido'
         ]);
 
         AyudasDiagnosticasPrueba::create([
         	'id_prueba' => '11',
-        	'descripcion' => 'Pruebas de función eléctrica'
+        	'descripcion' => 'MRI (Imagen de Resonancia Magnética)'
         ]);
 
         AyudasDiagnosticasPrueba::create([
-        	'id_prueba' => '12',
+            'id_prueba' => '12',
+            'descripcion' => 'Pruebas de Función Eléctrica'
+        ]);
+
+        AyudasDiagnosticasPrueba::create([
+            'id_prueba' => '13',
+            'descripcion' => 'Prueba Cutánea'
+        ]);
+
+        AyudasDiagnosticasPrueba::create([
+        	'id_prueba' => '14',
         	'descripcion' => 'Otro'
         ]);
 

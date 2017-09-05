@@ -342,7 +342,7 @@ class AAC extends FileValidator {
             case '1':
               if (ctype_alpha(trim($consultSection[17]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
+                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo de código de consulta no puede estar compuesto por una cadena totalmente alfabética."]);
               } else {
                 if(isset($consultSection[17])) {
                     if(strlen(trim($consultSection[17])) > 6){
@@ -351,15 +351,17 @@ class AAC extends FileValidator {
                     } else {
                       $exists = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
                       if(!$exists){
-                        $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
-                        if(!$exists){
+                        $existsHomologo = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
+                        if(!$existsHomologo){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
                         }else{
-                          $esConsulta = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
-                          if(!$esConsulta){
+                          $esCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $existsHomologo->cod_cups))->first();
+                          if(!$esCup){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
+                          } else {
+                            $consultSection[17] = $existsHomologo->cod_cups;
                           }
                         }
                       }
@@ -386,16 +388,18 @@ class AAC extends FileValidator {
                     } else {
                       $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
                       if(!$exists){
-                        $exists = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
-                        if(!$exists){
+                        $existsCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
+                        if(!$existsCup){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo  válido"]);
                         }
                        }else{
-                          $esConsulta = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
-                          if(!$esConsulta){
+                          $esCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
+                          if(!$esCup){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
+                          } else {
+                            $consultSection[17] = $exists->cod_cups;
                           }
                       }
                     }
