@@ -253,11 +253,9 @@ class FileValidator {
 		}else{
 			$isValidRow = false;
 			array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El campo no debe ser nulo"]);
-		}
-
-		//validacion campo 5
+		}		//validacion campo 5
     	if(isset($entitySection[4])){
-    		if(strlen(trim($entitySection[4])) == 6){
+    		if(strlen(trim($entitySection[4])) <= 6){
     			$tipo = Eapb::where('cod_eapb',$entitySection[4])->first();
     			if(!$tipo){
     				$isValidRow = false;
@@ -265,7 +263,7 @@ class FileValidator {
     			}
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo debe tener un longitud igual a 6"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo debe tener un longitud menor o igual a 6"]);
     		}
 		}else{
 			$isValidRow = false;

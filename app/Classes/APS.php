@@ -292,7 +292,7 @@ class APS extends FileValidator {
     if(isset($consultSection[16])) {
         if(strlen(trim($consultSection[16])) > 8){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud igual a 8 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud menor o igual a 8 caracteres"]);
         }
         
     }else{
