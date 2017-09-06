@@ -449,7 +449,7 @@ class AEH extends FileValidator {
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no puede ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
           }else{
-            $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[26])->first();
+            $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[26])->first();
             if(!$exists){
               $isValidRow = false;
               array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El valor no corresponde a un valor código de diagnóstico CIEX valido"]);

@@ -330,18 +330,6 @@ class AAC extends FileValidator {
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
     }
-
-    Log::info("----------------------- Campo 20 ---------------------------------");
-    //validacion campo 20
-    if(isset($consultSection[19])) {
-        if(!preg_match("/^\d{2}$/", $consultSection[19])){
-          $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
-        }
-    }else{
-      $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
-    }
     
     Log::info("----------------------- Campo 18, 19, 20 ---------------------------------");
     //validacion campo 18, 19 y 20

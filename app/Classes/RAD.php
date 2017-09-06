@@ -318,7 +318,7 @@ class RAD extends FileValidator {
     if(isset($consultSection[17])) {
       switch ($consultSection[17]) {
         case '1':
-          $exists = ProcedimientoCup::where('cod_procedimiento',intval($consultSection[17]))
+          $exists = ProcedimientoCup::where('cod_procedimiento', trim($consultSection[17])
                                       ->where(function ($query) { //codigos de grupos correpondientes a ayudas diagnosticas
                                                   $query->where('cod_grup_cups', 6)
                                                         ->orWhere('cod_grup_cups', 7)
@@ -427,7 +427,6 @@ class RAD extends FileValidator {
       array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo"]);
     }
 
-    
   }
 
   protected function validateDates(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$firstRow ,$data)
