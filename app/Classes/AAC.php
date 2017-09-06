@@ -349,14 +349,14 @@ class AAC extends FileValidator {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 6 caracteres"]);
                     } else {
-                      $exists = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
+                      $exists = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
                       if(!$exists){
-                        $existsHomologo = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
+                        $existsHomologo = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
                         if(!$existsHomologo){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
                         }else{
-                          $esCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $existsHomologo->cod_cups))->first();
+                          $esCup = GiossConsultaCup::where('cod_consulta', $existsHomologo->cod_cups)->first();
                           if(!$esCup){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
@@ -386,15 +386,15 @@ class AAC extends FileValidator {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
                     } else {
-                      $exists = HomologosCupsCodigo::where('cod_homologo', str_replace('-', '', $consultSection[17]))->first();
+                      $exists = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
                       if(!$exists){
-                        $existsCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $consultSection[17]))->first();
+                        $existsCup = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
                         if(!$existsCup){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo  válido"]);
                         }
                        }else{
-                          $esCup = GiossConsultaCup::where('cod_consulta', str_replace('-', '', $exists->cod_cups))->first();
+                          $esCup = GiossConsultaCup::where('cod_consulta', $exists->cod_cups)->first();
                           if(!$esCup){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
@@ -441,7 +441,7 @@ class AAC extends FileValidator {
       if($consultSection[19] != 99){
         if(strlen($consultSection[20]) > 50 || trim($consultSection[20]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser vacío y debe tener una longitud menor o igual a 50"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser vacío y debe tener una longitud menor o igual a 50"]);
         }
       }
         
@@ -507,7 +507,7 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[24]) > 50 || trim($consultSection[24]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 25, "Ya que el campo 24 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 25, "Ya que el campo 24 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres."]);
         }
       }
     }else{
@@ -541,7 +541,7 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[26]) > 50 || trim($consultSection[26]) == ''){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 27, "Ya que el campo 26 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 27, "Ya que el campo 26 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.."]);
         }
       }
     }else{
