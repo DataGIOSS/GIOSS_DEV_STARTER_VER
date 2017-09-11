@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(topsPruebasSeeder::class);
         $this->call(protocoloQuimioterapiaSeeder::class);
         $this->call(protocoloMedicamentosSeeder::class);
+        $this->call(GiossConsultaCUPSeeder::class);
 
 	    Model::reguard();
     }

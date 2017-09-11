@@ -15,6 +15,7 @@ class CreateMedicamentosHomologoTable extends Migration {
 		Schema::create('medicamentos_homologo', function(Blueprint $table)
 		{
 			$table->string('codigo_medicamento', 40)->primary('medicamentos_homologo_pkey');
+			$table->string('codigo_cum', 40);
 			$table->string('descripcion', 100)->nullable();
 		});
 	}

@@ -52,6 +52,7 @@ $(document).ready(function(){
 			$('#div_file_statuses').empty();
 			var validatorNames = validateNameFiles();
 			var validatorPeriodo = validatePeriodo();
+			consecutive = Date.now();
 
 			if(!validatorNames['isValid'] || !validatorPeriodo.isValid){
 				if(!validatorNames['isValid']){

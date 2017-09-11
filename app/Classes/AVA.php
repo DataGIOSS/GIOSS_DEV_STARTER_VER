@@ -320,7 +320,6 @@ class AVA extends FileValidator {
                         $consultSection[16] = $exists->cod_cups;
                       }
                     }
-
                   }
                 }
               }
@@ -364,7 +363,7 @@ class AVA extends FileValidator {
           }
 
         }
-    }else{
+    } else {
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
     }

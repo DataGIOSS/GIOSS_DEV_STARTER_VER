@@ -202,7 +202,7 @@ class AAC extends FileValidator {
                 $useripsid = $ipsuser->id_user;
               }
 
-              Log::info("Se busa la entidad (AAC - Linea 215)");
+              Log::info("Se busca la entidad (AAC - Linea 215)");
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
 
@@ -438,7 +438,7 @@ class AAC extends FileValidator {
     Log::info("----------------------- Campo 21 ---------------------------------");
     //validacion campo 21
     if(isset($consultSection[20])) {
-      if($consultSection[19] != 99){
+      if($consultSection[19] != 99 && $consultSection[19] != ''){
         if(strlen($consultSection[20]) > 50 || trim($consultSection[20]) == ''){
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser vacío y debe tener una longitud menor o igual a 50"]);

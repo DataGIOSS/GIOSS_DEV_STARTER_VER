@@ -321,10 +321,24 @@ class AMS extends FileValidator {
         switch ($consultSection[17]) {
           case '1':
             if (trim($consultSection[16]) != '') {
-              $exists = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-              if(!$exists){
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM válido"]);
+              $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$existsCum){
+                $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                if (!$existsAtc) {
+                  $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  if (!$existsHomologo) {
+                    $isValidRow = false;
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
+                  } else {
+                    $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                    if(!$esCum){
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código existente entre los códigos CUM"]);
+                    } else {
+                      $consultSection[16] = $existsHomologo->codigo_cum;
+                    }
+                  }
+                }
               }
             } else {
               $isValidRow = false;
@@ -335,10 +349,22 @@ class AMS extends FileValidator {
           
           case '2':
             if (trim($consultSection[16]) != '') {
-              $exists = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-              if(!$exists){
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC válido"]);
+              $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$existsAtc){
+                $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                if (!$existsCum) {
+                  $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  if (!$existsHomologo) {
+                    $isValidRow = false;
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC, CUM ni Homólogo válido"]);
+                  } else {
+                    $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                    if (!$esCum) {
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código CUM válido."]);
+                    }
+                  }
+                }
               }
             } else {
               $isValidRow = false;
@@ -349,10 +375,22 @@ class AMS extends FileValidator {
 
           case '3':
             if (trim($consultSection[16]) != '') {
-              $exists = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
-              if(!$exists){
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento Homólogo válido"]);
+              $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              if(!$existsHomologo){
+                $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                if (!$existsCum) {
+                  $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  if (!$existsAtc) {
+                    $isValidRow = false;
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
+                  }
+                }
+              } else {
+                $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                if (!$esCum) {
+                  $isValidRow = false;
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código Homólogo entregado no corresponde a un código CUM válido"]);
+                }
               }
             } else {
               $isValidRow = false;
