@@ -346,26 +346,28 @@ class AAC extends FileValidator {
               } else {
                 if(isset($consultSection[17])) {
                     if(strlen(trim($consultSection[17])) > 6){
-                      $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 6 caracteres"]);
-                    } else {
-                      $exists = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
-                      if(!$exists){
-                        $existsHomologo = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
-                        if(!$existsHomologo){
+                      
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 6 caracteres"]);
+
+                    }
+                    
+                    $exists = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
+                    if(!$exists){
+                      $existsHomologo = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
+                      if(!$existsHomologo){
+                        $isValidRow = false;
+                        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
+                      }else{
+                        $esCup = GiossConsultaCup::where('cod_consulta', $existsHomologo->cod_cups)->first();
+                        if(!$esCup){
                           $isValidRow = false;
-                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
-                        }else{
-                          $esCup = GiossConsultaCup::where('cod_consulta', $existsHomologo->cod_cups)->first();
-                          if(!$esCup){
-                            $isValidRow = false;
-                            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
-                          } else {
-                            $consultSection[17] = $existsHomologo->cod_cups;
-                          }
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
+                        } else {
+                          $consultSection[17] = $existsHomologo->cod_cups;
                         }
                       }
                     }
+                  
                 } else {
                   $isValidRow = false;
                   array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
