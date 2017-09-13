@@ -7,6 +7,11 @@ $(document).ready(function(){
 	$('#add_file').on('click', function(){
 
 		$('#alert').fadeOut();
+
+		if (count_files < 0) {
+			count_files = 0;
+		}
+
 		count_files+=1;
 
 		var html = '<div class="form-group well" id="particular_file_div"> <button type="button" id="close_div_file" class="close" aria-hidden="true">&times;</button> <label for="tipo_file" class="form-control-label" style="font-family: \'Jura\', sans-serif; font-size: 15px;"><strong>Tipo de archivo No.'+count_files+'</strong></label><select id="tipo_file" name="tipo_file[]" style="width: 80%;position:relative;font-family: \'Jura\', sans-serif; font-size: 16px;"><option value="AAC" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Atencion en Consulta AAC</option> <option value="AEH" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Egresos Hospitalarios AEH</option><option value="ASM" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Suministro Medicamentos ASM</option><option value="AVA" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Vacunas Aplicadas AVA</option><option value="APS" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Procedimientos APS</option><option value="ATP" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Peso y Tensión ATP</option><option value="RAD" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro Ayudas Diagnosticas RAD</option><option value="ARQ" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro de Quimioterapia ARQ</option><option value="ARC" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro de Cancer ARC</option></select><div><input type="file" name="archivo[]" id="archivo"  accept=".txt" style="width:80%;position:relative;font-family: \'Jura\', sans-serif; font-size: 16px;"></div></div>';
@@ -184,9 +189,6 @@ function validateNameFiles(){
 			var dateini = fecha_ini.substring(0,4)+'-'+fecha_ini.substring(4,6)+'-'+fecha_ini.substring(6);
 			var datefin = fecha_fin.substring(0,4)+'-'+fecha_fin.substring(4,6)+'-'+fecha_fin.substring(6);
 			var mesr = MesRepor.substring(0,4)+'-'+MesRepor.substring(4,6)+'-01';
-			//console.log(dateini);
-			//console.log(datefin);
-			//console.log(mesr);
 
 			var startDt=$('#fecha_ini').val();
 			var endDt=$('#fecha_fin').val();
@@ -212,8 +214,6 @@ function validateNameFiles(){
 		});
 
 	}
-
-		
 
 	return {'isValid': isValid, 'detalle':detalle};
 
@@ -267,8 +267,6 @@ function ConsultaAJAX_Async(parametros,filePHP,divContent)
 	}
 
 }//fin funcion consulta ajax
-
-
 
 async function uploadFile() 
 {

@@ -21,11 +21,8 @@
         <link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
 
         {{ Html::style(asset("css/bootstrap-3.3.7-dist/css/bootstrap.min.css")) }}
-        {{ Html::style(asset("css/font-awesome.css")) }}
-        {{ Html::style(asset("css/font-awesome.min.css")) }}
+        {{ Html::style(asset("fonts/font-awesome.css")) }}
         {{ Html::style(asset("css/menu.css")) }}
-
-        <script src="https://use.fontawesome.com/fa8c2f9ced.js"></script>
         
         <!-- Scripts -->
         <script>
@@ -42,50 +39,50 @@
         <!-- <div class="settings"></div> -->
             <div class="scrollbar" id="style-1" style="z-index: 50 !important;">
       
-            <li>                                   
+            <li style="height: 6%">
                 <a href="{{ url('/home') }}">
-                <i class="fa fa-home fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                <i class="fa fa-home fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px"></i>
                 <span class="nav-text"> Inicio </span>
                 </a>
             </li>
 
             @if (Auth::user()->roleid == 1)
-            <li>                                   
+            <li style="height: 6%">
                 <a href="{{ url('/registro') }}">
-                <i class="fa fa-user-circle fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                <i class="fa fa-user-circle fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px"></i>
                 <span class="nav-text"> Crear Usuarios </span>
                 </a>
             </li>
             @endif
 
-            <li>                                   
+            <li style="height: 6%">
                 <a href="{{ url('/upload_files') }}">
-                <i class="fa fa-upload fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                <i class="fa fa-upload fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px"></i>
                 <span class="nav-text">Cargar archivos</span>
                 </a>
             </li>
 
             @if (Auth::user()->roleid == 1)
-            <li>                                   
+            <li style="height: 6%">
                 <a href="{{ url('/generar_reportes') }}">
-                <i class="fa fa-file-text fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                <i class="fa fa-file-text fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px;"></i>
                 <span class="nav-text"> Generar Reporte </span>
                 </a>
             </li>
             @endif
 
-            <li>                                   
+            <li style="height: 6%">
                 <a href="{{ url('/help') }}">
-                <i class="fa fa-question-circle fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                <i class="fa fa-question-circle fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px"></i>
                 <span class="nav-text"> Ayuda </span>
                 </a>
             </li>
     
   
-            <ul class="logout">
-                <li>
+            <ul class="logout" style="height: 6%">
+                <li style="height: 6%">
                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                         <i class="fa fa-sign-out fa-lg" style="font-size: 2.2em; margin: auto auto 7px auto"></i>
+                         <i class="fa fa-sign-out fa-lg" style="font-size: 2.3em; margin: auto auto auto auto;top: 6px"></i>
                         <span class="nav-text">
                             Salir
                         </span>

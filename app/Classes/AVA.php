@@ -223,7 +223,7 @@ class AVA extends FileValidator {
               $vacunacion->save();
 
               array_push($this->success_rows, $data);
-              $this->updateStatusFile($lineCount);
+              $this->updateStatusFile($lineCount - 1);
               $lineCount++;
 
             }  
@@ -236,7 +236,7 @@ class AVA extends FileValidator {
         }
         else
         {
-          $this->updateStatusFile($lineCount);
+          $this->updateStatusFile($lineCount - 1);
         }
 
         fclose($this->handle);

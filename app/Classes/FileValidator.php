@@ -283,7 +283,6 @@ class FileValidator {
 
     }
 
-
     function validateUserSection(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $userSection){
 
     	//validación campo 7

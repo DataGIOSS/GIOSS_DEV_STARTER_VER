@@ -37,7 +37,7 @@ class AAC extends FileValidator {
     $fileNameToken = explode('.',$fileName);
     $this->fileName =  substr($fileNameToken[0],0,58);
     $this->version = substr($fileNameToken[0],58);
-
+|
     $this->consecutive = $consecutive;
     $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
     $this->wrong_rows =  array();
@@ -350,8 +350,9 @@ class AAC extends FileValidator {
                       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 6 caracteres"]);
 
                     }
-                    
+
                     $exists = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
+                    
                     if(!$exists){
                       $existsHomologo = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
                       if(!$existsHomologo){
