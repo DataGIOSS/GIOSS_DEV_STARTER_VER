@@ -31,19 +31,17 @@ class AAC extends FileValidator {
     $conteoLineas = $this->countLine($filePath);
     if(!($this->handle = fopen($filePath, 'r'))) throw new Exception("Error al abrir el archivo AAC");
     
-    //dd($fileName);
     $this->folder = $pathfolder;
 
     $fileNameToken = explode('.',$fileName);
     $this->fileName =  substr($fileNameToken[0],0,58);
     $this->version = substr($fileNameToken[0],58);
-|
     $this->consecutive = $consecutive;
     $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
   }
-
+  
   // Función para el manejo  las validaciones de los registros
 
   public function manageContent() {
@@ -55,7 +53,7 @@ class AAC extends FileValidator {
 
       $exists = Archivo::where('nombre', $this->fileName)
                 ->where('version', $this->version)
-                ->first(); 
+                ->first();
 
       if($exists){
 
@@ -81,7 +79,7 @@ class AAC extends FileValidator {
       $this->file_status->current_status = 'WORKING';
 
       $this->file_status->save();
-
+      
       $isValidFirstRow = true ;
       
 			$firstRow = fgetcsv($this->handle, 0, "|");

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 
 use App\User;
 
@@ -58,15 +59,16 @@ class usersController extends Controller
                     'name' => 'required | max: 255 |',
                     'lastname' => 'required | max: 255',
                     'email' => 'required | email | max:255 | unique:users,email',
-                    'password' => 'required|min:6',
+                    'password' => 'required | min:6',
                     'tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
                 ]
             );
 
             $validator->setAttributeNames([
                 'name'=>'Nombres',
+                'lastname'=>'Apellidos',
                 'email' => "Email",
-                'password' => 'Password',
+                'password' => 'Contraseña'
             ]);
 
             $validator->validate();
@@ -78,8 +80,8 @@ class usersController extends Controller
             $newUser->name = $request->name;
             $newUser->email = $request->email;
             $newUser->password = Hash::make(''.$request->password);
-            $newUser->roleid = $request->tipo_usuario; 
-            $newUser->lastname = $request->lastname; 
+            $newUser->roleid = $request->tipo_usuario;
+            $newUser->lastname = $request->lastname;
 
             $saveUser = $newUser->save();
             if(!$saveUser) throw new Exception("Error al crear el Usuario");
@@ -89,9 +91,9 @@ class usersController extends Controller
             return back()->with('success', 'El Usuario fue creado con éxito.');
 
         } catch (\Exception $e) {
-            Log::error("Error en el controlador: ".$e->getMessage());   
+            Log::error("Error en el controlador: ".$e->getMessage());
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+            return back()->with('error', $e->getMessage())->withErrors($validator)->withInput();
         }
 
     }

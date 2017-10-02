@@ -115,7 +115,7 @@ class filesController extends Controller
                         break;
                 }
 
-                $count++;     
+                $count++;
           
         }
 

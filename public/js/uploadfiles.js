@@ -1,11 +1,12 @@
 var consecutive = Date.now();
+var count_files = 0;
 
 $(document).ready(function(){
-	var count_files = 0;
+	
 	var interval = null;
 
 	$('#add_file').on('click', function(){
-
+		$('#div_file_statuses').empty();
 		$('#alert').fadeOut();
 
 		if (count_files < 0) {
@@ -39,7 +40,7 @@ $(document).ready(function(){
 
 	$('#btnUpload').on('click', function(){
 		$('#error_area').empty();
-
+		count_files = 0;
 		if($('#archivo').val() == '') {
 			var detalle = '<hr><hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Ningún archivo ha sido seleccionado!</strong>';
 			$('#error_area').append(detalle);
@@ -362,7 +363,7 @@ async function consultStatusFiles(consecutive) {
 
             	if (msj[x].current_status == 'COMPLETED')
             	{
-            		$('#div_file_statuses').empty();
+            		//$('#div_file_statuses').empty();
             		finish = true;
             	}
             	else
@@ -386,7 +387,7 @@ async function consultStatusFiles(consecutive) {
             	{
             		$('#btnUpload').prop('disabled', true);
             		$('#btnUpload').removeClass("disabled");
-            		$('#div_file_statuses').empty();
+            		//$('#div_file_statuses').empty();
             		switch(msj[x].final_status)
             		{
 	            		case 'REGULAR':

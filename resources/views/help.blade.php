@@ -28,7 +28,7 @@
                             Adicionalmente para el uso del aplicativo se han generado dos perfiles que le permitirán facilitar la 
                             asignación de permisos para los usuarios que tengan acceso al aplicativo. Con el perfil de <strong>Administrador</strong> 
                             podrá hacer uso completo de la plataforma, sin restricciones. Con el perfil de <strong>Invitado</strong> solo podrá cargar
-                            archivos de un de terminado periodo. 
+                            archivos de un determinado periodo mas no tendrá acceso a la generación de Reportes ni a la creación de nuevos Usuarios. 
                         </p>
 
                     <h3><kbd>Carga de Archivos</kbd></h3><br>
@@ -122,14 +122,14 @@
                             El nombre del archivo a cargar deberá tener un formato similar al ejemplo presentado a continuación: 
                             <ul>
                               <li>
-                                <p style="text-shadow: -1px 0.5px red;">
+                                <p style="text-shadow: -1px 0.5px red; word-wrap: break-word;">
                                   Nombre del archivo Sin Versión <br>
                                   <strong style="text-shadow: initial;">SGD239AAC2016082016080120160810NIT000890324177760010287001.TXT</strong>
                                 </p>
                               </li>
 
                               <li>
-                                <p style="text-shadow: -1px 0.5px red;">
+                                <p style="text-shadow: -1px 0.5px red;word-wrap: break-word;">
                                   Nombre del archivo Con Versión <br>
                                   <strong style="text-shadow: initial;">SGD239AAC2016082016080120160810NIT000890324177760010287001<mark>01</mark>.TXT</strong>
                                 </p>
@@ -160,7 +160,7 @@
 
                       <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Generar_Reporte.png') }}'); height: 300px; width: 100%; background-size: 1000px"></div>
 
-                      Para la Creación de Reportes es indispensable que el usuario haya cargado todos los archivos correspondientes al periodo a reportar para que así el sistema pueda extraer la información necesaria. Si ya han sido cargados todos los archivos puede ingresar a la pestaña <strong><mark>GENERAR REPORTE</mark></strong> que podrá encontrar en el meenú desplegable. Una vez allí basta con que indique el periodo que desea reportar y que debe ser equivalente al periodo de los archivos cargó. 
+                      Para la Creación de Reportes es indispensable que el usuario haya cargado todos los archivos correspondientes al periodo a reportar para que así el sistema pueda extraer la información necesaria. Si ya han sido cargados todos los archivos puede ingresar a la pestaña <strong><mark>GENERAR REPORTE</mark></strong> que podrá encontrar en el menú desplegable. Una vez allí basta con que indique el periodo que desea reportar y que debe ser equivalente al periodo de los archivos cargó. 
 
                       <blockquote class="blockquote blockquote-reverse" style="padding-top: 20px">
                           <footer class="blockquote-footer" style="font-size: 18px"> <strong>Equipo de Desarrollo <cite title="Source Title">DataGIOSS</cite></strong></footer>

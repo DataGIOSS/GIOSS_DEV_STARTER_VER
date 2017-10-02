@@ -17,11 +17,11 @@
                             <div class="form-group" style="margin: auto auto auto auto;">
                                 @if(session()->has('success'))
                                     <div class="alert alert-success fade in" style="margin: auto auto auto auto">
-                                    <strong>El Usuario fue creado con EXITO!</strong> <!--{{session('success')}}-->
+                                    <strong>El Usuario fue creado con EXITO!</strong>
                                   </div>
                                 @elseif(session()->has('error'))
-                                    <div class="alert alert-error fade in" style="margin: auto auto auto auto">
-                                        <strong>El Usuario no pudo ser creado con EXITO!</strong> <!-- {{session('error')}} -->
+                                    <div class="alert alert-danger fade in" style="margin: auto auto auto auto">
+                                        <strong>El Usuario no pudo ser creado con EXITO!</strong>
                                     </div>
                                 @endif
                             </div>
@@ -42,6 +42,7 @@
                                             <strong>{{ $errors->first('name') }}</strong>
                                         </span>
                                     @endif
+
                                 </div>
                             </div>
 
@@ -56,6 +57,7 @@
                                             <strong>{{ $errors->first('lastname') }}</strong>
                                         </span>
                                     @endif
+
                                 </div>
                             </div>
 
@@ -70,6 +72,7 @@
                                             <strong>{{ $errors->first('password') }}</strong>
                                         </span>
                                     @endif
+                                    
                                 </div>
                             </div>
 

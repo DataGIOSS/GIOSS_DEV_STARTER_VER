@@ -370,11 +370,10 @@ class AVA extends FileValidator {
 
     //validacion campo 19
     if(isset($consultSection[18])) {
-        if(!is_numeric($consultSection[18]) && (trim($consultSection[18]) > 2 || trim($consultSection[18]) < 1)) {
+        if(!ctype_digit($consultSection[18]) || (trim($consultSection[18]) < 1 || trim($consultSection[18]) > 5)) {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor entre 1 y 2"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor numérico entre 1 y 5"]);
         }
-      
         
     }else{
       $isValidRow = false;

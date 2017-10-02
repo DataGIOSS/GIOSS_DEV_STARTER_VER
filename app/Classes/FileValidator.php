@@ -177,7 +177,7 @@ class FileValidator {
 		}elseif (($this->totalRegistros - 1) != intval($firstRow[4])) {
 			//Si esto no se cumple se marca el registro como inválido y se inserta el error en el arreglo de errores
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 5, "El valor no coincide con el número de registros del archivo actual: No. registros encontrados = ".$this->totalRegistros." - valor del campo = ".intval($firstRow[4])]);
+			array_push($detail_erros, [1, 0, 5, "El valor no coincide con el número de registros del archivo actual: No. registros encontrados = ".($this->totalRegistros - 1)." - valor del campo = ".intval($firstRow[4])]);
 		}
 
 	}
@@ -318,7 +318,7 @@ class FileValidator {
     	if(isset($userSection[8])) {
     		if(strlen(trim($userSection[8])) > 12 || !ctype_digit($userSection[8])) {
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe un valor numerico con una longitud menor o igual a 12 dígitos."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe ser un valor numérico con una longitud menor o igual a 12 dígitos."]);
     		}
 		}else{
 			$isValidRow = false;
@@ -329,7 +329,7 @@ class FileValidator {
     	if(isset($userSection[9])) {
     		if(strlen(trim($userSection[9])) > 30 || trim($userSection[9]) == '' ){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser vacio y  debe tener un longitud menor o igual a 30 caracteres."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser vacío y debe tener un longitud menor o igual a 30 caracteres."]);
     		}
 		}else{
 			$isValidRow = false;
@@ -376,7 +376,7 @@ class FileValidator {
 				if(!checkdate($date[1], $date[2], $date[0]))
 				{
 					$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe corresponder a un fecha válida."]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe corresponder a una fecha válida."]);
 				}	
     		}
     		else{
@@ -576,8 +576,6 @@ class FileValidator {
 		        fputcsv($arrayIdsFileHandler, $row, '|');              
 		    }
 		    fclose($arrayIdsFileHandler);
-		    
-
 		    
 		    if(count($this->wrong_rows) > 0){
 		      $this->file_status->final_status = 'REGULAR';

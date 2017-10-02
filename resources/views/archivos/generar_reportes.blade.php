@@ -34,8 +34,8 @@
                             <div class="col-md-4 form-group"></div>
                             
                             <div class="col-md-4 form-group" style="margin-top: 0px; margin-bottom: 0px;" align="center">
-                                <button type="button" id="btnReport" class="btn btn-info btn-m" style="font-family: 'Jura', sans-serif; width: 60%">
-                                    <i class="fa fa-send-o" style="font-size: 15px; height: 15px; top: 1px; right: 40px">&nbsp;<span style="font-family: 'Jura', sans-serif">Generar Reporte</span></i> 
+                                <button type="button" id="btnReport" class="btn btn-info btn-m" style="font-family: 'Jura', sans-serif; width: 170px">
+                                    <i class="fa fa-send-o" style="font-size: 15px; height: 15px; top: 1px; text-align: center">&nbsp;&nbsp;<span style="font-family: 'Jura', sans-serif">Generar Reporte</span></i> 
                                 </button>    
                             </div>
                             

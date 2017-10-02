@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class DepartamentoController extends Controller
 {
     public function getMunicipios(Request $request){
-    	Log::info("----------------------------- Entra a la función de DepartamentosController getMunicipios ------------------------------------------");
+    	
     	try {
     		$municipios = Municipio::where('cod_depto', $request->departamento)->orderBy('nombre','asc')->get();	
     	} catch (\Exception $e) {
