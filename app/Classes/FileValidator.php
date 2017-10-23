@@ -552,7 +552,6 @@ class FileValidator {
 		  }
 		  fclose($wrongfile);
 		  
-		  
 		}
 
 		if(count($this->detail_erros) > 1){
@@ -564,6 +563,7 @@ class FileValidator {
 		  foreach ($this->detail_erros as $row) {
 		      fputcsv($detailsFileHandler, $row,',');              
 		  }
+		  
 		  fclose($detailsFileHandler);
 		}
 

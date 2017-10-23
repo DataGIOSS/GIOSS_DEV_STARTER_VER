@@ -21,6 +21,7 @@ $(document).ready(function(){
     	$('#btnUpload').prop('disabled', false);
     	$('#btnUpload').removeClass("col-md-3 col-md-offset-5 btn btn-info btn-m disabled");
     	$('#btnUpload').addClass("col-md-3 col-md-offset-5 btn btn-info btn-m");
+    	
     	console.log('Contenido del select del tipo de archivo '+$('#tipo_file').val());
     	console.log('Contenido del select del tipo de archivo '+$('#archivo').val());
 	});
@@ -40,6 +41,7 @@ $(document).ready(function(){
 
 	$('#btnUpload').on('click', function(){
 		$('#error_area').empty();
+		
 		count_files = 0;
 		if($('#archivo').val() == '') {
 			var detalle = '<hr><hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Ningún archivo ha sido seleccionado!</strong>';

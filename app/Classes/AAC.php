@@ -291,8 +291,6 @@ class AAC extends FileValidator {
 
   }
 
-  // ESTE MÉTODO ESTÁ FALLANDO. AL SER INVOCADO NO ESTÁ ENTRANDO Y LUEGO NO SIGUE LA IMPLEMENTACIÓN
-
   function validateAAC(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
     Log::info("Empieza el llamado a las validaciones del archivo (AAC - Linea 320) -> Campo 16");
     if(isset($consultSection[15])) {

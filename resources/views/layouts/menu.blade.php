@@ -15,13 +15,10 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts Design and Styles-->
-        
-        <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Jura" rel="stylesheet">
 
         {{ Html::style(asset("css/bootstrap-3.3.7-dist/css/bootstrap.min.css")) }}
         {{ Html::style(asset("fonts/font-awesome.css")) }}
+        {{ Html::style(asset("fonts/fonts.css")) }}
         {{ Html::style(asset("css/menu.css")) }}
         
         <!-- Scripts -->
