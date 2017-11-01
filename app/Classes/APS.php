@@ -50,7 +50,7 @@ class APS extends FileValidator {
       $isValidFile = true;
       $fileid = 0;
 
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first(); 
 
@@ -94,7 +94,7 @@ class APS extends FileValidator {
         //se adicionan terminan de definir los prametros el archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -153,7 +153,7 @@ class APS extends FileValidator {
               $tabla->save();
               
               // alamacena en la dimension
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -186,12 +186,12 @@ class APS extends FileValidator {
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
 
-              $eapb  = Eapb::where('num_identificacion', $cadena_test)
+              $eapb  = DB::table('eapbs')->where('num_identificacion', $cadena_test)
                               ->where('cod_eapb', $data[4])->first();
               
               if ($eapb) {
 
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -205,7 +205,7 @@ class APS extends FileValidator {
                 }
                 
               } else {
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -304,14 +304,14 @@ class APS extends FileValidator {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 8 caracteres"]);
                     } else {
-                      $exists = ProcedimientoCup::where('cod_procedimiento', $consultSection[16])->first();
+                      $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
                       if(!$exists){
-                        $exists = HomologosCupsCodigo::where('cod_homologo', $consultSection[16])->first();
+                        $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
                         if(!$exists){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo válido"]);
                         }else{
-                          $esConsulta = ProcedimientoCup::where('cod_procedimiento', $exists->cod_cups)->first();
+                          $esConsulta = DB::table('procedimiento_cups')->where('cod_procedimiento', $exists->cod_cups)->first();
                           if(!$esConsulta){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
@@ -337,15 +337,15 @@ class APS extends FileValidator {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
                     } else {
-                      $exists = HomologosCupsCodigo::where('cod_homologo', $consultSection[16])->first();
+                      $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
                       if(!$exists){
-                        $exists = ProcedimientoCup::where('cod_procedimiento', $consultSection[16])->first();
+                        $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
                         if(!$exists){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo  válido"]);
                         }
                        }else{
-                          $esConsulta = ProcedimientoCup::where('cod_procedimiento', $exists->cod_cups)->first();
+                          $esConsulta = DB::table('procedimiento_cups')->where('cod_procedimiento', $exists->cod_cups)->first();
                           if(!$esConsulta){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
@@ -381,7 +381,7 @@ class APS extends FileValidator {
     if(isset($consultSection[18])) {
 
         if($esQuirurjico){
-          $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[18])->first();
+          $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico',$consultSection[18])->first();
           if(!$exists){
             $diagPrinConfirm = true;
             $isValidRow = false;
@@ -411,7 +411,7 @@ class APS extends FileValidator {
 
     //validación campo 21
     if(isset($consultSection[20])) {
-          $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[20])->first();
+          $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[20])->first();
           if(!$exists){
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El valor no corresponde a un valor código de diagnóstico valido"]);
@@ -429,7 +429,7 @@ class APS extends FileValidator {
           $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo de tener una longitud igual a 1"]);
         }else{
-          $exists = Ambito::where('cod_ambito',$consultSection[21])->first();
+          $exists = DB::table('ambito')->where('cod_ambito',$consultSection[21])->first();
           if(!$exists){
             array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor del campo no correponde a un Ambito valido"]);
           }

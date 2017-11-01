@@ -59,7 +59,7 @@ class AMS extends FileValidator {
       $isValidFile = true;
       $fileid = 0;
 
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first(); 
 
@@ -102,7 +102,7 @@ class AMS extends FileValidator {
         //se adicionan terminan de definir los prametros el archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -163,7 +163,7 @@ class AMS extends FileValidator {
 
               //
               // alamacena en la dimension
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -204,7 +204,7 @@ class AMS extends FileValidator {
               
               if ($eapb) {
 
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -218,7 +218,7 @@ class AMS extends FileValidator {
                 }
                 
               } else {
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -321,16 +321,16 @@ class AMS extends FileValidator {
         switch ($consultSection[17]) {
           case '1':
             if (trim($consultSection[16]) != '') {
-              $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              $existsCum = DB::table('medicamentos_cum')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
               if(!$existsCum){
-                $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                $existsAtc = DB::table('medicamentos_atc')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                 if (!$existsAtc) {
-                  $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  $existsHomologo = DB::table('medicamentos_homologo')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsHomologo) {
                     $isValidRow = false;
                     array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
                   } else {
-                    $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                    $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                     if(!$esCum){
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código existente entre los códigos CUM"]);
@@ -349,16 +349,16 @@ class AMS extends FileValidator {
           
           case '2':
             if (trim($consultSection[16]) != '') {
-              $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              $existsAtc = DB::table('medicamentos_atc')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
               if(!$existsAtc){
-                $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                $existsCum = DB::table('medicamentos_cum')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                 if (!$existsCum) {
-                  $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  $existsHomologo = DB::table('medicamentos_homologo')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsHomologo) {
                     $isValidRow = false;
                     array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC, CUM ni Homólogo válido"]);
                   } else {
-                    $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                    $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                     if (!$esCum) {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código CUM válido."]);
@@ -375,18 +375,18 @@ class AMS extends FileValidator {
 
           case '3':
             if (trim($consultSection[16]) != '') {
-              $existsHomologo = MedicamentosHomologo::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+              $existsHomologo = DB::table('medicamentos_homologo')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
               if(!$existsHomologo){
-                $existsCum = MedicamentosCum::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                $existsCum = DB::table('medicamentos_cum')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                 if (!$existsCum) {
-                  $existsAtc = MedicamentosAtc::where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
+                  $existsAtc = DB::table('medicamentos_atc')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsAtc) {
                     $isValidRow = false;
                     array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
                   }
                 }
               } else {
-                $esCum = MedicamentosCum::where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
+                $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                 if (!$esCum) {
                   $isValidRow = false;
                     array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código Homólogo entregado no corresponde a un código CUM válido"]);
@@ -431,7 +431,7 @@ class AMS extends FileValidator {
           $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo de tener una longitud igual a 1"]);
         }else{
-          $exists = Ambito::where('cod_ambito',$consultSection[19])->first();
+          $exists = DB::table('ambito')->where('cod_ambito',$consultSection[19])->first();
           if(!$exists){
             array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor del campo no correponde a un Ambito valido"]);
           }

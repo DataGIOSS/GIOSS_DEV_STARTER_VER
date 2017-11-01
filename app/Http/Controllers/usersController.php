@@ -28,10 +28,10 @@ class usersController extends Controller
      */
     public function index()
     {
-        return view('auth.register');
-    }
+        $users = DB::table('users')->get();
 
- 
+        return view('auth.register')->with('users', $users);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -42,7 +42,6 @@ class usersController extends Controller
     {
         
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -59,7 +58,7 @@ class usersController extends Controller
                     'name' => 'required | max: 255 |',
                     'lastname' => 'required | max: 255',
                     'email' => 'required | email | max:255 | unique:users,email',
-                    'password' => 'required | min:6',
+                    'password' => 'required | min:6 | alpha_dash',
                     'tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
                 ]
             );
@@ -84,7 +83,7 @@ class usersController extends Controller
             $newUser->lastname = $request->lastname;
 
             $saveUser = $newUser->save();
-            if(!$saveUser) throw new Exception("Error al crear el Usuario");
+            if(!$saveUser) throw new \Exception("Error al crear el Usuario");
 
             DB::commit();
 
@@ -115,9 +114,163 @@ class usersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
         //
+        $url = $request->edit_url;
+
+        try {
+
+            if ($request->edit_password == "" || is_null($request->edit_password)) {
+                
+                if ($request->edit_email == "" || is_null($request->edit_email)) {
+
+                    $validator = Validator::make(
+                        $request->all(), 
+                        [
+                            'edit_name' => 'required | max: 255 |',
+                            'edit_lastname' => 'required | max: 255',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                        ]
+                    );
+
+                    $validator->setAttributeNames([
+                        'edit_name'=>'Nombres',
+                        'edit_lastname'=>'Apellidos',
+                    ]);
+
+                } else {
+                    $validator = Validator::make(
+                        $request->all(), 
+                        [
+                            'edit_name' => 'required | max: 255 |',
+                            'edit_lastname' => 'required | max: 255',
+                            'edit_email' => 'required | email | max:255 | unique:users,email',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                        ]
+                    );
+
+                    $validator->setAttributeNames([
+                        'edit_name'=>'Nombres',
+                        'edit_lastname'=>'Apellidos',
+                        'edit_email' => "Email",
+                    ]);
+                }
+
+            } else {
+                
+                if ($request->edit_email == "" || is_null($request->edit_email)) {
+
+                    $validator = Validator::make(
+                        $request->all(), 
+                        [
+                            'edit_name' => 'required | max: 255 |',
+                            'edit_lastname' => 'required | max: 255',
+                            'edit_password' => 'min:6 | alpha_dash',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                        ]
+                    );
+
+                    $validator->setAttributeNames([
+                        'edit_name'=>'Nombres',
+                        'edit_lastname'=>'Apellidos',
+                        'edit_password' => 'Contraseña'
+                    ]);
+
+                } else {
+
+                    $validator = Validator::make(
+                        $request->all(), 
+                        [
+                            'edit_name' => 'required | max: 255 |',
+                            'edit_lastname' => 'required | max: 255',
+                            'edit_email' => 'required | email | max:255 | unique:users,email',
+                            'edit_password' => 'min:6 | alpha_dash',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                        ]
+                    );
+
+                    $validator->setAttributeNames([
+                        'edit_name'=>'Nombres',
+                        'edit_lastname'=>'Apellidos',
+                        'edit_email' => "Email",
+                        'edit_password' => 'Contraseña'
+                    ]);
+
+                }
+
+            }
+
+            $validator->validate();
+
+            DB::beginTransaction();
+            //se crea al usuario
+
+            if ($request->edit_password == "" || is_null($request->edit_password)) {
+                
+                if ($request->edit_email == "" || is_null($request->edit_email)) {
+                    $updateUser = DB::table('users')
+                    ->where('id', $request->edit_id_user)
+                    ->update(array('name' => $request->edit_name, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                } else {
+                    $updateUser = DB::table('users')
+                    ->where('id', $request->edit_id_user)
+                    ->update(array('name' => $request->edit_name, 'email' => $request->edit_email, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                }
+                
+            } else {
+                if ($request->edit_email == "" || is_null($request->edit_email)) {
+                    $updateUser = DB::table('users')
+                    ->where('id', $request->edit_id_user)
+                    ->update(array('name' => $request->edit_name, 'password' => $request->edit_password, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                } else {
+                    $updateUser = DB::table('users')
+                    ->where('id', $request->edit_id_user)
+                    ->update(array('name' => $request->edit_name, 'email' => $request->edit_email, 'password' => $request->edit_password, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                }
+            }
+
+            if(!$updateUser) throw new \Exception("Error al modificar el Usuario ".$request->edit_id_user);
+
+            DB::commit();
+
+            return \Redirect::to($url)->with('edit_success', 'El Usuario fue creado con éxito.');
+
+        } catch (\Exception $e) {
+            Log::error("Error en el controlador: ".$e->getMessage());
+            DB::rollBack();
+            return \Redirect::to($url)->with('edit_error', $e->getMessage())->withErrors($validator)->withInput();
+        }
+    }
+
+    public function desactivar_usuario(Request $request)
+    {
+        $url = $request->disable_url;
+
+        try {
+
+            DB::beginTransaction();
+            
+            $updateUser = DB::table('users')
+                    ->where('id', $request->edit_id_user)
+                    ->update(array('status' => $request->edit_status));
+
+            if(!$updateUser) throw new \Exception("Error al desactivar el Usuario");
+
+            DB::commit();
+
+            if ($request->edit_status == 1) {
+                return \Redirect::to($url)->with('disable_success', 'El Usuario fue desactivado con éxito.');
+            } else {
+                return \Redirect::to($url)->with('able_success', 'El Usuario fue activado con éxito.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Error en el controlador: ".$e->getMessage());
+            DB::rollBack();
+            return \Redirect::to($url)->with('disable_error', 'El Usuario fue creado con éxito.');
+        }
+
     }
 
     /**

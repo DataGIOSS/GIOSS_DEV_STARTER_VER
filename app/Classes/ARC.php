@@ -50,7 +50,7 @@ class ARC extends FileValidator {
       $fileid = 0;
 
       //Log::info("manageContent (ARC - Linea 59)");
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first(); 
       //Log::info("manageContent (ARC - Linea 63)");
@@ -82,6 +82,7 @@ class ARC extends FileValidator {
 
       }
 
+
       Log::info("manageContent (ARC - Linea 85)");
       // se inicializa el objeto file_status 
       $this->file_status =  new FileStatus();
@@ -89,7 +90,7 @@ class ARC extends FileValidator {
       $this->file_status->archivoid = $fileid;
       $this->file_status->current_status = 'PROCCESING';
       Log::info("Guarda el FileStatus (ARC - Linea 85)");
-      $this->file_status->save();  
+      $this->file_status->save();
       Log::info("Finalizó la creacion del FileStatus (ARC - Linea 85)");
       //Este booleano verifica la validez del registro de control
       $isValidFirstRow = true;
@@ -108,7 +109,7 @@ class ARC extends FileValidator {
         //Se asignan los parámetros faltantes del Objeto Archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -170,7 +171,7 @@ class ARC extends FileValidator {
                 $tabla->save();
 
               // Se busca el usuario que aparece en el registro para confirmar que ya haya sido agregado a la base de datos.
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -208,14 +209,14 @@ class ARC extends FileValidator {
 
               //Se guarda la información del registro
               $cadena_temp=ltrim($data[3], '0');
-              $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
+              $cadena_test=substr($cadena_temp, 0, strlen($cadena_temp) - 1);
 
-              $eapb  = Eapb::where('num_identificacion', $cadena_test)
+              $eapb  = DB::table('eapbs')->where('num_identificacion', $cadena_test)
                               ->where('cod_eapb', $data[4])->first();
               
               if ($eapb) {
 
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -229,7 +230,7 @@ class ARC extends FileValidator {
                 }
                 
               } else {
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -364,7 +365,7 @@ class ARC extends FileValidator {
         $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números."]);
       } else {
-        $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[18])->first();
+        $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[18])->first();
           if (!$exists) {
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El valor de este campo no corresponde a un código de diagnóstico válido"]);
@@ -644,7 +645,7 @@ class ARC extends FileValidator {
         $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números."]);
       } else {
-        $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[39])->first();
+        $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[39])->first();
           if (!$exists) {
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El valor de este campo no corresponde a un código de diagnóstico válido"]);
@@ -1042,7 +1043,6 @@ class ARC extends FileValidator {
       $isValidRow = false;
       array_push($detail_erros, [$lineCount, $lineCountWF, 74, "El campo no puede ser nulo."]);
     }
-
 
     Log::info("Termina validateARC (ARC - Linea 500)");
 

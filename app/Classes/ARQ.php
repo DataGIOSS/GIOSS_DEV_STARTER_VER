@@ -51,7 +51,7 @@ class ARQ extends FileValidator {
       $fileid = 0;
 
       //Log::info("manageContent (ARQ - Linea 59)");
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first(); 
       //Log::info("manageContent (ARQ - Linea 63)");
@@ -109,7 +109,7 @@ class ARQ extends FileValidator {
         //Se asignan los parámetros faltantes del Objeto Archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -171,7 +171,7 @@ class ARQ extends FileValidator {
                 $tabla->save();
 
               // Se busca el usuario que aparece en el registro para confirmar que ya haya sido agregado a la base de datos.
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -210,12 +210,12 @@ class ARQ extends FileValidator {
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
 
-              $eapb  = Eapb::where('num_identificacion', $cadena_test)
+              $eapb  = DB::table('eapbs')->where('num_identificacion', $cadena_test)
                               ->where('cod_eapb', $data[4])->first();
               
               if ($eapb) {
 
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -229,7 +229,7 @@ class ARQ extends FileValidator {
                 }
                 
               } else {
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -307,7 +307,7 @@ class ARQ extends FileValidator {
         $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números."]);
       } else {
-        $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[17])->first();
+        $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[17])->first();
         if (!$exists) {
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor de este campo no corresponde a un código de diagnóstico válido"]);
@@ -342,7 +342,7 @@ class ARQ extends FileValidator {
 
     // Se valida el codigo de protocolo (campo 21)
     if (isset($consultSection[20])) {
-      $exists = ProtocoloQuimioterapia::where('cod_protocolo', $consultSection[20])->first();
+      $exists = DB::table('protocolo_quimioterapia')->where('cod_protocolo', $consultSection[20])->first();
       if (!$exists) {
         $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 21, "EL valor de código de protocolo dado no corresponde a un valor de código de protocolo válido"]);

@@ -51,7 +51,7 @@ class AAC extends FileValidator {
       $isValidFile = true;
       $fileid = 0;
 
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first();
 
@@ -91,7 +91,7 @@ class AAC extends FileValidator {
         //se adicionan terminan de definir los prametros el archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -166,7 +166,7 @@ class AAC extends FileValidator {
 
               //
               // alamacena en la dimension
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -203,13 +203,13 @@ class AAC extends FileValidator {
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
 
-              $eapb  = Eapb::where('num_identificacion', $cadena_test)
+              $eapb  = DB::table('eapbs')->where('num_identificacion', $cadena_test)
                               ->where('cod_eapb', $data[4])->first();
             
               Log::info("Se verifica la existencia e la entidad (AAC - Linea 222)");
               if ($eapb) {
                 Log::info("La entidad existe, se busca el registro (AAC - Linea 224)");
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 Log::info("La entidad existe pero el registro no, se crea el registro (AAC - Linea 227)");
                 if (!$exists) {
@@ -225,7 +225,7 @@ class AAC extends FileValidator {
                 
               } else {
                 Log::info("La entidad no existe, se busca el registro (AAC - Linea 240)");
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
                 
                 Log::info("La entidad existe y tampoco el registro (AAC - Linea 243)");
 
@@ -316,7 +316,7 @@ class AAC extends FileValidator {
           $isValidRow = false;
         array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud igual a 1"]);
         }else{
-          $exists = Ambito::where('cod_ambito',$consultSection[16])->first();
+          $exists = DB::table('ambito')->where('cod_ambito',$consultSection[16])->first();
           if(!$exists){
             array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a un Ambito valido"]);
           }
@@ -346,15 +346,15 @@ class AAC extends FileValidator {
 
                     }
 
-                    $exists = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
+                    $exists = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();
                     
                     if(!$exists){
-                      $existsHomologo = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
+                      $existsHomologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
                       if(!$existsHomologo){
                         $isValidRow = false;
                         array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
                       }else{
-                        $esCup = GiossConsultaCup::where('cod_consulta', $existsHomologo->cod_cups)->first();
+                        $esCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $existsHomologo->cod_cups)->first();
                         if(!$esCup){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
@@ -384,15 +384,15 @@ class AAC extends FileValidator {
                       $isValidRow = false;
                       array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
                     } else {
-                      $exists = HomologosCupsCodigo::where('cod_homologo', $consultSection[17])->first();
+                      $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
                       if(!$exists){
-                        $existsCup = GiossConsultaCup::where('cod_consulta', $consultSection[17])->first();
+                        $existsCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();
                         if(!$existsCup){
                           $isValidRow = false;
                           array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo  válido"]);
                         }
                        }else{
-                          $esCup = GiossConsultaCup::where('cod_consulta', $exists->cod_cups)->first();
+                          $esCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $exists->cod_cups)->first();
                           if(!$esCup){
                             $isValidRow = false;
                             array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
@@ -454,7 +454,7 @@ class AAC extends FileValidator {
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
         }else{
-          $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[21])->first();
+          $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico',$consultSection[21])->first();
           if(!$exists){
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
@@ -486,7 +486,7 @@ class AAC extends FileValidator {
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud menor o igual a 4 caracteres."]);
         }else{
-          $exists = DiagnosticoCiex::where('cod_diagnostico', $consultSection[23])->first();
+          $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[23])->first();
           if(!$exists){
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
@@ -521,7 +521,7 @@ class AAC extends FileValidator {
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe tener un longitud menor o igual 4 caracteres."]);
         }else{
-          $exists = DiagnosticoCiex::where('cod_diagnostico',$consultSection[25])->first();
+          $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico',$consultSection[25])->first();
           if(!$exists){
             $isValidRow = false;
             array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El valor no corresponde a un valor código de diagnóstico valido"]);

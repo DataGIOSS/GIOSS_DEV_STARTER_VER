@@ -43,11 +43,14 @@ Route::group(['middleware' => 'auth'], function(){
     	return view('home');
 	});
 		
-	Route::resource('/registro', 'usersController');	
+	Route::resource('/registro', 'usersController');
+	Route::post('/editar', 'usersController@edit');
+	Route::post('/desactivar_usuario', 'usersController@desactivar_usuario');
 	Route::get('/upload_files', 'filesController@upload');
 	Route::get('/generar_reportes', 'reportsController@upload');
 	Route::name('uploading')->post('/upload_files','filesController@store');
 	Route::name('status_files')->get('/status_files','filesController@show');
+	Route::name('indexing')->get('/upload_files','filesController@index');
 	Route::name('getMunicipios')->get('/departamento/getmunicipio', 'DepartamentoController@getMunicipios');
 	//Route::post('/registrar', 'usersController@create');
 });

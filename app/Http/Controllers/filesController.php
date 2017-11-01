@@ -26,7 +26,9 @@ class filesController extends Controller
      */
     public function index()
     {
-        //
+        $files = DB::table('file_statuses')->join('archivo', 'file_statuses.archivoid', '=', 'archivo.id_archivo_seq')->paginate(10);
+
+        return view('archivos.upload_files')->with('files', $files);
     }
 
     /**
@@ -70,6 +72,9 @@ class filesController extends Controller
             $folder = '/'.$consecutive.'/'.$fileTypes[$count].$consecutive.'/';
 
             $routeFolder = storage_path('archivos').$folder;
+
+            Log::info("-------------------- Se creo la ruta = ".$routeFolder);
+
             $routeFile = $folder.$file->getClientOriginalName();
             $fileName = $file->getClientOriginalName();
             Storage::disk('archivos')->put($routeFile, \File::get($file));
@@ -134,13 +139,11 @@ class filesController extends Controller
         //dd($request->consecutive);
         
 
-        $result = DB::table('file_statuses')
-                    ->join('archivo','archivo.id_archivo_seq','=','file_statuses.archivoid')
-            ->where('file_statuses.consecutive', $request->consecutive)->get();
+        $files = DB::table('file_statuses')->join('archivo', 'file_statuses.archivoid', '=', 'archivo.id_archivo_seq')->get();
 
         //Log::info(print_r($result, true));
 
-        echo json_encode($result);
+        echo json_encode($files);
     }
 
     /**

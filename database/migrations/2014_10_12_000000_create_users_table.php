@@ -21,10 +21,10 @@ class CreateUsersTable extends Migration {
 			$table->rememberToken();
 			$table->timestamps();
 			$table->integer('roleid')->default(0);
+			$table->integer('status')->default(0);
 			$table->string('lastname')->nullable();
 		});
 	}
-
 
 	/**
 	 * Reverse the migrations.

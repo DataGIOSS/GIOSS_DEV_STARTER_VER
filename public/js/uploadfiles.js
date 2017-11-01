@@ -1,26 +1,31 @@
 var consecutive = Date.now();
 var count_files = 0;
+var interval_load = null;
 
 $(document).ready(function(){
 	
 	var interval = null;
 
 	$('#add_file').on('click', function(){
-		$('#div_file_statuses').empty();
-		$('#alert').fadeOut();
+		clearInterval(interval_load);
+		$('#add_file').prop('disabled', true);
+		$('#error_area').empty();
+		$('#alert').empty();
 
-		if (count_files < 0) {
+		if (count_files != 0) {
 			count_files = 0;
 		}
 
 		count_files+=1;
 
+		$('#files_div').empty();
 		var html = '<div class="form-group well" id="particular_file_div"> <button type="button" id="close_div_file" class="close" aria-hidden="true">&times;</button> <label for="tipo_file" class="form-control-label" style="font-family: \'Jura\', sans-serif; font-size: 15px;"><strong>Tipo de archivo No.'+count_files+'</strong></label><select id="tipo_file" name="tipo_file[]" style="width: 80%;position:relative;font-family: \'Jura\', sans-serif; font-size: 16px;"><option value="AAC" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Atencion en Consulta AAC</option> <option value="AEH" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Egresos Hospitalarios AEH</option><option value="ASM" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Suministro Medicamentos ASM</option><option value="AVA" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Vacunas Aplicadas AVA</option><option value="APS" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Procedimientos APS</option><option value="ATP" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Peso y Tensión ATP</option><option value="RAD" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro Ayudas Diagnosticas RAD</option><option value="ARQ" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro de Quimioterapia ARQ</option><option value="ARC" style="font-family: \'Jura\', sans-serif; font-size: 16px;">Archivo Registro de Cancer ARC</option></select><div><input type="file" name="archivo[]" id="archivo"  accept=".txt" style="width:80%;position:relative;font-family: \'Jura\', sans-serif; font-size: 16px;"></div></div>';
 		$('#files_div').append(html);
+		$('#files_div').fadeIn();
 
     	$('#btnUpload').prop('disabled', false);
-    	$('#btnUpload').removeClass("col-md-3 col-md-offset-5 btn btn-info btn-m disabled");
-    	$('#btnUpload').addClass("col-md-3 col-md-offset-5 btn btn-info btn-m");
+    	$('#btnUpload').removeClass("col-md-3 btn btn-info btn-m disabled");
+    	$('#btnUpload').addClass("col-md-3 col-md-offset-6 btn btn-info btn-m");
     	
     	console.log('Contenido del select del tipo de archivo '+$('#tipo_file').val());
     	console.log('Contenido del select del tipo de archivo '+$('#archivo').val());
@@ -28,11 +33,12 @@ $(document).ready(function(){
 
 	$('#files_div').on('click','#close_div_file', function(){
 		$('#alert').fadeOut();
+		$('#add_file').prop('disabled', false);
 		count_files-=1;
 		$(this).parent().fadeOut(function(){
 			if (count_files <= 0) {
 				$('#btnUpload').prop('disabled', true);
-    			$('#btnUpload').addClass("col-md-3 col-md-offset-5 btn btn-info btn-m disabled");
+    			$('#btnUpload').addClass("col-md-3 col-md-offset-6 btn btn-info btn-m disabled");
 			}
 			$(this).remove();
 		});
@@ -40,7 +46,10 @@ $(document).ready(function(){
 	});
 
 	$('#btnUpload').on('click', function(){
+		clearInterval(interval_load);
 		$('#error_area').empty();
+		$('#btnUpload').prop('disabled', true);
+		$('#divgif').html(loadGif);
 		
 		count_files = 0;
 		if($('#archivo').val() == '') {
@@ -54,9 +63,7 @@ $(document).ready(function(){
 			$('#btnUpload').fadeIn();
 
 		} else {
-
-			$('#add_file').fadeOut();
-			$('#btnUpload').fadeOut();
+			$('#files_div').fadeOut();
 			$('#div_file_statuses').empty();
 			var validatorNames = validateNameFiles();
 			var validatorPeriodo = validatePeriodo();
@@ -64,15 +71,20 @@ $(document).ready(function(){
 
 			if(!validatorNames['isValid'] || !validatorPeriodo.isValid){
 				if(!validatorNames['isValid']){
+					$('#add_file').prop('disabled', false);
 					$('#error_area').append(validatorNames['detalle']);
+					$('#divgif').empty();
 				}
 				
 				if( !validatorPeriodo.isValid){
+					$('#add_file').prop('disabled', false);
 					$('#error_area').append(validatorPeriodo['detalle']);
+					$('#divgif').empty();
 				}
 				$('#alert').fadeIn();
 				$('#add_file').fadeIn();
 				$('#btnUpload').fadeIn();
+
 			}else{
 				count_files = 1;
 				$('#alert').fadeOut();
@@ -277,6 +289,7 @@ async function uploadFile()
 
 	var formData = new FormData($('#cargaArchivos')[0]);
 	formData.append('consecutive', consecutive);
+	update_table(consecutive);
 
 	$.ajax({
 	    url: route,
@@ -289,15 +302,13 @@ async function uploadFile()
 	    contentType: false,
 	    processData: false,
 	    beforeSend: function() {
-	       $('#divgif').append(loadGif);
-	       
+
 	    },
 	    error: function (msj) {
 	        console.log(msj);
 	    }
 	    
 	});
-  
 }
 
 function LeerArchivoPlanoDeServidor(ruta, elemento_div)
@@ -335,10 +346,88 @@ function validateFirstRow(folderPath, tipoArchivo){
 
 }
 
+function load_table(){
+
+	$('#home').removeClass('show');
+
+	$.ajax({
+
+        url: status_file_route,
+        data: {'consecutive':consecutive},
+        type: 'GET',
+        dataType: 'json',
+        cache: false,
+        async: true,
+        beforeSend: function() {
+        
+        },
+        success: function (msj) {
+        	
+        	var id = '';
+        	var finish = false;
+        	var counter = 0;
+
+            for (x in msj)
+            {
+            	var registro_leido = '';
+            	id = msj[x].id_tema_informacion + msj[x].consecutive;
+
+            	if(msj[x].current_status != 'COMPLETED'){
+            		document.getElementById('loading_table_img').style.display = 'inline';
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> <b>PROCESANDO </td> </tr>';
+            		load_table();
+            	} else {
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> </tr>';
+            	}
+
+        		console.log('EL ID DEL COMPONENTES ES: ' + id);
+        		
+        		if (document.getElementById(id) && msj[x].current_status != 'COMPLETED') {
+        			document.getElementById(id).innerHTML = registro_leido;
+        		} else if (!document.getElementById(id) && msj[x].current_status != 'COMPLETED') {
+        			$('#loaded_files').append(registro_leido);
+        		} else if (!document.getElementById(id) && msj[x].current_status == 'COMPLETED') {
+        			counter++;
+        			$('#loaded_files').append(registro_leido);
+        		} else if (document.getElementById(id) && msj[x].current_status == 'COMPLETED') {
+        			counter++;
+        			document.getElementById(id).innerHTML = registro_leido;
+        		}
+				
+        	}
+
+        	if(counter == msj.length){
+        		document.getElementById('loading_table_img').style.display = 'none';
+        	}
+
+		}
+	});
+
+}
+
+function update_table(consecutive){
+
+	interval_load = setInterval(load_table(consecutive), 500);
+
+}
+
+window.onload = function(){
+	
+	 load_table();
+} 
+
+function stop_load_table(){
+	
+	$('#home').removeClass('show');
+	clearInterval(interval_load);
+
+}
+
 
 async function consultStatusFiles(consecutive) {	
 	
 	var bool_fallo = false;
+	update_table(consecutive);
 	
 	$.ajax({
 
@@ -355,104 +444,112 @@ async function consultStatusFiles(consecutive) {
         success : function (msj) {
         	//console.log("Entra al SUCCESS");
         	//console.log("Longitud msj: " + msj.length);
+        	$('#add_file').prop('disabled', false);
             $('#div_file_statuses').empty();
+            update_table(consecutive);
             //$('#div_file_statuses').append('')
             
             var finish = false;
 
             for (x in msj)
             {
-
-            	if (msj[x].current_status == 'COMPLETED')
+        		
+        		// SECCIÓN DIV DE ESTADO
+        		document.getElementById('loading_table_img').style.display = 'inline';
+            
+            	if (msj[x].consecutive == consecutive)
             	{
-            		//$('#div_file_statuses').empty();
-            		finish = true;
-            	}
-            	else
-            	{
-            		finish = false;
-            	}//fon else
 
-            	var html = '<div class="form-group well "> <h4 style="font-family: \'Jura\', sans-serif; font-size: 16px;"> Estado de archivos: </h4> <div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Nombre:</strong></label> <label class="col-md-8" style="display: inline-block; width: 300px; overflow: hidden; text-overflow: ellipsis; font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].nombre+'0'+msj[x].version+'.txt</label></div> <div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Estado:</strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].current_status+'</label></div>';
+	            	if (msj[x].current_status == 'COMPLETED')
+	            	{
+	            		//$('#div_file_statuses').empty();
+	            		finish = true;
+	            		clearInterval(interval_load);
+	            	}
+	            	else
+	            	{
+	            		finish = false;
+	            	}//fon else
 
-            	if (msj[x].current_line <= 0) {
+	            	var html = '<div class="form-group well "> <h4 style="font-family: \'Jura\', sans-serif; font-size: 16px;"> Estado de archivos: </h4> <div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Nombre:</strong></label> <label class="col-md-8" style="display: inline-block; width: 300px; overflow: hidden; text-overflow: ellipsis; font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].nombre+'0'+msj[x].version+'.txt</label></div> <div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Estado:</strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].current_status+'</label></div>';
 
-            		html += '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> % Cargado: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].porcent+'% => ' + msj[x].current_line+'/'+msj[x].total_registers+'</label></div>';
+	            	if (msj[x].current_line <= 0) {
 
-            	} else {
+	            		html += '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> % Cargado: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].porcent+'% => ' + msj[x].current_line+'/'+msj[x].total_registers+'</label></div>';
 
-            		html += '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> % Cargado: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].porcent+'% => ' + (msj[x].current_line - 1)+'/'+msj[x].total_registers+'</label></div>';
+	            	} else {
 
-            	}
+	            		html += '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> % Cargado: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">'+msj[x].porcent+'% => ' + (msj[x].current_line - 1)+'/'+msj[x].total_registers+'</label></div>';
 
-            	if(msj[x].current_status == 'COMPLETED')
-            	{
-            		$('#btnUpload').prop('disabled', true);
-            		$('#btnUpload').removeClass("disabled");
-            		//$('#div_file_statuses').empty();
-            		switch(msj[x].final_status)
-            		{
-	            		case 'REGULAR':
-	            			bool_fallo = false;
-	            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">REGULAR</label></div>';
-	            			//$('#alert').empty();
-		        			//$('#error_area').empty();
-	            			break;
-	            		case 'SUCCESS':
-	            			//$('#alert').empty();
-            				//$('#error_area').empty();
-	            			bool_fallo = false;
-	            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">EXITOSO</label></div>';
-	            			//$('#alert').empty();
-		        			//$('#error_area').empty();
-	            			break;
-	            		case 'FAILURE':
-	            			if(msj[x].current_line==0)
-	            			{
-	            				bool_fallo = true;
-	            				html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">FALLO EN LA PRIMERA LINEA</label></div>';
-	            			
-	            			}
-		            		else
-		            		{
-		            			bool_fallo = false;
-		            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">FALLIDO</label></div>';
-	            			
-		            		}
-	            			break;
 	            	}
 
-	            	html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Detalle: </strong></label> <a href="'+msj[x].zipath+'" class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Descargar</strong></a></div>';
-	            	
-	            	if (msj[x].current_status == 'COMPLETED' && bool_fallo) 
+	            	if(msj[x].current_status == 'COMPLETED')
 	            	{
-	            		$('#btnUpload').prop('disabled', true);
-	            		$('#btnUpload').removeClass("disabled");
-	            		var array_ruta = msj[x].zipath.split('/');
-	            		var nombre_comprimido = array_ruta[array_ruta.length - 1];
-	            		var consecutivo_comprimido = nombre_comprimido.substr(8, 10);
+	            		//$('#div_file_statuses').empty();
+	            		switch(msj[x].final_status)
+	            		{
+		            		case 'REGULAR':
+		            			bool_fallo = false;
+		            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">REGULAR</label></div>';
+		            			//$('#alert').empty();
+			        			//$('#error_area').empty();
+		            			break;
+		            		case 'SUCCESS':
+		            			//$('#alert').empty();
+	            				//$('#error_area').empty();
+		            			bool_fallo = false;
+		            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">EXITOSO</label></div>';
+		            			//$('#alert').empty();
+			        			//$('#error_area').empty();
+		            			break;
+		            		case 'FAILURE':
+		            			if(msj[x].current_line==0)
+		            			{
+		            				bool_fallo = true;
+		            				html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">FALLO EN LA PRIMERA LINEA</label></div>';
+		            			
+		            			}
+			            		else
+			            		{
+			            			bool_fallo = false;
+			            			html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Cal. Global: </strong></label> <label class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;">FALLIDO</label></div>';
+		            			
+			            		}
+		            			break;
+		            	}
 
-	            		var ruta = '../storage/archivos/'+consecutive+'/'+msj[x].id_tema_informacion+consecutive+'/DetallesErrores.txt';
+		            	html+= '<div class="row"> <label class="col-md-4" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Detalle: </strong></label> <a href="'+msj[x].zipath+'" class="col-md-8" style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Descargar</strong></a></div>';
+		            	
+		            	if (msj[x].current_status == 'COMPLETED' && bool_fallo) 
+		            	{
+		            		var array_ruta = msj[x].zipath.split('/');
+		            		var nombre_comprimido = array_ruta[array_ruta.length - 1];
+		            		var consecutivo_comprimido = nombre_comprimido.substr(8, 10);
 
-	            		validateFirstRow(ruta, msj[x].id_tema_informacion);
-	            		bool_fallo = false;
-	            	} 
-            		//console.log(JSON.stringify(msj[x]));
+		            		var ruta = '../storage/archivos/'+consecutive+'/'+msj[x].id_tema_informacion+consecutive+'/DetallesErrores.txt';
 
-	            	$('#add_file').fadeIn();
-					$('#btnUpload').fadeIn();
-            	}
-            	
-            	html+= ' </div>';
-            	$('#div_file_statuses').append(html);
-            	bool_fallo = false;
-            } // FINAL FOR
+		            		finish = true;
+		            		validateFirstRow(ruta, msj[x].id_tema_informacion);
+		            		bool_fallo = false;
+		            	} 
+	            		//console.log(JSON.stringify(msj[x]));
+
+		            	$('#add_file').fadeIn();
+						$('#btnUpload').fadeIn();
+	            	}
+	            	
+	            	html+= ' </div>';
+	            	$('#div_file_statuses').append(html);
+	            	bool_fallo = false;
+	            }
+            } // FINAL FOR REGISTROS
 
             if(finish){
             	//console.log("Termina AJAX");
             	$('#divgif').empty();
-            	$('#files_div').empty();
+            	document.getElementById('loading_table_img').style.display = 'none';
             	clearInterval(interval_consecutive);
+            	clearInterval(interval_load);
             }
 
             if (!$('#div_file_statuses').is(':visible')) $('#div_file_statuses').fadeIn();
@@ -466,5 +563,4 @@ async function consultStatusFiles(consecutive) {
     });
 
 }//fin function consultas
-
 

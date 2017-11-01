@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {{-- <meta name="csrf-token" content="{{ crsf_token() }}"> --}}
 
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -11,12 +12,14 @@
         
         {{ Html::script(asset("js/jquery-3.1.0.min.js")) }}
         {{ Html::script(asset("css/bootstrap-3.3.7-dist/js/bootstrap.min.js")) }}
+        {{-- {{ Html::script(asset("css/MDB_Bootstrap/js/mdb.js")) }} --}}
         {{ Html::script(asset("js/menu.js")) }}
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts Design and Styles-->
 
         {{ Html::style(asset("css/bootstrap-3.3.7-dist/css/bootstrap.min.css")) }}
+        {{-- {{ Html::style(asset("css/MDB_Bootstrap/css/mdb.css")) }} --}}
         {{ Html::style(asset("fonts/font-awesome.css")) }}
         {{ Html::style(asset("fonts/fonts.css")) }}
         {{ Html::style(asset("css/menu.css")) }}
@@ -30,7 +33,7 @@
 
     </head>
     <!--HTML Body of the page-->
-    <body class="body-background" style="background-image: url('{{ asset('images/Fondo2.png') }}'); background-size: cover; background-repeat: repeat-y;">
+    <body onload class="body-background" style="background-image: url('{{ asset('images/Fondo2.png') }}'); background-size: cover; background-repeat: repeat-y;">
 
         <nav class="main-menu" style="z-index: 50 !important; height: 100%; position: fixed; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 
@@ -92,7 +95,18 @@
 
         </nav>
     
+        <h1>
+            @if (!Auth::check())
+                
+            @endif
+        </h1>
+
     @yield('content')
-    
+
+    {{ Html::script(asset("css/MDB_Bootstrap/js/jquery-3.2.1.min.js")) }}
+    {{ Html::script(asset("css/MDB_Bootstrap/js/popper.min.js")) }}
+    {{ Html::script(asset("css/MDB_Bootstrap/js/bootstrap.min.js")) }}
+    {{ Html::script(asset("css/MDB_Bootstrap/js/mdb.min.js")) }}
+
     </body>
 </html>

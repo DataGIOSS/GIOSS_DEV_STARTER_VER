@@ -20,8 +20,6 @@ use App\Models\GiossArchivoAtpCfvl;
 
 class ATP extends FileValidator {
 
-
-
   function __construct($pathfolder, $fileName,$consecutive) {
     $filePath = $pathfolder.$fileName;
     $this->countLine($filePath);
@@ -51,7 +49,7 @@ class ATP extends FileValidator {
       $isValidFile = true;
       $fileid = 0;
 
-      $exists = Archivo::where('nombre', $this->fileName)
+      $exists = DB::table('archivo')->where('nombre', $this->fileName)
                 ->where('version', $this->version)
                 ->first(); 
 
@@ -93,7 +91,7 @@ class ATP extends FileValidator {
         //se adicionan terminan de definir los prametros el archivo
         $this->archivo->fecha_ini_periodo = strtotime($firstRow[2]);
         $this->archivo->fecha_fin_periodo = strtotime($firstRow[3]);
-        $entidad = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+        $entidad = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
         $this->archivo->id_entidad = $entidad->id_entidad;
         $this->archivo->numero_registros = $firstRow[4];
         $this->archivo->save();
@@ -152,7 +150,7 @@ class ATP extends FileValidator {
 
               //
               // alamacena en la dimension
-              $exists = UserIp::where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
+              $exists = DB::table('user_ips')->where('num_identificacion', $data[8])->orderBy('created_at', 'desc')->first();
 
               $createNewUserIp = true;
               $useripsid = 0;
@@ -186,12 +184,12 @@ class ATP extends FileValidator {
               $cadena_temp=ltrim($data[3], '0');
               $cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
 
-              $eapb  = Eapb::where('num_identificacion', $cadena_test)
+              $eapb  = DB::table('eapbs')->where('num_identificacion', $cadena_test)
                               ->where('cod_eapb', $data[4])->first();
               
               if ($eapb) {
 
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->where('id_eapb', $eapb->id_entidad)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -205,7 +203,7 @@ class ATP extends FileValidator {
                 }
                 
               } else {
-                $exists = Registro::where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
+                $exists = DB::table('registro')->where('id_archivo', $this->archivo->id_archivo_seq)->where('id_user', $useripsid)->first();
 
                 if (!$exists) {
                   Log::info("Crea el registro");
@@ -276,7 +274,7 @@ class ATP extends FileValidator {
           $isValidRow = false;
           array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo de tener una longitud igual a 1"]);
         }else{
-          $exists = Ambito::where('cod_ambito',$consultSection[15])->first();
+          $exists = DB::table('ambito')->where('cod_ambito',$consultSection[15])->first();
           if(!$exists){
             array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El valor del campo no correponde a un Ambito valido"]);
           }

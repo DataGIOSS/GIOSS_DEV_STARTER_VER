@@ -12,6 +12,7 @@ use App\Models\TipoEapb;
 use App\Models\TipoIdentEapb;
 use App\Models\FileStatus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class FileValidator {
 
@@ -51,7 +52,7 @@ class FileValidator {
 		//Se verifica que el campo 0 no esté vacio o que contenga un número
 		if(isset($firstRow[0]) && is_numeric($firstRow[0])){
 			//Se realiza la consulta a través del código de habilitación en la Base de Datos de Entidades
-			$exists = EntidadesSectorSalud::where('cod_habilitacion', $firstRow[0])->first();
+			$exists = DB::table('entidades_sector_salud')->where('cod_habilitacion', $firstRow[0])->first();
 			//Se verifica la existencia de la entidad ingresada en el registro
 			if(!$exists){
 				//En caso de que la Entidad no exista, es decir, que la consulta no arroje resultados, se marca el registro como no válido y se inserta el error en el arreglo de errores
@@ -186,7 +187,7 @@ class FileValidator {
     	
     	//validacion campo 1
     	if(isset($entitySection[0]) && preg_match('/^\d{12}$/', $entitySection[0])){
-			$exists = EntidadesSectorSalud::where('cod_habilitacion', $entitySection[0])->first();
+			$exists = DB::table('entidades_sector_salud')->where('cod_habilitacion', $entitySection[0])->first();
 			if(!$exists){
 				$isValidRow = false;
 				array_push($detail_erros, [$lineCount, $lineCountWF, 1, "El valor del campo no corresponde a un código de entidad registrado"]);
@@ -199,7 +200,7 @@ class FileValidator {
 		//validacion campo 2
     	if(isset($entitySection[1])){
     		if(strlen(trim($entitySection[1])) == 1){
-    			$tipo = TipoEapb::where('id_tipo_ent',$entitySection[1])->first();
+    			$tipo = DB::table('tipo_eapb')->where('id_tipo_ent',$entitySection[1])->first();
     			if(!$tipo){
     				$isValidRow = false;
 					array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El  valor del campo no corresponde a un código de tipo entidad"]);
@@ -218,7 +219,7 @@ class FileValidator {
     	if(isset($entitySection[2])){
     		if(strlen(trim($entitySection[2])) == 2){
     			
-    			$tipo_ident = TipoIdentEapb::where('id_tipo_ident', $entitySection[2])->first();
+    			$tipo_ident = DB::table('tipo_identificacion_entidad')->where('id_tipo_ident', $entitySection[2])->first();
     			if(!$tipo_ident){
     				$isValidRow = false;
 					array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El valor del campo no corresponde a un código de tipo identificacion entidad"]);
@@ -236,11 +237,11 @@ class FileValidator {
     	if(isset($entitySection[3])){
     		if(preg_match('/^\d{12}$/', $entitySection[3])){
     			//Sin truncar el último dígito
-    			$tipo = Eapb::where('num_identificacion', ltrim($entitySection[3], '0'))->first();
+    			$tipo = DB::table('eapbs')->where('num_identificacion', ltrim($entitySection[3], '0'))->first();
     			//Truncando el último dígito
     			$cadena_temp=ltrim($entitySection[3], '0');
     			$cadena_test=substr($cadena_temp, 0,  strlen($cadena_temp) - 1);
-    			$tipo2 = Eapb::where('num_identificacion', $cadena_test)->first();
+    			$tipo2 = DB::table('eapbs')->where('num_identificacion', $cadena_test)->first();
     			
     			if(!$tipo && !$tipo2){
     				$isValidRow = false;
@@ -256,7 +257,7 @@ class FileValidator {
 		}		//validacion campo 5
     	if(isset($entitySection[4])){
     		if(strlen(trim($entitySection[4])) <= 6){
-    			$tipo = Eapb::where('cod_eapb',$entitySection[4])->first();
+    			$tipo = DB::table('eapbs')->where('cod_eapb',$entitySection[4])->first();
     			if(!$tipo){
     				$isValidRow = false;
 					array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El  valor del campo no corresponde a un código de EAPB válido"]);
@@ -299,7 +300,7 @@ class FileValidator {
 		//validación campo 8
     	if(isset($userSection[7])) {
     		if(strlen(trim($userSection[7])) == 2){
-    			$tipo_ident = TipoIdentificacionUser::where('id_tipo_ident', $userSection[7])->first();
+    			$tipo_ident = DB::table('tipo_identificacion_user')->where('id_tipo_ident', $userSection[7])->first();
     			if(!$tipo_ident){
     				$isValidRow = false;
 					array_push($detail_erros, [$lineCount, $lineCountWF, 8, "tipo de identificación no valido"]);
@@ -390,12 +391,12 @@ class FileValidator {
 
 		//validación campo 15
     	if(isset($userSection[14])) {
-    		if(strlen(trim($userSection[14])) != 1 ){
+    		if(strlen(trim($userSection[14])) != 1){
     			$isValidRow = false;
 				array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El campo debe tener un longitud igual a 1 caracteres."]);
     		}else{
-    			$exists = GenerosUser::where('id_genero',$userSection[14])->first();
-    			if(!$exists){
+    			//$exists = GenerosUser::where('id_genero',$userSection[14])->first();
+    			if((trim($userSection[14]) != 'M') || (trim($userSection[14]) != 'F') || (trim($userSection[14]) != 'I')){
     				$isValidRow = false;
 					array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El valor del campo no correponde a un género definido."]);
     			}
