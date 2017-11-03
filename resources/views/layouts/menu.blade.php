@@ -33,7 +33,7 @@
 
     </head>
     <!--HTML Body of the page-->
-    <body onload class="body-background" style="background-image: url('{{ asset('images/Fondo2.png') }}'); background-size: cover; background-repeat: repeat-y;">
+    <body class="body-background" style="background-image: url('{{ asset('images/Fondo2.png') }}'); background-size: cover; background-repeat: repeat-y;">
 
         <nav class="main-menu" style="z-index: 50 !important; height: 100%; position: fixed; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 

@@ -18,7 +18,7 @@ class UserAdministratorSeeder extends Seeder
         	'password' => Hash::make('administrador_1'),
         	'roleid' => 1,
         	'lastname' => 'gioss',
-
+            'status' => 1,
         ]);
 
         User::create([
@@ -27,7 +27,7 @@ class UserAdministratorSeeder extends Seeder
             'password' => Hash::make('invitado_1'),
             'roleid' => 2,
             'lastname' => 'Perez',
-
+            'status' => 0,
         ]);
 
         return true;

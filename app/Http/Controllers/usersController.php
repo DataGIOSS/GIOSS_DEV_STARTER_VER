@@ -59,7 +59,7 @@ class usersController extends Controller
                     'lastname' => 'required | max: 255',
                     'email' => 'required | email | max:255 | unique:users,email',
                     'password' => 'required | min:6 | alpha_dash',
-                    'tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                    'tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                 ]
             );
 
@@ -130,30 +130,30 @@ class usersController extends Controller
                         [
                             'edit_name' => 'required | max: 255 |',
                             'edit_lastname' => 'required | max: 255',
-                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                         ]
                     );
 
                     $validator->setAttributeNames([
                         'edit_name'=>'Nombres',
-                        'edit_lastname'=>'Apellidos',
+                        'edit_lastname'=>'Apellidos'
                     ]);
 
                 } else {
                     $validator = Validator::make(
-                        $request->all(), 
+                        $request->all(),
                         [
                             'edit_name' => 'required | max: 255 |',
                             'edit_lastname' => 'required | max: 255',
                             'edit_email' => 'required | email | max:255 | unique:users,email',
-                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                         ]
                     );
 
                     $validator->setAttributeNames([
                         'edit_name'=>'Nombres',
                         'edit_lastname'=>'Apellidos',
-                        'edit_email' => "Email",
+                        'edit_email' => "Email"
                     ]);
                 }
 
@@ -166,8 +166,8 @@ class usersController extends Controller
                         [
                             'edit_name' => 'required | max: 255 |',
                             'edit_lastname' => 'required | max: 255',
-                            'edit_password' => 'min:6 | alpha_dash',
-                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                            'edit_password' => 'required | min:6 | alpha_dash',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                         ]
                     );
 
@@ -185,8 +185,8 @@ class usersController extends Controller
                             'edit_name' => 'required | max: 255 |',
                             'edit_lastname' => 'required | max: 255',
                             'edit_email' => 'required | email | max:255 | unique:users,email',
-                            'edit_password' => 'min:6 | alpha_dash',
-                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id',
+                            'edit_password' => 'required | min:6 | alpha_dash',
+                            'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                         ]
                     );
 
@@ -222,15 +222,15 @@ class usersController extends Controller
                 if ($request->edit_email == "" || is_null($request->edit_email)) {
                     $updateUser = DB::table('users')
                     ->where('id', $request->edit_id_user)
-                    ->update(array('name' => $request->edit_name, 'password' => $request->edit_password, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                    ->update(array('name' => $request->edit_name, 'password' => Hash::make(''.$request->edit_password), 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
                 } else {
                     $updateUser = DB::table('users')
                     ->where('id', $request->edit_id_user)
-                    ->update(array('name' => $request->edit_name, 'email' => $request->edit_email, 'password' => $request->edit_password, 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
+                    ->update(array('name' => $request->edit_name, 'email' => $request->edit_email, 'password' => Hash::make(''.$request->edit_password), 'roleid' => $request->edit_tipo_usuario, 'lastname' => $request->edit_lastname));
                 }
             }
 
-            if(!$updateUser) throw new \Exception("Error al modificar el Usuario ".$request->edit_id_user);
+            if(!$updateUser) throw new \Exception("Error al modificar el Usuario");
 
             DB::commit();
 
@@ -239,7 +239,7 @@ class usersController extends Controller
         } catch (\Exception $e) {
             Log::error("Error en el controlador: ".$e->getMessage());
             DB::rollBack();
-            return \Redirect::to($url)->with('edit_error', $e->getMessage())->withErrors($validator)->withInput();
+            return \Redirect::to($url)->with('edit_error', $e->getMessage())->withErrors($validator);
         }
     }
 
@@ -259,7 +259,7 @@ class usersController extends Controller
 
             DB::commit();
 
-            if ($request->edit_status == 1) {
+            if ($request->edit_status == 0) {
                 return \Redirect::to($url)->with('disable_success', 'El Usuario fue desactivado con éxito.');
             } else {
                 return \Redirect::to($url)->with('able_success', 'El Usuario fue activado con éxito.');

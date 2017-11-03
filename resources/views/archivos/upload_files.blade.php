@@ -84,10 +84,10 @@
                     </div>
                 </div>
 
-                <div id="menu1" class="tab-pane fade panel" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
-                    <div class="panel-body">
+                <div id="menu1" class="tab-pane fade panel" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); min-width: 100%">
+                    <div class="panel-body" style="min-width: inherit">
                         
-                        <table class="table table-striped">
+                        <table class="table table-striped" style="overflow-x: scroll; min-width: inherit">
                             <thead style="font-family: 'Jura', sans-serif; font-size: 15px; text-align: center">
                                 <th style="max-width: 150px; text-align: center;">NOMBRE ARCHIVO</th>
                                 <th style="text-align: center;">TIPO DE ARCHIVO</th>

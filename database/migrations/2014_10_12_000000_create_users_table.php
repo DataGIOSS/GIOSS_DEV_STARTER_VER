@@ -20,9 +20,9 @@ class CreateUsersTable extends Migration {
 			$table->string('password');
 			$table->rememberToken();
 			$table->timestamps();
-			$table->integer('roleid')->default(0);
-			$table->integer('status')->default(0);
+			$table->integer('roleid')->default(2);
 			$table->string('lastname')->nullable();
+			$table->integer('status')->default(0);
 		});
 	}
 

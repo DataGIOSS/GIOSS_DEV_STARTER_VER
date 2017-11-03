@@ -391,7 +391,7 @@ function load_table(){
         			$('#loaded_files').append(registro_leido);
         		} else if (document.getElementById(id) && msj[x].current_status == 'COMPLETED') {
         			counter++;
-        			document.getElementById(id).innerHTML = registro_leido;
+        			//document.getElementById(id).innerHTML = registro_leido;
         		}
 				
         	}

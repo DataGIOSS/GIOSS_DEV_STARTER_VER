@@ -26,7 +26,7 @@
                 @endif
 
                 @if (Auth::user()->roleid == 2)
-                <div class="panel-heading">Bienvenido Invitado</div>
+                <div class="panel-heading" style="font-family: 'Poiret One', cursive; font-size: 20px">Bienvenido Invitado</div>
                 
 
                 <div class="panel-body" style="font-family: 'Jura', sans-serif; font-size: 16px">

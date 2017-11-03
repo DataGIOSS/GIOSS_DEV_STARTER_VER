@@ -18,16 +18,16 @@
                         <form class="form-horizontal" role="form" method="POST" action="{{ url('registro') }}" novalidate>
                             {{ csrf_field() }}
 
-                            <div class="row" id="info_usuario" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px">
+                            <div class="row" id="info_usuario" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px; width: 80%">
                                 <h3><kbd> Información de Usuario </kbd></h3>
-                                <div class="form-group" style="margin: auto auto auto auto;">
+                                <div id="alert_3" class="form-group" style="margin: auto auto auto auto;">
                                     @if(session()->has('success'))
                                         <div class="alert alert-success fade in" style="margin: auto auto auto auto">
-                                        <strong>El Usuario fue creado con EXITO!</strong>
+                                        <strong>EL USUARIO FUE CREADO CON ÉXITO!</strong>
                                       </div>
                                     @elseif(session()->has('error'))
                                         <div class="alert alert-danger fade in" style="margin: auto auto auto auto">
-                                            <strong>El Usuario no pudo ser creado con EXITO!</strong>
+                                            <strong>EL USUARIO NO PUDO SER CREADO CON ÉXITO!</strong>
                                         </div>
                                     @endif
                                 </div>
@@ -137,23 +137,16 @@
                     
                     <div class="panel-body">
                         
-                        <div id="alert" class="form-group" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 15px; width: 50%; text-align: center">
-                            @if(session()->has('edit_success'))
-                                <div class="alert alert-success fade in" style="margin: auto auto auto auto">
-                                <strong>EL USUARIO FUE ACTUALIZADO CON EXITO!</strong>
-                              </div>
-                            @elseif(session()->has('edit_error'))
-                                <div class="alert alert-danger fade in" style="margin: auto auto auto auto">
-                                    <strong>El USUARIO NO PUDO SER EDITADO CON EXITO!</strong>
-                                </div>
-
-                                <hr>
-                            @endif
+                        <div id="alert_1" class="form-group" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 15px; width: 80%; text-align: center">
 
                             @if(session()->has('disable_success'))
                                 <div class="alert alert-danger fade in" style="margin: auto auto auto auto">
-                                <strong>EL USUARIO FUE DESACTIVADO CON EXITO!</strong>
-                              </div>
+                                    <strong>EL USUARIO FUE DESACTIVADO CON EXITO!</strong>
+                                </div>
+                            @elseif(session()->has('edit_success'))
+                                <div class="alert alert-success fade in" style="margin: auto auto auto auto">
+                                    <strong>EL USUARIO FUE ACTUALIZADO CON EXITO!</strong>
+                                </div>
                             @elseif(session()->has('able_success'))
                                 <div class="alert alert-success fade in" style="margin: auto auto auto auto">
                                     <strong>El USUARIO FUE ACTIVADO CON EXITO!</strong>
@@ -179,230 +172,254 @@
                             </thead>
                             <tbody style="font-family: 'Jura', sans-serif; font-size: 15px; text-align: center;">
                                 @foreach($users as $user)
-                                    <tr>
-                                        <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->name}}</td>
-                                        <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->lastname}}</td>
-                                        <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->email}}</td>
-                                        <td style="position: relative; top: 50%; transform: translateY(10%);">
-                                        @if($user->roleid == 1)
-                                            <span class="label label-danger">
-                                                Administrador
-                                            </span>
-                                        @else
-                                            <span class="label label-primary">
-                                                Invitado
-                                            </span>
-                                        @endif
-                                        </td>
-                                        
-                                        <td>
-                                            <button onclick="get_url('{{ $user->id }}')" id="edit_user_btn" type="button" class="btn btn-warning" data-toggle="modal" data-target="#edit{{$user->id}}" data-whatever="@mdo" style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-wrench" style="font-size: 1.5em; position: absolute; display: block; top: 18%; left: -18%"></span></button>
+                                    @if($user->name != 'Administrador')
+                                        <tr id="registro_{{ $user->id }}">
+                                            <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->name}}</td>
+                                            <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->lastname}}</td>
+                                            <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->email}}</td>
+                                            <td style="position: relative; top: 50%; transform: translateY(10%);">
+                                            @if($user->roleid == 1)
+                                                <span class="label label-danger">
+                                                    Administrador
+                                                </span>
+                                            @else
+                                                <span class="label label-primary">
+                                                    Invitado
+                                                </span>
+                                            @endif
+                                            </td>
                                             
+                                            <td>
+                                                <button onclick="get_url('{{ $user->id }}')" id="edit_user_btn" type="button" class="btn btn-warning" data-toggle="modal" data-target="#edit_{{$user->id}}" data-whatever="@mdo" style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-wrench" style="font-size: 1.5em; position: absolute; display: block; top: 18%; left: -18%"></span></button>
+                                                
 
-                                            <div class="modal fade" id="edit{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                              <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                  <div class="modal-header">
-                                                    <h3 class="modal-title" id="exampleModalLabel" style="text-transform: uppercase;">EDITAR USUARIO {{$user->name}} {{$user->lastname}}</h3>
-                                                  </div>
-                                                  <div class="modal-body">
+                                                <div class="modal fade" id="edit_{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <h3 class="modal-title" id="exampleModalLabel" style="text-transform: uppercase;">EDITAR USUARIO {{$user->name}} {{$user->lastname}}</h3>
+                                                      </div>
+                                                      <div class="modal-body">
+
+                                                        <div id="alert_2" class="form-group" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 15px; width: 80%; text-align: center">
+                                                            @if(session()->has('edit_error'))
+                                                                <div id="error_alert" class="alert alert-danger fade in" style="margin: auto auto auto auto">
+                                                                    <strong>El USUARIO NO PUDO SER ACTUALIZADO CON EXITO!</strong>
+                                                                </div>
+
+                                                                <hr>
+                                                            @endif
+                                                        </div>
+
+                                                        <form id="{{ $user->id }}" class="form-horizontal" role="form" method="POST" action="{{ url('editar') }}" novalidate>
+                                                            {{ csrf_field() }}
+
+                                                            <div class="row" id="info_edit_usuario{{ $user->id }}" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px">
+
+                                                                <div>
+                                                                    <blockquote class="blockquote">
+                                                                        <footer class="blockquote-footer" style="font-family: 'Jura', sans-serif; font-size: 16px"> Edite solo los datos de usuario que desea modificar. Los demás campos deben permanecer iguales (*)</footer>
+                                                                    </blockquote>
+                                                                </div>
+
+                                                                
+                                                                <input id="edit_id_user{{ $user->id }}" type="hidden" class="form-control" name="edit_id_user" value="{{ $user->id }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
+                                                                
+                                                                <input id="edit_url{{ $user->id }}" type="hidden" class="form-control" name="edit_url" value=""  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
 
 
+                                                                <div class="form-group{{ $errors->has('edit_name') ? ' has-error' : '' }}">
+                                                                    <label for="edit_name" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Nombres:</label>
 
-                                                    <form id="{{ $user->id }}" class="form-horizontal" role="form" method="POST" action="{{ url('editar') }}" novalidate>
-                                                        {{ csrf_field() }}
+                                                                    <div class="col-md-6">
+                                                                        <input id="edit_name" type="text" class="form-control" name="edit_name" value="{{ $user->name }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
 
-                                                        <div class="row" id="info_edit_usuario{{ $user->id }}" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px">
+                                                                        @if ($errors->has('edit_name'))
+                                                                            <span class="help-block">
+                                                                                <strong>{{ $errors->first('edit_name') }}</strong>
+                                                                            </span>
+                                                                            <script type="text/javascript">
+                                                                                $('#edit_' + {{ $user->id }}).modal('show');
+                                                                            </script>
+                                                                        @endif
 
-                                                            <div>
-                                                                <blockquote class="blockquote">
-                                                                    <footer class="blockquote-footer" style="font-family: 'Jura', sans-serif; font-size: 16px"> Edite solo los datos de usuario que desea modificar. Los demás campos deben permanecer iguales (*)</footer>
-                                                                </blockquote>
-                                                            </div>
+                                                                    </div>
+                                                                </div>
 
-                                                            
-                                                            <input id="edit_id_user{{ $user->id }}" type="hidden" class="form-control" name="edit_id_user" value="{{ $user->id }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
-                                                            
+                                                                <div class="form-group{{ $errors->has('edit_lastname') ? ' has-error' : '' }}">
+                                                                    <label for="edit_lastname" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Apellidos:</label>
 
-                                                            <div class="form-group" style="display: none">
-                                                                <input id="edit_url{{ $user->id }}" type="text" class="form-control" name="edit_url" value=""  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
-                                                            </div>
+                                                                    <div class="col-md-6">
+                                                                        <input id="edit_lastname" type="text" class="form-control" name="edit_lastname" value="{{ $user->lastname }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
 
+                                                                        @if ($errors->has('edit_lastname'))
+                                                                            <span class="help-block">
+                                                                                <strong>{{ $errors->first('edit_lastname') }}</strong>
+                                                                            </span>
+                                                                            <script type="text/javascript">
+                                                                                $('#edit_' + {{ $user->id }}).modal('show');
+                                                                            </script>
+                                                                        @endif
 
-                                                            <div class="form-group{{ $errors->has('edit_name') ? ' has-error' : '' }}">
-                                                                <label for="edit_name" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Nombres:</label>
+                                                                    </div>
+                                                                </div>
 
-                                                                <div class="col-md-6">
-                                                                    <input id="edit_name" type="text" class="form-control" name="edit_name" value="{{ $user->name }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
+                                                                <div class="form-group{{ $errors->has('edit_password') ? ' has-error' : '' }}">
+                                                                    <label for="edit_password" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Contraseña:</label>
 
-                                                                    @if ($errors->has('edit_name'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('edit_name') }}</strong>
-                                                                        </span>
-                                                                    @endif
+                                                                    <div class="col-md-6">
+                                                                        <input id="edit_password" type="password" class="form-control" placeholder="*************" name="edit_password" style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
+
+                                                                        @if ($errors->has('edit_password'))
+                                                                            <span class="help-block">
+                                                                                <strong>{{ $errors->first('edit_password') }}</strong>
+                                                                            </span>
+                                                                        @endif
+                                                                        
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group{{ $errors->has('edit_email') ? ' has-error' : '' }}">
+                                                                    <label for="edit_email" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Correo Electrónico:</label>
+
+                                                                    <div class="col-md-6">
+                                                                        <input id="edit_email" type="email" class="form-control" placeholder="{{ $user->email }}" name="edit_email" style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
+
+                                                                        @if ($errors->has('edit_email'))
+                                                                            <span class="help-block">
+                                                                                <strong>{{ $errors->first('edit_email') }}</strong>
+                                                                            </span>
+                                                                            {{-- <script type="text/javascript">
+                                                                                $('#edit_' + {{ $user->id }}).modal('show');
+                                                                            </script> --}}
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+
+                                                                <br>
+
+                                                                <div class="input-group col-md-6 form-group{{ $errors->has('edit_tipo_usuario') ? ' has-error' : '' }}" style="margin: auto auto auto auto">
+                                                                    <div class="input-group" style="width:150%; right: 50px">
+                                                                        <div for="edit_tipo_usuario" class="input-group-addon"><b style="font-family: 'Poiret One', cursive;">Tipo de Usuario</b></div>
+                                                                        <select id="edit_tipo_usuario" name="edit_tipo_usuario" class="form-control" required style="font-family: 'Jura', sans-serif; font-size: 16px">
+                                                                            @if ($user->roleid == 1)
+                                                                                <option value="1" style="font-family: 'Jura', sans-serif; font-size: 16px" selected> Administrador (Todos los Permisos) </option>
+                                                                                <option value="2" style="font-family: 'Jura', sans-serif; font-size: 16px"> Invitado (Solo Carga de Archivos) </option>
+                                                                            @else
+                                                                                <option value="1" style="font-family: 'Jura', sans-serif; font-size: 16px"> Administrador (Todos los Permisos) </option>
+                                                                                <option value="2" style="font-family: 'Jura', sans-serif; font-size: 16px" selected> Invitado (Solo Carga de Archivos) </option>
+                                                                            @endif
+                                                                            
+                                                                        </select>
+
+                                                                        @if ($errors->has('edit_tipo_usuario'))
+                                                                            <span class="help-block">
+                                                                                <strong>{{ $errors->first('edit_tipo_usuario') }}</strong>
+                                                                            </span>
+                                                                        @endif
+
+                                                                    </div>
 
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="form-group{{ $errors->has('edit_lastname') ? ' has-error' : '' }}">
-                                                                <label for="edit_lastname" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Apellidos:</label>
-
-                                                                <div class="col-md-6">
-                                                                    <input id="edit_lastname" type="text" class="form-control" name="edit_lastname" value="{{ $user->lastname }}"  style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
-
-                                                                    @if ($errors->has('edit_lastname'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('edit_lastname') }}</strong>
-                                                                        </span>
-                                                                    @endif
-
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-group{{ $errors->has('edit_password') ? ' has-error' : '' }}">
-                                                                <label for="edit_password" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Contraseña:</label>
-
-                                                                <div class="col-md-6">
-                                                                    <input id="edit_password" type="password" class="form-control" placeholder="*************" name="edit_password" style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
-
-                                                                    @if ($errors->has('edit_password'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('edit_password') }}</strong>
-                                                                        </span>
-                                                                    @endif
-                                                                    
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-group{{ $errors->has('edit_email') ? ' has-error' : '' }}">
-                                                                <label for="edit_email" class="col-md-4 control-label" style="font-family: 'Jura', sans-serif; font-size: 16px; vertical-align: middle;">Correo Electrónico:</label>
-
-                                                                <div class="col-md-6">
-                                                                    <input id="edit_email" type="email" class="form-control" placeholder="{{ $user->email }}" name="edit_email" style="font-family: 'Jura', sans-serif; font-size: 16px" autofocus>
-
-                                                                    @if ($errors->has('edit_email'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('edit_email') }}</strong>
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
                                                             </div>
 
                                                             <br>
+                                                            
+                                                            <div class="form-group">
+                                                                <div class="modal-footer" style="text-align: center">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
 
-                                                            <div class="input-group col-md-6 form-group{{ $errors->has('edit_tipo_usuario') ? ' has-error' : '' }}" style="margin: auto auto auto auto">
-                                                                <div class="input-group" style="width:150%; right: 50px">
-                                                                    <div for="edit_tipo_usuario" class="input-group-addon"><b style="font-family: 'Poiret One', cursive;">Tipo de Usuario</b></div>
-                                                                    <select id="edit_tipo_usuario" name="edit_tipo_usuario" class="form-control" required style="font-family: 'Jura', sans-serif; font-size: 16px">
-                                                                        @if ($user->roleid == 1)
-                                                                            <option value="1" style="font-family: 'Jura', sans-serif; font-size: 16px" selected> Administrador (Todos los Permisos) </option>
-                                                                            <option value="2" style="font-family: 'Jura', sans-serif; font-size: 16px"> Invitado (Solo Carga de Archivos) </option>
+                                                      </div>
+                                                      
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                @if($user->status == 1)
+                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo" style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-times" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
+                                                @else
+                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-success" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo", style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-plus" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
+                                                @endif
+
+                                                <div class="modal fade" id="disable{{$user->id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                  <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <h3 class="modal-title" id="exampleModalLabel">DESACTIVAR USUARIO</h3>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        
+                                                        @if($user->status == 0)
+                                                            ¿Desea activar al usuario {{$user->name}} {{$user->lastname}}? 
+                                                        @else
+                                                            ¿Desea desactivar al usuario {{$user->name}} {{$user->lastname}}? 
+                                                        @endif
+
+                                                        <form id="{{ $user->id }}" class="form-horizontal" role="form" method="POST" action="{{ url('desactivar_usuario') }}" novalidate>
+                                                            {{ csrf_field() }}
+
+                                                            <div class="row" id="info_edit_usuario{{ $user->id }}" style="display: none">
+
+                                                                
+                                                                <input id="edit_id_user" type="hidden" class="form-control" name="edit_id_user" value="{{ $user->id }}"/>
+                                                                
+                                                                <input id="disable_url{{ $user->id }}" type="hidden"  value="test" name="disable_url" />
+
+                                                                <div class="form-group{{ $errors->has('edit_status') ? ' has-error' : '' }}" style="display:none">
+                                                                    <label for="edit_status" class="col-md-4 control-label"></label>
+
+                                                                    <div class="col-md-6">
+                                                                        @if ($user->status == 1)
+                                                                            <input id="edit_status" type="text" class="form-control" name="edit_status" value="0">
                                                                         @else
-                                                                            <option value="1" style="font-family: 'Jura', sans-serif; font-size: 16px"> Administrador (Todos los Permisos) </option>
-                                                                            <option value="2" style="font-family: 'Jura', sans-serif; font-size: 16px" selected> Invitado (Solo Carga de Archivos) </option>
+                                                                            <input id="edit_status" type="text" class="form-control" name="edit_status" value="1">
                                                                         @endif
-                                                                        
-                                                                    </select>
-
-                                                                    @if ($errors->has('edit_tipo_usuario'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('edit_tipo_usuario') }}</strong>
-                                                                        </span>
-                                                                    @endif
-
+                                                                    </div>
                                                                 </div>
 
                                                             </div>
-
-                                                        </div>
-
-                                                        <br>
-                                                        
-                                                        <div class="form-group">
-                                                            <div class="modal-footer" style="text-align: center">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                                                <button type="submit" class="btn btn-primary">Actualizar</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-
-                                                  </div>
-                                                  
-                                                </div>
-                                              </div>
-                                            </div>
-
-                                            @if($user->status == 1)
-                                                <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo" style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-times" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
-                                            @else
-                                                <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-success" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo", style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-plus" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
-                                            @endif
-
-                                            <div class="modal fade" id="disable{{$user->id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                              <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                  <div class="modal-header">
-                                                    <h3 class="modal-title" id="exampleModalLabel">DESACTIVAR USUARIO</h3>
-                                                  </div>
-                                                  <div class="modal-body">
-                                                    
-                                                    @if($user->status == 0)
-                                                        ¿Desea activar al usuario {{$user->name}} {{$user->lastname}}? 
-                                                    @else
-                                                        ¿Desea desactivar al usuario {{$user->name}} {{$user->lastname}}? 
-                                                    @endif
-
-                                                    <form id="{{ $user->id }}" class="form-horizontal" role="form" method="POST" action="{{ url('desactivar_usuario') }}" novalidate>
-                                                        {{ csrf_field() }}
-
-                                                        <div class="row" id="info_edit_usuario{{ $user->id }}" style="display: none">
-
                                                             
-                                                            <input id="edit_id_user" type="hidden" class="form-control" name="edit_id_user" value="{{ $user->id }}"/>
-                                                            
-                                                            <input id="disable_url{{ $user->id }}" type="hidden"  value="test" name="disable_url" />
-
-                                                            <div class="form-group{{ $errors->has('edit_status') ? ' has-error' : '' }}" style="display:none">
-                                                                <label for="edit_status" class="col-md-4 control-label"></label>
-
-                                                                <div class="col-md-6">
-                                                                    @if ($user->status == 1)
-                                                                        <input id="edit_status" type="text" class="form-control" name="edit_status" value="0">
-                                                                    @else
-                                                                        <input id="edit_status" type="text" class="form-control" name="edit_status" value="1">
-                                                                    @endif
+                                                            <div class="form-group">
+                                                                <div class="modal-footer" style="text-align: center">
+                                                                    <button id="close_{{ $user->id }}" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                                    <button id="submit_{{ $user->id }}" type="submit" onclick="disable_user('{{ $user->id }}')" class="btn btn-primary">Confirmar</button>
                                                                 </div>
                                                             </div>
+                                                        </form>
 
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <div class="modal-footer" style="text-align: center">
-                                                                <button id="close_{{ $user->id }}" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                                                                <button id="submit_{{ $user->id }}" type="submit" onclick="disable_user('{{ $user->id }}')" class="btn btn-primary">Confirmar</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-
+                                                      </div>
+                                                    </div>
                                                   </div>
                                                 </div>
-                                              </div>
-                                            </div>
 
-                                        </td>
-                                    </tr>
-
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
     
                         <script type="text/javascript">
 
+                            var id_registro = 0;
+
+                            function put_id(id){
+                                id_registro = id;
+                                localStorage.setItem("id_registro", id);
+                            }
+
                             function get_url(id){
 
                                 console.log('Entra a get URL '+ document.getElementById('disable_url' + id).value + '   ' + id);
 
-                                //document.getElementById('disable_url' + id).value = 'urlbefore';
+                                id_registro = id;
+                                localStorage.setItem("id_registro", id);
+                                console.log("El id de registro es: " + id_registro);
 
                                 var url = document.URL;
 
@@ -412,6 +429,22 @@
                                 });
 
                                 
+                            }
+
+                            function open_modal(){
+                                
+                                var id = localStorage.getItem("id_registro");
+                                
+                                get_url(id);
+
+                                $('#edit_' + id).modal('show');
+                                $('#edit_' + id).addClass('in');
+                                $('#edit_' + id).css('background', 'linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))');
+                            }
+
+
+                            if ($( "#error_alert" ).hasClass( "in" )) {
+                                open_modal();
                             }
 
                             function disable_user(id){
@@ -449,7 +482,9 @@
                                 window.location.hash = id;
                             });
 
-                            $('#alert').fadeIn('fast').delay(5000).fadeOut('slow');
+                            $('#alert_1').fadeIn('fast').delay(5000).fadeOut('slow');
+                            $('#alert_2').fadeIn('fast').delay(5000).fadeOut('slow');
+                            $('#alert_3').fadeIn('fast').delay(5000).fadeOut('slow');
                             // on load of the page: switch to the currently selected tab
                             var hash = window.location.hash;
                             $('#myTab a[href="' + hash + '"]').tab('show');
