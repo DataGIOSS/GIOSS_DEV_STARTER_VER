@@ -355,9 +355,9 @@
                                                       <div class="modal-body">
                                                         
                                                         @if($user->status == 0)
-                                                            ¿Desea activar al usuario {{$user->name}} {{$user->lastname}}? 
+                                                            <p> ¿Desea activar al usuario {{$user->name}} {{$user->lastname}}? </p> 
                                                         @else
-                                                            ¿Desea desactivar al usuario {{$user->name}} {{$user->lastname}}? 
+                                                            <p> ¿Desea desactivar al usuario {{$user->name}} {{$user->lastname}}? </p>
                                                         @endif
 
                                                         <form id="{{ $user->id }}" class="form-horizontal" role="form" method="POST" action="{{ url('desactivar_usuario') }}" novalidate>
@@ -437,6 +437,7 @@
                                 
                                 get_url(id);
 
+                                $('#edit_' + id).fadeIn('slow');
                                 $('#edit_' + id).modal('show');
                                 $('#edit_' + id).addClass('in');
                                 $('#edit_' + id).css('background', 'linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))');
@@ -482,9 +483,9 @@
                                 window.location.hash = id;
                             });
 
-                            $('#alert_1').fadeIn('fast').delay(5000).fadeOut('slow');
-                            $('#alert_2').fadeIn('fast').delay(5000).fadeOut('slow');
-                            $('#alert_3').fadeIn('fast').delay(5000).fadeOut('slow');
+                            $('#alert_1').fadeIn('slow').delay(5000).fadeOut('slow');
+                            $('#alert_2').fadeIn('slow').delay(5000).fadeOut('slow');
+                            $('#alert_3').fadeIn('slow').delay(5000).fadeOut('slow');
                             // on load of the page: switch to the currently selected tab
                             var hash = window.location.hash;
                             $('#myTab a[href="' + hash + '"]').tab('show');

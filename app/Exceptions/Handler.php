@@ -60,6 +60,11 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
+        if ($exception instanceof TokenMismatchException){
+            // Redirect to a form. Here is an example of how I handle mine
+            return redirect($request->fullUrl())->with('csrf_error',"Oops! Parece que tu sesión se ha cerrado. Por favor ingresa de nuevo.");
+        }
+
         return redirect()->guest('login');
     }
 }

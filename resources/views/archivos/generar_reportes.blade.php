@@ -29,6 +29,13 @@
                                 </div>
                             </div>
 
+                            <div class="input-group date" data-provide="datepicker">
+                                <input type="text" class="form-control">
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+
                         </div><hr>
                         <div class="row">
                             <div class="col-md-4 form-group"></div>
@@ -64,4 +71,7 @@
         </div>
     </div>
 </div>
+
+{{ Html::script(asset("js/reports.js")) }}
+
 @endsection

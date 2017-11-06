@@ -75,7 +75,7 @@
                                 <div class="col-md-6" id="files_div">
                                     
                                 </div>
-                                <div class="col-md-6 col-md-offset-3" id="div_file_statuses" style="display:none; width: 50%; text-align: left;">
+                                <div class="col-md-6 col-md-offset-3" id="div_file_statuses" style="display: none; width: 50%; text-align: left;">
                                    
                                 </div>
                             </div>
