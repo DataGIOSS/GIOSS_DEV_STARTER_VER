@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
     <head>
+        <title>
+            GIOSS BODEGA - {{ Auth::user()->name }} {{ Auth::user()->lastname }}
+        </title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,7 +68,7 @@
 
             @if (Auth::user()->roleid == 1)
             <li style="height: 40px">
-                <a href="{{ url('/generar_reportes') }}">
+                <a href="#">
                 <i class="fa fa-file-text fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px;"></i>
                 <span class="nav-text"> Generar Reporte </span>
                 </a>

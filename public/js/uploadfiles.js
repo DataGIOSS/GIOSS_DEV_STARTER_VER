@@ -364,12 +364,12 @@ function load_table(){
         success: function (msj) {
         	
         	var id = '';
+        	var registro_leido = '';
         	var finish = false;
         	var counter = 0;
 
             for (x in msj)
             {
-            	var registro_leido = '';
             	id = msj[x].id_tema_informacion + msj[x].consecutive;
 
             	if(msj[x].current_status != 'COMPLETED'){
@@ -379,8 +379,6 @@ function load_table(){
             	} else {
             		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> </tr>';
             	}
-
-        		console.log('EL ID DEL COMPONENTES ES: ' + id);
         		
         		if (document.getElementById(id) && msj[x].current_status != 'COMPLETED') {
         			document.getElementById(id).innerHTML = registro_leido;
@@ -394,6 +392,7 @@ function load_table(){
         			//document.getElementById(id).innerHTML = registro_leido;
         		}
 				
+				document.getElementById(id).innerHTML = registro_leido;
         	}
 
         	if(counter == msj.length){
@@ -427,7 +426,6 @@ function stop_load_table(){
 async function consultStatusFiles(consecutive) {	
 	
 	var bool_fallo = false;
-	update_table(consecutive);
 	
 	$.ajax({
 
@@ -562,5 +560,5 @@ async function consultStatusFiles(consecutive) {
         
     });
 
-}//fin function consultas
+}//fin function consultais
 
