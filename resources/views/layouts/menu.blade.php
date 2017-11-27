@@ -54,7 +54,7 @@
             <li style="height: 40px">
                 <a href="{{ url('/registro') }}">
                 <i class="fa fa-user-circle fa-lg" style="font-size: 2.3em; margin: auto auto auto auto; top: 6px"></i>
-                <span class="nav-text"> Crear Usuarios </span>
+                <span class="nav-text"> Gestionar Usuarios </span>
                 </a>
             </li>
             @endif

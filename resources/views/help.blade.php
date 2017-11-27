@@ -13,15 +13,16 @@
 
                 <div class="panel-body" style="font-family: 'Jura', sans-serif; font-size: 16px">
                     
-                    <h3><kbd>Creación de Usuarios</kbd></h3><br>
+                    <h3><kbd>Gestión de Usuarios</kbd></h3><br>
 
-                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Crear_Usuario.png') }}'); height: 300px; background-size: 1000px;width: 100%"></div>
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Creacion_Usuarios.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
 
                         <p style="text-align: justify;">
-                            Para la Creación de Usuarios es necesario que se diriga a la pestaña <strong><mark>CREAR USUARIOS</mark></strong> que podrá
-                            encontrar en el menú situado al lado izquierdo de esta ventana. Una vez allí puede proceder a asignar los valores 
-                            correspondientes al nombre, apellido, correo electrónico y la contraseña. Recuerde que todos los campos son
-                            obligatorios.
+                            Para la Creación de Usuarios es necesario que se diriga a la opción <strong><mark>GESTIONAR USUARIOS</mark></strong> que podrá
+                            encontrar en el menú situado al lado izquierdo de esta ventana. Una vez allí debe ubicarse en la pestaña <strong><em>Creación de Usuarios 
+                            del Aplicativo</em></strong> donde podrá proceder a asignar los valores correspondientes del nuevo usuario: Nombre, Apellido, Correo
+                            Electrónico y Contraseña. Recuerde que todos los campos son obligatorios y si no han sido correctamente diligenciados el sistema 
+                            no procederá a crear el usuario.
                         </p> 
                         
                         <p style="text-align: justify;">
@@ -31,17 +32,54 @@
                             archivos de un determinado periodo mas no tendrá acceso a la generación de Reportes ni a la creación de nuevos Usuarios. 
                         </p>
 
+                        <p style="text-align: justify;">
+                            Con el fin de conservar un registro de usuarios que han sido creados en el sistema y para facilitar el manejo de los permisos de 
+                            acceso se creó un atributo adicional que señala el estado actual de cada usuario que puede variar entre <strong>ACTIVO</strong> e 
+                            <strong>INACTIVO</strong> y cabe resaltar que por defecto cada nuevo usuario es creado en estado inactivo. Para modificar cualquier
+                            parámetro de la información de los usuarios existentes es necesario dirigirse a la pestaña de <strong><em>Listado de Usuarios.</em></strong>
+                        </p>
+
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Listado_Usuarios.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
+
+                        <p style="text-align: justify;">
+                            En esta pestaña usted encontrará un registro de todos los usuarios que han sido creados para el manejo del sistema. Toda la información
+                            de cada usuario así como el tipo que le fue asignado al momento de la creación. En esta misma interfaz usted podrá modificar la
+                            información del usuario que desee (a excepción del usuario con el que ha ingresado y de un administrador general del sistema). En la 
+                            parte derecha de cada registro podrá observar dos botones: uno para la edición de la información del usuario 
+                            <img src="{{ asset('images/editar.png') }}" height="25px" width="25px"> y otro para Activar o Desactivar el usuario y permitir/denegar su acceso al sistema 
+                            <img src="{{ asset('images/desactivar.png') }}" height="25px" width="25px"><img src="{{ asset('images/activar.png') }}" height="25px" width="25px">.
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Al ingresar a la opción de edición de usuario se desplegará un formulario donde se podrá diligenciar la información que se desee editar de
+                            la cuenta seleccionada. Solo hace falta diligenciar los campos cuya información requiere de algun tipo e actualización, los demás pueden 
+                            permanecer en blanco. Si los campos no son diligenciados correctamente se volverá a abrir el formuulario indicando los errores ocurridos,
+                            de lo contrario en la interfaz de Listado de Usuarios se indicará que la actualización de la informacion del usuario fue exitosa. 
+                        </p>
+
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/edicion_usuario.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/actualizacion_exitosa.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
+
+                        <p style="text-align: justify;">
+                            Cabe resaltar que <img src="{{ asset('images/desactivar.png') }}" height="25px" width="25px"> es la opción para desactivar el usuario, lo cual indica que 
+                            si el registro del usuario está acompañado de este icono es porque el usuario está activado, por el contrario si el icono es <img src="{{ asset('images/activar.png') }}" height="25px" width="25px">, entonces el usuario está inactivo y la opción permitirá activarlo. De cualquier modo, al hacer clic en esta opción
+                            el sistema desplegará un mensaje de confirmación donde el usuario deberá aceptar la Activación o Desactivación (según sea el caso) del usuario 
+                            seleccionado.
+                        </p>
+
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Activacion_Usuario.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
+
                     <h3><kbd>Carga de Archivos</kbd></h3><br>
 
-                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Cargar_Archivos.png') }}'); height: 300px; background-size: 1000px; width: 100%"></div>
+                        <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Carga_Archivos.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
 
                         <p style="text-align: justify;">
-                            Para la Carga de Archivos, debe entrar a la pestaña <strong><mark>CARGAR ARCHIVOS</mark></strong> que también enontrará en el 
-                            menú desplegable a la izquierda de la ventana. En esta sección se le pedirá que indique el periodo comprendido
-                            por el archivo a cargar.
+                            Para la Carga de Archivos, debe entrar a la opción <strong><mark style="background-color: #FFE7FFFF;">CARGAR ARCHIVOS</mark></strong> que también enontrará en el 
+                            menú desplegable a la izquierda de la ventana. En esta sección se le pedirá que indique el periodo comprendido por el archivo a cargar y que seleccione 
+                            además el Archivo correspondiente y su Tipo.
                         </p>
                         <p style="text-align: justify;">
-                            Recuerde que las primeras validaciones que se realizan son aquellas que corresponden al nombre del archivo que 
+                            Recuerde que las primeras validaciones que se realizan sobre el archivo seleccionado son aquellas que corresponden al nombre del archivo que 
                             usted está cargando. Las validaciones se hacen sobre cada sección del nombre del archivo:
                         </p><br>
 
@@ -111,7 +149,11 @@
 
                           <dt class="col-sm-6">Versión</dt>
                           <dd class="col-sm-6" style="padding-bottom: 10px;text-align: justify;">
-                            Ya que el usuario debe cargar el archivo que corresponde a un mismo periodo las veces que sean necesarias hasta que todos los registros sean en su totalidad exitosos, se da la posibilidad de asignar un número de <strong>Versión</strong> después del <strong>Código de Habilitación</strong> de la entidad en el archivo que está cargando, es decir, si ya usted cargó el archivo y este fue procesado, pero fue necesario realizar alguna correción de registros, usted deberá asignar un valor entre <strong>0</strong> y <strong>100</strong> al final del nombre del archivo. Este valor debe ser cambiado para cada nueva versión del archivo que se busca procesar con exito.
+                            Ya que el usuario debe cargar el archivo que corresponde a un mismo periodo las veces que sean necesarias hasta que todos los registros sean en su totalidad
+                            exitosos, se da la posibilidad de asignar un número de <strong>Versión</strong> después del <strong>Código de Habilitación</strong> de la entidad en el archivo
+                            que está cargando, es decir, si ya usted cargó el archivo y este fue procesado, pero fue necesario realizar alguna correción de registros, usted deberá asignar
+                            un valor entre <strong>0</strong> y <strong>100</strong> al final del nombre del archivo. Este valor debe ser cambiado para cada nueva versión del archivo que
+                            se busca procesar con exito.
                           </dd>
 
                           <hr style="padding: 0px; width: 98%;height: 10px; border: 0; box-shadow: 0 10px 10px -10px #8c8b8b inset;">
@@ -137,30 +179,69 @@
                             </ul>
                             
                             <p style="text-align: justify;">
-                                Al ingresar a la pestaña de Carga de Archivos deberá seleccionar Desde y Hasta qué fecha comprende el periodo del archivo que va a cargar. Este rango de fechas debe ser igual a la <strong>Fecha de Inicio de Periodo de Corte</strong> y a la <strong>Fecha de Cierre Periodo de Corte</strong> que se encuentran en el nombre del archivo. Una vez indicado el periodo debe hacer clic en el botón <mark style="background-color: lightgreen"> Adicionar Archivo </mark>, al hacerlo aparecerá un panel que contiene una lista donde usted deberá seleccionar el Tipo de Archivo que desea cargar a continuación, hecho esto deberá Hacer clic en el botón <mark  style="background-color: lightyellow">Seleccionar Archivo</mark> para poder seleccionar el archivo que se procesará. Si ya ha ejecutado estos pasos correctamente, podrá cargar el archivo al sistema haciendo clic en el botón <mark  style="background-color: lightblue">Cargar Archivo</mark>.
-                            </p>
-                            <p style="text-align: justify;">
-                                Al hacer esto, el aplicativo realizará las primeras validaciones que corresponden al nombre del archivo, si allí existe alguna incongruencia se desplegará un <strong>Panel de Errores</strong> donde se le indicará lo que ha fallado, así mismo ocurrirá con la primera linea del archivo que contiene: <strong>Código de Habilitación de la Entidad, Mes Reportado, Fecha de Inicio del Periodo de Corte, Fecha de Cierre del Periodo de Corte</strong> y el <strong>Número total de Registros Contenidos</strong>. Si el Archivo que se intentó cargar ha fallado en los parámetros del nombre o en la primera linea del archivo, no hace falta que usted modifique la <strong>Versión</strong> del archivo cargado, ya que al fallar en las primeras validaciones este no se almacenó en los registros.     
+                                El rango de fechas establecido por el usuario debe ser igual a la <strong>Fecha de Inicio de Periodo de Corte</strong> y a la <strong>Fecha de Cierre Periodo 
+                                de Corte</strong> que se encuentran en el nombre del archivo, es decir debe comprender exactamente el mismo periodo a reportar. Una vez indicado el periodo debe
+                                hacer clic en el botón <mark style="background-color: lightgreen">Adicionar Archivo</mark> que se encuentra en la parte inferior de la interfaz, al hacerlo 
+                                aparecerá un pequeño panel que contiene una lista donde usted deberá seleccionar el Tipo de Archivo que desea cargar. Hecho esto deberá Hacer 
+                                clic en el botón <mark  style="background-color: lightyellow">Seleccionar Archivo</mark> para poder seleccionar el archivo que se procesará. Si ya ha ejecutado
+                                estos pasos correctamente, podrá cargar el archivo al sistema haciendo clic en el botón <mark  style="background-color: lightblue">Cargar Archivo</mark>.
                             </p>
 
                             <p style="text-align: justify;">
-                                Una vez se cargue el archivo al aplicativo, este le mostrará al usuario el progreso de carga del archivo. Al finalizar el proceso n el mismo panel de progreso el usuario podrá encontrar el estado final de la carga del archivo, si el estado es <strong>FALLIDO</strong> es porque el aplicativo no encontró ningún registro que pasara correctamente las validaciones, si el resultado es <strong>REGULAR</strong> es porque se encontraron algunos registros buenos y otros incorrectos y pendientes por correegir, si el estado final de <strong>EXITOSO</strong> es porque todos los registros del archivo cargado fueron correctos y no hace falta cargar nuevamente este archivo.
+                                Al hacer esto, el aplicativo realizará las primeras validaciones que corresponden al nombre del archivo, si allí existe alguna incongruencia se desplegará un <strong>
+                                Panel de Errores</strong> donde se le indicará lo que ha fallado, así mismo ocurrirá con la primera linea del archivo que contiene: <strong>Código de Habilitación de 
+                                la Entidad, Mes Reportado, Fecha de Inicio del Periodo de Corte, Fecha de Cierre del Periodo de Corte</strong> y el <strong>Número total de Registros Contenidos</strong>.
+                                Si el Archivo que se intentó cargar ha fallado en los parámetros del nombre o en la primera linea del archivo, no hace falta que usted modifique la <strong>Versión</strong>
+                                del archivo cargado, ya que al fallar en las primeras validaciones este no es almacenado en los registros y puede ser cargado nuevamente.
                             </p>
+
+                            <div class="jumbotron text-center" style="background-image: url('{{ asset('images/error_carga.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
+
                             <p style="text-align: justify;">
-                                Desde el panel de progreso, al finalizar la carga de cada archivo el usuario podrá <strong>DESCARGAR</strong> el resultado del procesamiento. Este resultado estará contenido en una carpeta comprimida de extensión <strong>.ZIP</strong> y en su interior estarán: el archivo original que se cargó para ser procesado, el archivo de registros exitosos (si es que hubo al menos uno), el archivo de registros fallidos (si hubo alguno) y por último el archivo de detalles de los errores encontrados en los registros que fallaron (este archivo solo se genera si se encontraron registros fallidos).
+                                Una vez se cargue el archivo al aplicativo, este le mostrará al usuario el progreso de carga del archivo. Al finalizar el proceso en el mismo panel de progreso el
+                                usuario podrá encontrar el estado final de la carga del archivo, si el estado es <strong>FALLIDO</strong> es porque el aplicativo no encontró ningún registro que
+                                pasara correctamente las validaciones, si el resultado es <strong>REGULAR</strong> es porque se encontraron algunos registros buenos y otros incorrectos y pendientes
+                                por correegir, si el estado final de <strong>EXITOSO</strong> es porque todos los registros del archivo cargado fueron correctos y no hace falta cargar nuevamente
+                                este archivo.
                             </p>
+
+                            <div class="jumbotron text-center" style="background-image: url('{{ asset('images/archivo_cargando.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
+                            
+                            <p style="text-align: justify;">
+                                Una vez se finalice el procesamiento el panel mostrará al usuario el estado final y el enlace de descarga de los resultados:
+                            </p>
+
+                            <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Archivo_finalizado.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
+
+                            <p style="text-align: justify;">
+                                Desde el panel de progreso, al finalizar la carga de cada archivo el usuario podrá <strong>DESCARGAR</strong> el resultado del procesamiento. Este resultado estará 
+                                contenido en una carpeta comprimida de extensión <strong>.ZIP</strong> y en su interior estarán: el archivo original que se cargó para ser procesado, el archivo de
+                                registros exitosos (si es que hubo al menos uno), el archivo de registros fallidos (si hubo alguno) y por último el archivo de detalles de los errores encontrados
+                                en los registros que fallaron (este archivo solo se genera si se encontraron registros fallidos).
+                            </p>
+
                             <p style="text-align: justify;">
                                 Una vez cargado un archivo o un grupo de archivos, el usuario deberá corregir los registros fallidos en el archivo original e ingresar una nueva versión de
                                 este para que todos los datos sean insertados correctamente en la Bodega de Datos.
                             </p>
 
+                            <p style="text-align: justify;">
+                                Adicionalmente en la pestaña <strong><em>Archivos Cargados</em></strong> podrá ver el listado de archivos que han sido procesados y la información correspondiente
+                                al usuario que lo procesó la fecha y la hora de carga. Además de esto podrá encontrar el estado final del procesamiento del archivo y el enlace de descarga
+                                para acceder a los resultados del procesamiento.
+                            </p>
+
+                            <div class="jumbotron text-center" style="background-image: url('{{ asset('images/procesando.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
+                            
                         </p>
 
                       <h3><kbd>Creación de Reportes</kbd></h3><br>
 
-                      <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Generar_Reporte.png') }}'); height: 300px; width: 100%; background-size: 1000px"></div>
+                      <p>... Módulo en desarrollo...</p>
 
-                      Para la Creación de Reportes es indispensable que el usuario haya cargado todos los archivos correspondientes al periodo a reportar para que así el sistema pueda extraer la información necesaria. Si ya han sido cargados todos los archivos puede ingresar a la pestaña <strong><mark>GENERAR REPORTE</mark></strong> que podrá encontrar en el menú desplegable. Una vez allí basta con que indique el periodo que desea reportar y que debe ser equivalente al periodo de los archivos cargó. 
+                      {{-- <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Generar_Reporte.png') }}'); height: 300px; width: 100%; background-size: 1200px"></div>
+
+                      Para la Creación de Reportes es indispensable que el usuario haya cargado todos los archivos correspondientes al periodo a reportar para que así el sistema pueda extraer la información necesaria. Si ya han sido cargados todos los archivos puede ingresar a la pestaña <strong><mark>GENERAR REPORTE</mark></strong> que podrá encontrar en el menú desplegable. Una vez allí basta con que indique el periodo que desea reportar y que debe ser equivalente al periodo de los archivos cargó. --}}
 
                       <blockquote class="blockquote blockquote-reverse" style="padding-top: 20px">
                           <footer class="blockquote-footer" style="font-size: 18px"> <strong>Equipo de Desarrollo <cite title="Source Title">DataGIOSS</cite></strong></footer>

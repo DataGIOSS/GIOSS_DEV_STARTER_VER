@@ -3,14 +3,15 @@ var count_files = 0;
 var interval_load = null;
 
 $(document).ready(function(){
-	
+
 	var interval = null;
 
 	$('#add_file').on('click', function(){
 		clearInterval(interval_load);
 		$('#add_file').prop('disabled', true);
 		$('#error_area').empty();
-		$('#alert').empty();
+		$('#alert').fadeOut();
+		$('#div_file_statuses').fadeOut();
 
 		if (count_files != 0) {
 			count_files = 0;
@@ -46,21 +47,54 @@ $(document).ready(function(){
 	});
 
 	$('#btnUpload').on('click', function(){
-		clearInterval(interval_load);
 		$('#error_area').empty();
+		$('#alert').fadeOut();
+		var date= new Date().toJSON().slice(0,10);
+		var dt = new Date();
+		var time;
+
+		if (dt.getMinutes() < 10) {
+			console.log("Entró a minutos menor a 10");
+			if (dt.getSeconds() < 10) {
+				console.log("Entró a minutos y segundos menor a 10");
+				time = dt.getHours() + ":0" + dt.getMinutes() + ":0" + dt.getSeconds();
+			} else {
+				console.log("Entró a minutos menor a 10 segundos mayor a 10");
+				time = dt.getHours() + ":0" + dt.getMinutes() + ":" + dt.getSeconds();
+			}
+		} else {
+			if (dt.getSeconds() < 10) {
+				console.log("Entró a minutos mayor que 10 y segundos menor a 10");
+				time = dt.getHours() + ":" + dt.getMinutes() + ":0" + dt.getSeconds();
+			} else {
+				console.log("Entró a minutos mayor a 10 segundos mayor a 10");
+				time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+			}
+		}
+
+		console.log("Time: " + time);
+
+		$('#current_date').val(date);
+		$('#current_time').val(time);
+
+		clearInterval(interval_load);
 		$('#btnUpload').prop('disabled', true);
 		$('#divgif').html(loadGif);
 		
 		count_files = 0;
 		if($('#archivo').val() == '') {
+			console.log('El archivo recibido es: ' + $('#archivo').val());
 			var detalle = '<hr><hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Ningún archivo ha sido seleccionado!</strong>';
+			$('#btnUpload').prop('disabled', false);
 			$('#error_area').append(detalle);
+			$('#error_area').fadeIn();
 			$('#alert').fadeOut();
 			$('#alert').fadeIn();
 			$('#add_file').fadeOut();
 			$('#btnUpload').fadeOut();
 			$('#add_file').fadeIn();
 			$('#btnUpload').fadeIn();
+			$('#divgif').empty();
 
 		} else {
 			$('#files_div').fadeOut();
@@ -70,25 +104,25 @@ $(document).ready(function(){
 			consecutive = Date.now();
 
 			if(!validatorNames['isValid'] || !validatorPeriodo.isValid){
+				$('#btnUpload').prop('disabled', false);
 				if(!validatorNames['isValid']){
-					$('#add_file').prop('disabled', false);
+					//$('#add_file').prop('disabled', false);
 					$('#error_area').append(validatorNames['detalle']);
 					$('#divgif').empty();
 				}
 				
 				if( !validatorPeriodo.isValid){
-					$('#add_file').prop('disabled', false);
+					//$('#add_file').prop('disabled', false);
 					$('#error_area').append(validatorPeriodo['detalle']);
 					$('#divgif').empty();
 				}
 				$('#alert').fadeIn();
+				$('#files_div').fadeIn();
 				$('#add_file').fadeIn();
 				$('#btnUpload').fadeIn();
 
 			}else{
 				count_files = 1;
-				$('#alert').fadeOut();
-				$('#error_area').empty();
 				$('#div_file_statuses').empty();
 				interval_consecutive = setInterval(function(){
 					consultStatusFiles(consecutive);
@@ -104,7 +138,7 @@ $(document).ready(function(){
 function validatePeriodo(){
 
 	var isValid = true;
-	var detalle = '<hr><hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Error en el periodo a reportar </strong><br>';
+	var detalle = '<hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong> Error en el periodo a reportar </strong><br>';
 	var startDt=$('#fecha_ini').val();
 	var endDt=$('#fecha_fin').val();
 	
@@ -130,7 +164,7 @@ function validatePeriodo(){
 function validateNameFiles(){
 
 	var isValid = true;
-	var detalle = '<hr><hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Error en el formato del nombre de un archivo</strong>';
+	var detalle = '<hr style="font-family: \'Jura\', sans-serif; font-size: 16px;"><strong>Error en el formato del nombre de un archivo</strong>';
 
 	if($('#files_div #particular_file_div')){
 		$('#files_div #particular_file_div').each(function(i, item){
@@ -139,7 +173,6 @@ function validateNameFiles(){
 			var label = $(this).find('label').text();
 
 			var file_path = $(this).find('#archivo').val();
-			console.log('Contenido del select del tipo de archivo ' + $(this).find('#tipo_file').val());
 
 			var file_array_split = file_path.split("\\");
 			var file_name_array =  file_array_split[file_array_split.length -1];
@@ -210,6 +243,7 @@ function validateNameFiles(){
 
 			if(startDt != dateini)
 			{
+				console.log('El periodo escrito es: ' + startDt + ' y el periodo leido el archivo es: ' + dateini);
 			     isValid = false;
 				 mnj += '<p style="font-family: \'Jura\', sans-serif; font-size: 16px;">- El periodo incial debe ser equivalente al periodo inicial de la sección nombre del archivo reportado</p>';
 			}
@@ -374,10 +408,10 @@ function load_table(){
 
             	if(msj[x].current_status != 'COMPLETED'){
             		document.getElementById('loading_table_img').style.display = 'inline';
-            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> <b>PROCESANDO </td> </tr>';
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> <b>PROCESANDO </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr>';
             		load_table();
             	} else {
-            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> </tr>';
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr>';
             	}
         		
         		if (document.getElementById(id) && msj[x].current_status != 'COMPLETED') {

@@ -1,6 +1,9 @@
 @extends('layouts.menu')
 
 @section('content')
+{{ Html::style(asset("css/register.css")) }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
 <div class="container-fluid" style="margin-left: 65px">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
@@ -13,12 +16,12 @@
             </ul>
 
             <div class="tab-content">
-                <div id="home_us" class="tab-pane panel fade in active" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+                <div id="home_us" class="tab-pane panel fade in active">
                     <div class="panel-body">
                         <form class="form-horizontal" role="form" method="POST" action="{{ url('registro') }}" novalidate>
                             {{ csrf_field() }}
 
-                            <div class="row" id="info_usuario" style="margin: auto auto auto auto; font-family: 'Jura', sans-serif; font-size: 16px; width: 80%">
+                            <div class="row" id="info_usuario" style="width: 100%">
                                 <h3><kbd> Información de Usuario </kbd></h3>
                                 <div id="alert_3" class="form-group" style="margin: auto auto auto auto;">
                                     @if(session()->has('success'))
@@ -120,7 +123,7 @@
 
                             </div>
                             
-                            <hr id="separador_usuario">
+                            <hr id="separador_usuario"><br>
                             
                             <div class="form-group">
                                 <div style="padding-left: 45%">
@@ -172,7 +175,7 @@
                             </thead>
                             <tbody style="font-family: 'Jura', sans-serif; font-size: 15px; text-align: center;">
                                 @foreach($users as $user)
-                                    @if($user->name != 'Administrador')
+                                    @if($user->name != 'Administrador' && $user->email != Auth::user()->email)
                                         <tr id="registro_{{ $user->id }}">
                                             <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->name}}</td>
                                             <td style="position: relative; top: 50%; transform: translateY(10%);">{{$user->lastname}}</td>
@@ -341,16 +344,20 @@
                                                 </div>
 
                                                 @if($user->status == 1)
-                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo" style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-times" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
+                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo"><span id="disable_user_spn" class="fa fa-user-times"></span></button>
                                                 @else
-                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-success" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo", style="position: relative; width: 40px; height: 40px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-user-plus" style="font-size: 1.5em; position: absolute; display: block; top: 20%; left: -18%"></span></button>
+                                                    <button onclick="get_url('{{ $user->id }}')" id="disable_user_btn" type="button" class="btn btn-success" data-toggle="modal" data-target="#disable{{$user->id}}" data-whatever="@mdo"><span id="disable_user_spn" class="fa fa-user-plus"></span></button>
                                                 @endif
 
                                                 <div class="modal fade" id="disable{{$user->id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                   <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                       <div class="modal-header">
-                                                        <h3 class="modal-title" id="exampleModalLabel">DESACTIVAR USUARIO</h3>
+                                                        @if($user->status == 0)
+                                                            <h3 class="modal-title" id="exampleModalLabel">ACTIVAR USUARIO</h3>
+                                                        @else
+                                                            <h3 class="modal-title" id="exampleModalLabel">DESACTIVAR USUARIO</h3>
+                                                        @endif
                                                       </div>
                                                       <div class="modal-body">
                                                         

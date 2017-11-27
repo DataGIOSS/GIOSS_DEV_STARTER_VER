@@ -57,9 +57,9 @@ class usersController extends Controller
                 [
                     'name' => 'required | max: 255 |',
                     'lastname' => 'required | max: 255',
-                    'email' => 'required | email | max:255 | unique:users,email',
+                    'email' => 'required | email | max:255 | unique:users, email',
                     'password' => 'required | min:6 | alpha_dash',
-                    'tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
+                    'tipo_usuario' => 'required | integer | between:1, 2 | exists:roles, id'
                 ]
             );
 

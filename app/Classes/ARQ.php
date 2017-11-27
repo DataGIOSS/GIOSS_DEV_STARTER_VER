@@ -21,10 +21,12 @@ use Illuminate\Support\Facades\Log;
 class ARQ extends FileValidator {
 
   //Aquí se hace la apertura del archivo que fue guardado en la ruta que le pasa al constructor y que corresponde a la ruta de la carpeta Storage del proyecto en Laravel.
+  var $datos_creacion_global;
 
-  function __construct($pathfolder, $fileName,$consecutive) {
+  function __construct($pathfolder, $fileName,$consecutive, $datos_creacion) {
     $filePath = $pathfolder.$fileName;
     $conteoLineas = $this->countLine($filePath);
+    $this->datos_creacion_global = $datos_creacion;
     if(!($this->handle = fopen($filePath, 'r'))) throw new Exception("Error al abrir el archivo ARQ");
     
     //dd($fileName);
@@ -88,7 +90,10 @@ class ARQ extends FileValidator {
       $this->file_status =  new FileStatus();
       $this->file_status->consecutive = $this->consecutive;
       $this->file_status->archivoid = $fileid;
-      $this->file_status->current_status = 'PROCCESING';
+      $this->file_status->current_status = 'WORKING';
+      $this->file_status->usuario_creacion = $this->datos_creacion_global[0];
+      $this->file_status->fecha_creacion = $this->datos_creacion_global[1];
+      $this->file_status->hora_creacion = $this->datos_creacion_global[2];
       Log::info("Guarda el FileStatus (ARQ - Linea 85)");
       $this->file_status->save();  
       Log::info("Finalizó la creacion del FileStatus (ARQ - Linea 85)");

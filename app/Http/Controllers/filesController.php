@@ -62,8 +62,18 @@ class filesController extends Controller
         
         $files = $request->file('archivo');
         $fileTypes = $request->tipo_file;
+        $current_date = $request->current_date;
+        $current_time = $request->current_time;
+        $current_user = $request->current_user;
         
-        
+        Log::info("------- El usuario actual es: ".$current_user."------ La fecha actual es:".$current_date."----- El tiempo actual es:".$current_time );
+        $datos_creacion = array();
+        $datos_creacion[0] = $current_user;
+        $datos_creacion[1] = $current_date;
+        $datos_creacion[2] = $current_time;
+
+        Log::info("------- El arreglo datos creacion es: ".print_r($datos_creacion, true));
+
         $count = 0;
         foreach($files as $file) {
             $rules = array('file' => 'required'); //'required|mimes:png,gif,jpeg,txt,pdf,doc'
@@ -73,7 +83,7 @@ class filesController extends Controller
 
             $routeFolder = storage_path('archivos').$folder;
 
-            Log::info("-------------------- Se creo la ruta = ".$routeFolder);
+            //Log::info("-------------------- Se creo la ruta = ".$routeFolder);
 
             $routeFile = $folder.$file->getClientOriginalName();
             $fileName = $file->getClientOriginalName();
@@ -83,39 +93,39 @@ class filesController extends Controller
                 switch ($fileTypes[$count]) {
                     //Se está llamando AAC 
                     case 'AAC':
-                        $AAC = new AAC($routeFolder, $fileName, $consecutive);
+                        $AAC = new AAC($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $AAC->manageContent();
                         break;
                     case 'AEH':
-                        $AEH = new AEH($routeFolder, $fileName, $consecutive);
+                        $AEH = new AEH($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $AEH->manageContent();
                         break;
                     case 'ASM':
-                        $AMS = new AMS($routeFolder, $fileName, $consecutive);
+                        $AMS = new AMS($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $AMS->manageContent();
                         break;
                     case 'APS':
-                        $APS = new APS($routeFolder, $fileName, $consecutive);
+                        $APS = new APS($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $APS->manageContent();
                         break;
                     case 'AVA':
-                        $AVA = new AVA($routeFolder, $fileName, $consecutive);
+                        $AVA = new AVA($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $AVA->manageContent();
                         break;
                     case 'RAD':
-                        $RAD = new RAD($routeFolder, $fileName, $consecutive);
+                        $RAD = new RAD($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $RAD->manageContent();
                         break;
                     case 'ATP':
-                        $ATP = new ATP($routeFolder, $fileName, $consecutive);
+                        $ATP = new ATP($routeFolder, $fileName, $consecutive, $datos_creacion);
                         $ATP->manageContent();
                         break;
                     case 'ARQ':
-                        $ARQ = new ARQ($routeFolder,$fileName, $consecutive);
+                        $ARQ = new ARQ($routeFolder,$fileName, $consecutive, $datos_creacion);
                         $ARQ->manageContent();
                         break;
                     case 'ARC':
-                        $ARC = new ARC($routeFolder,$fileName, $consecutive);
+                        $ARC = new ARC($routeFolder,$fileName, $consecutive, $datos_creacion);
                         $ARC->manageContent();
                         break;
                 }

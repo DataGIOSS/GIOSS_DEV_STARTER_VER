@@ -1,0 +1,50 @@
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+#disable_user_btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    outline: none
+}
+
+#disable_user_spn {
+    font-size: 1.5em;
+    position: absolute;
+    display: block;
+    top: 20%;
+    left: -18%
+}
+
+#home_us {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#info_usuario {
+    margin: auto auto auto auto;
+    font-family: 'Jura', sans-serif;
+    font-size: 16px;
+    width: 80%
+}

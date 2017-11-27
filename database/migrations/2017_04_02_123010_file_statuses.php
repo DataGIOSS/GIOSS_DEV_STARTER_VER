@@ -24,6 +24,9 @@ class FileStatuses extends Migration
             $table->integer('current_line')->nullable()->default(0);
             $table->string('final_status', 20)->nullable();
             $table->string('zipath', 300)->nullable();
+            $table->string('usuario_creacion', 30)->nullable();
+            $table->string('fecha_creacion', 30)->nullable();
+            $table->string('hora_creacion', 30)->nullable();
             $table->unique(['file_statuses_id','consecutive','archivoid']);
         });
     }

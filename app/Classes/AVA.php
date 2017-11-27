@@ -20,9 +20,14 @@ use App\Models\GiossArchivoAvaCfvl;
 
 class AVA extends FileValidator {
 
-  function __construct($pathfolder, $fileName,$consecutive) {
+  var $datos_creacion_global;
+
+  function __construct($pathfolder, $fileName,$consecutive, $datos_creacion) {
+    Log::info("------- El arreglo datos creacion en constructor: ".print_r($datos_creacion, true));
+
     $filePath = $pathfolder.$fileName;
     $this->countLine($filePath);
+    $this->datos_creacion_global = $datos_creacion;
     if(!($this->handle = fopen($pathfolder.$fileName, 'r'))) throw new Exception("Error al abrir el archivo AVA");
     //dd($fileName);
     $this->folder = $pathfolder;
@@ -41,7 +46,7 @@ class AVA extends FileValidator {
   public function manageContent() {
 
     try {
-
+      Log::info("------- El arreglo datos creacion en manageContent es: ".print_r($this->datos_creacion_global, true));
       // se valida la existencia del archivo
       $isValidFile = true;
       $fileid = 0;
@@ -73,9 +78,12 @@ class AVA extends FileValidator {
       $this->file_status->consecutive = $this->consecutive;
       $this->file_status->archivoid = $fileid;
       $this->file_status->current_status = 'WORKING';
-
+      Log::info("Se creó el archivo en la base de datos, no se han añadido fecha y hora en File Statuses");
+      $this->file_status->usuario_creacion = $this->datos_creacion_global[0];
+      $this->file_status->fecha_creacion = $this->datos_creacion_global[1];
+      $this->file_status->hora_creacion = $this->datos_creacion_global[2];
       $this->file_status->save();  
-
+      Log::info("Se guardó File Statuses");
 
       $isValidFirstRow = true ;
       
@@ -252,7 +260,7 @@ class AVA extends FileValidator {
       }
     
     } catch (\Exception $e) {
-      Log::info(print_r($e->getMessage(), true));
+      Log::info("Érror de ejecución ARCHIVO AVA ".print_r($e->getMessage(), true));
     }
 
   }

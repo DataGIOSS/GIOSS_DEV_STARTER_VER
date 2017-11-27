@@ -20,9 +20,12 @@ use App\Models\GiossArchivoAtpCfvl;
 
 class ATP extends FileValidator {
 
-  function __construct($pathfolder, $fileName,$consecutive) {
+  var $datos_creacion_global;
+
+  function __construct($pathfolder, $fileName,$consecutive, $datos_creacion) {
     $filePath = $pathfolder.$fileName;
     $this->countLine($filePath);
+    $this->datos_creacion_global = $datos_creacion;
     if(!($this->handle = fopen($filePath, 'r'))) throw new Exception("Error al abrir el archivo ATP");
     
     //dd($fileName);
@@ -76,7 +79,9 @@ class ATP extends FileValidator {
       $this->file_status->consecutive = $this->consecutive;
       $this->file_status->archivoid = $fileid;
       $this->file_status->current_status = 'WORKING';
-
+      $this->file_status->usuario_creacion = $this->datos_creacion_global[0];
+      $this->file_status->fecha_creacion = $this->datos_creacion_global[1];
+      $this->file_status->hora_creacion = $this->datos_creacion_global[2];
       $this->file_status->save();  
 
 

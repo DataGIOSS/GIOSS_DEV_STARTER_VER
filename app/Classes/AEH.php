@@ -19,9 +19,13 @@ use App\Models\GiossArchivoAehCfvl;
 
 class AEH extends FileValidator {
 
-  function __construct($pathfolder, $fileName,$consecutive) {
+  var $datos_creacion_global;
+
+  function __construct($pathfolder, $fileName,$consecutive, $datos_creacion) {
+     Log::info("------- El arreglo datos creacion en constructor: ".print_r($datos_creacion, true));
     $filePath = $pathfolder.$fileName;
     $this->countLine($filePath);
+    $this->datos_creacion_global = $datos_creacion;
     if(!($this->handle = fopen($pathfolder.$fileName, 'r'))) throw new Exception("Error al abrir el archivo AEH");
     //dd($fileName);
     $this->folder = $pathfolder;
@@ -40,6 +44,8 @@ class AEH extends FileValidator {
   public function manageContent() {
 
     try {
+
+      Log::info("------- El arreglo datos creacion en manageContent es: ".print_r($this->datos_creacion_global, true));
 
       // se validad la existencia del archivo
       $isValidFile = true;
@@ -72,14 +78,13 @@ class AEH extends FileValidator {
       $this->file_status->consecutive = $this->consecutive;
       $this->file_status->archivoid = $fileid;
       $this->file_status->current_status = 'WORKING';
-
+      $this->file_status->usuario_creacion = $this->datos_creacion_global[0];
+      $this->file_status->fecha_creacion = $this->datos_creacion_global[1];
+      $this->file_status->hora_creacion = $this->datos_creacion_global[2];
       $this->file_status->save();  
 
-
       $isValidFirstRow = true ;
-      
-      
-      
+    
       $firstRow = fgetcsv($this->handle, 0, "|");
       
       $this->validateFirstRow($isValidFirstRow, $this->detail_erros, $firstRow);

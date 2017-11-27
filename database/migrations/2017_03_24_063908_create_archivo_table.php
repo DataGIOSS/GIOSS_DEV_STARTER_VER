@@ -24,7 +24,7 @@ class CreateArchivoTable extends Migration {
 			$table->bigInteger('fecha_fin_periodo')->nullable();
 			$table->bigInteger('id_entidad')->nullable();
 			$table->bigInteger('numero_registros')->nullable();
-			$table->unique(['nombre','version'], 'unquekeyarchivo');
+			$table->unique(['nombre','version'], 'uniquekeyarchivo');
 		});
 	}
 
