@@ -28,6 +28,10 @@ class FileValidator {
 	protected $archivo;
 	protected $totalRegistros;
 
+	function __construct($fileName) {
+		$this->fileName = $fileName;
+	}
+
 	//Este método realiza la apertura del archivo y hace el conteo de los registros que contiene dicho archivo
 	protected function countLine($filePath){
 		$handle = null;
@@ -57,13 +61,13 @@ class FileValidator {
 			if(!$exists){
 				//En caso de que la Entidad no exista, es decir, que la consulta no arroje resultados, se marca el registro como no válido y se inserta el error en el arreglo de errores
 				$isValidRow = false;
-				array_push($detail_erros, [1, 0, 1, "NO existe un  código de habilitación para la entidad"]);
+				array_push($detail_erros, [1, 0, 1, "No existe un  código de habilitación para la entidad", "=\"".$firstRow[0]."\""]);
 			}
 		
 		//En caso de que el campo sea NULO, se marca el registro como no válido y se inserta el error en el arreglo de errores	
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 1, "Debe ser un valor numérico no nulo"]);
+			array_push($detail_erros, [1, 0, 1, "Debe ser un valor numérico no nulo", "=\"".$firstRow[0]."\""]);
 		}
 
 		// FIN VALIDACIÓN CAMPO 0
@@ -80,18 +84,18 @@ class FileValidator {
 				if(!checkdate($date[1], 01, $date[0])){
 					//Si la fecha dada no existe (i.e un día 31 en un mes de 30 días), se marca el registro como no válido y se inserta el error en el arreglo de errores
 					$isValidRow = false;
-					array_push($detail_erros, [1, 0, 1, "El campo debe corresponder a una fecha válida."]);
+					array_push($detail_erros, [1, 0, 1, "El campo debe corresponder a una fecha válida.", "=\"".$firstRow[1]."\""]);
 				}
 			}
 			//Si la cadena obteenida en este campo no corresponde al formato de fecha esperado se marca el registro como no válido y se inserta el error en el arreglo de errores
 			else{
 				$isValidRow = false;
-				array_push($detail_erros, [1, 0, 2, "El campo debe tener el formato AAAA-MM"]);
+				array_push($detail_erros, [1, 0, 2, "El campo debe tener el formato AAAA-MM", "=\"".$firstRow[1]."\""]);
 			}
 		//Si el campo es NULO se marca el registro como no válido y se inserta el error en el arreglo de errores
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 2, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [1, 0, 2, "El campo no debe ser nulo", "=\"".$firstRow[1]."\""]);
 			
 		}
 
@@ -109,19 +113,19 @@ class FileValidator {
 				if(!checkdate($date[1], $date[2], $date[0])){
 					//Si la fecha dada no existe (i.e un día 31 en un mes de 30 días), se marca el registro como no válido y se inserta el error en el arreglo de errores
 					$isValidRow = false;
-					array_push($detail_erros, [1, 0, 3, "El campo debe corresponder a un fecha válida."]);
+					array_push($detail_erros, [1, 0, 3, "El campo debe corresponder a un fecha válida.", "=\"".$firstRow[2]."\""]);
 				}
 			}
 			//Si la cadena obteenida en este campo no corresponde al formato de fecha esperado se marca el registro como no válido y se inserta el error en el arreglo de errores
 			else
 			{
 				$isValidRow = false;
-				array_push($detail_erros, [1, 0, 3, "El campo debe tener el formato AAAA-MM-DD"]);
+				array_push($detail_erros, [1, 0, 3, "El campo debe tener el formato AAAA-MM-DD", "=\"".$firstRow[2]."\""]);
 			}
 		//Si el campo es NULO se marca el registro como no válido y se inserta el error en el arreglo de errores
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 3, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [1, 0, 3, "El campo no debe ser nulo", "=\"".$firstRow[2]."\""]);
 		}
 
 		//FIN VALIDACIÓN CAMPO 2
@@ -138,17 +142,17 @@ class FileValidator {
 				if(!checkdate($date[1], $date[2], $date[0])){	
 					//Si no es una fecha válida se marca el registro como no válido y se inserta el error a la cadena de errores 
 					$isValidRow = false;
-					array_push($detail_erros, [1, 0, 4, "El campo debe corresponder a un fecha válida."]);
+					array_push($detail_erros, [1, 0, 4, "El campo debe corresponder a un fecha válida.", "=\"".$firstRow[3]."\""]);
 				}
 			//Si la fecha no cumple con el formato se marca el registro como no válido y se inserta el error a la cadena de errores
 			} else {
 				$isValidRow = false;
-				array_push($detail_erros, [1, 0, 4, "El campo debe tener el formato AAAA-MM-DD"]);
+				array_push($detail_erros, [1, 0, 4, "El campo debe tener el formato AAAA-MM-DD", "=\"".$firstRow[3]."\""]);
 			}
 		//Si el campo es NULO se marca el registro como no válido y se inserta el error a la cadena de errores 
 		} else {
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 4, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [1, 0, 4, "El campo no debe ser nulo", "=\"".$firstRow[3]."\""]);
 		}
 
 		//FIN VALIDACIÓN CAMPO 3
@@ -161,7 +165,7 @@ class FileValidator {
 			if (strtotime($firstRow[2]) > strtotime($firstRow[3]) ){
 				//Si esto no se cumple se marca el registro como no válido y se inserta el error en  el arreglo de errores
 				$isValidRow = false;
-				array_push($detail_erros, [1, 0, '3 y 4', "El periodo incial debe ser menor que el periodo final"]);
+				array_push($detail_erros, [1, 0, '3 y 4', "El periodo incial debe ser menor que el periodo final", "=\"".$firstRow[2].", > ".$firstRow[3]."\""]);
 			}
 		}
 
@@ -173,12 +177,12 @@ class FileValidator {
 		if(!isset($firstRow[4]) || !is_numeric($firstRow[4])){
 			//Si este campo es NULO o NO ES NUMÉRICO se marca como no válido este registro y se inserta el error en el arreglo de errores
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 5, "Debe ser un valor numérico no nulo"]);
+			array_push($detail_erros, [1, 0, 5, "Debe ser un valor numérico no nulo", "=\"".$firstRow[4]."\""]);
 			//Sino se verifica que el número de registros reportados corresponda con el número de registros encontrados
 		}elseif (($this->totalRegistros - 1) != intval($firstRow[4])) {
 			//Si esto no se cumple se marca el registro como inválido y se inserta el error en el arreglo de errores
 			$isValidRow = false;
-			array_push($detail_erros, [1, 0, 5, "El valor no coincide con el número de registros del archivo actual: No. registros encontrados = ".($this->totalRegistros - 1)." - valor del campo = ".intval($firstRow[4])]);
+			array_push($detail_erros, [1, 0, 5, "El valor no coincide con el número de registros del archivo actual: No. registros encontrados = ".($this->totalRegistros - 1), intval($firstRow[4])]);
 		}
 
 	}
@@ -190,11 +194,11 @@ class FileValidator {
 			$exists = DB::table('entidades_sector_salud')->where('cod_habilitacion', $entitySection[0])->first();
 			if(!$exists){
 				$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 1, "El valor del campo no corresponde a un código de entidad registrado"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 1, "El valor del campo no corresponde a un código de entidad registrado", "=\"".$entitySection[0]."\""]);
 			}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 1, "El campo debe ser valor numérico de 12 dígitos"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 1, "El campo debe ser valor numérico de 12 dígitos", "=\"".$entitySection[0]."\""]);
 		}
 
 		//validacion campo 2
@@ -203,15 +207,15 @@ class FileValidator {
     			$tipo = DB::table('tipo_eapb')->where('id_tipo_ent',$entitySection[1])->first();
     			if(!$tipo){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El  valor del campo no corresponde a un código de tipo entidad"]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El  valor del campo no corresponde a un código de tipo entidad", "=\"".$entitySection[1]."\""]);
     			}
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El campo debe tener un longitud igual a 1"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El campo debe tener un longitud igual a 1", "=\"".$entitySection[1]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 2, "El campo no debe ser nulo", "=\"".$entitySection[1]."\""]);
 		}
 
 
@@ -222,20 +226,20 @@ class FileValidator {
     			$tipo_ident = DB::table('tipo_identificacion_entidad')->where('id_tipo_ident', $entitySection[2])->first();
     			if(!$tipo_ident){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El valor del campo no corresponde a un código de tipo identificacion entidad"]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El valor del campo no corresponde a un código de tipo identificacion entidad", "=\"".$entitySection[2]."\""]);
     			}
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El campo debe tener una longitud igual a 2"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El campo debe tener una longitud igual a 2", "=\"".$entitySection[2]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 3, "El campo no debe ser nulo", "=\"".$entitySection[2]."\""]);
 		}
 
 		//validacion campo 4
     	if(isset($entitySection[3])){
-    		if(preg_match('/^\d{12}$/', $entitySection[3])){
+    		if((strlen($entitySection[3]) == 12 ) && ctype_digit($entitySection[3])){
     			//Sin truncar el último dígito
     			$tipo = DB::table('eapbs')->where('num_identificacion', ltrim($entitySection[3], '0'))->first();
     			//Truncando el último dígito
@@ -245,41 +249,43 @@ class FileValidator {
     			
     			if(!$tipo && !$tipo2){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El  valor del campo no corresponde a un número de identificación de entidad registrado "]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El  valor del campo no corresponde a un número de identificación de entidad registrado ", "=\"".ltrim($entitySection[3], '0')."\""]);
     			} 
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El campo debe ser un valor numérico igual de 12 dígitos"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El campo debe ser un valor numérico igual de 12 dígitos", "=\"".ltrim($entitySection[3], '0')."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El campo no debe ser nulo"]);
-		}		//validacion campo 5
+			array_push($detail_erros, [$lineCount, $lineCountWF, 4, "El campo no debe ser nulo", "=\"".ltrim($entitySection[3], '0')."\""]);
+		}		
+
+		//validacion campo 5
     	if(isset($entitySection[4])){
     		if(strlen(trim($entitySection[4])) <= 6){
-    			$tipo = DB::table('eapbs')->where('cod_eapb',$entitySection[4])->first();
+    			$tipo = DB::table('eapbs')->where('cod_eapb', $entitySection[4])->first();
     			if(!$tipo){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El  valor del campo no corresponde a un código de EAPB válido"]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El  valor del campo no corresponde a un código de EAPB válido", "=\"".$entitySection[4]."\""]);
     			}
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo debe tener un longitud menor o igual a 6"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo debe tener un longitud menor o igual a 6", "=\"".$entitySection[4]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 5, "El campo no debe ser nulo", "=\"".$entitySection[4]."\""]);
 		}
 
 		//validacion campo 6
     	if(isset($entitySection[5]) ) {
     		if(strlen(trim($entitySection[5])) > 100 || trim($entitySection[5]) == ''){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 6, "El campo debe tener un longitud menor o igual a 100 caracteres y no debe ser vacio. ".$entitySection[5]]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 6, "El campo debe tener un longitud menor o igual a 100 caracteres y no debe ser vacio. ", "=\"".$entitySection[5]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 6, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 6, "El campo no debe ser nulo", "=\"".$entitySection[5]."\""]);
 		}
 
     }
@@ -290,11 +296,11 @@ class FileValidator {
     	if(isset($userSection[6])){
     		if(strlen(trim($userSection[6])) > 12){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 7, "El campo debe tener un longitud menor o igual a 12 caracteres "]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 7, "El campo debe tener un longitud menor o igual a 12 caracteres ", "=\"".$userSection[6]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 7, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 7, "El campo no debe ser nulo", "=\"".$userSection[6]."\""]);
 		}
 
 		//validación campo 8
@@ -303,71 +309,74 @@ class FileValidator {
     			$tipo_ident = DB::table('tipo_identificacion_user')->where('id_tipo_ident', $userSection[7])->first();
     			if(!$tipo_ident){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 8, "tipo de identificación no valido"]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 8, "tipo de identificación no valido", "=\"".$userSection[7]."\""]);
     			}
     			
     		}else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 8, "El campo debe tener un longitud igual a 2"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 8, "El campo debe tener un longitud igual a 2", "=\"".$userSection[7]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 8, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 8, "El campo no debe ser nulo", "=\"".$userSection[7]."\""]);
 		}
 
 		//validación campo 9
     	if(isset($userSection[8])) {
-    		if(strlen(trim($userSection[8])) > 12 || !ctype_digit($userSection[8])) {
+    		if(strlen(trim($userSection[8])) > 12) {
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe ser un valor numérico con una longitud menor o igual a 12 dígitos."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe tener una longitud menor o igual a 12 dígitos."]);
+    		}else if (((trim($userSection[7]) != 'PA') && (trim($userSection[7]) != 'AS') && (trim($userSection[7]) != 'MS')) && !ctype_digit($userSection[8])) {
+    			$isValidRow = false;
+				array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo debe ser un valor numérico.", "=\"".$userSection[8]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 9, "El campo no debe ser nulo", "=\"".$userSection[8]."\""]);
 		}
 		
 		//validación campo 10
     	if(isset($userSection[9])) {
     		if(strlen(trim($userSection[9])) > 30 || trim($userSection[9]) == '' ){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser vacío y debe tener un longitud menor o igual a 30 caracteres."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser vacío y debe tener un longitud menor o igual a 30 caracteres.", "=\"".$userSection[9]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 10, "El campo no debe ser nulo", "=\"".$userSection[9]."\""]);
 		}
 
 		//validación campo 11
     	if(isset($userSection[10])) {
     		if(strlen($userSection[10]) > 30){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 11, "El campo debe tener un longitud menor a 30 caracteres."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 11, "El campo debe tener un longitud menor a 30 caracteres.", "=\"".$userSection[10]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 11, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 11, "El campo no debe ser nulo", "=\"".$userSection[10]."\""]);
 		}
 
 		//validación campo 12
     	if(isset($userSection[11]) ) {
     		if(strlen(trim($userSection[11])) > 30 || trim($userSection[11]) == '' ){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 12, "El campo debe tener un longitud menor o igual a 30 caracteres."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 12, "El campo debe tener un longitud menor o igual a 30 caracteres.", "=\"".$userSection[11]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 12, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 12, "El campo no debe ser nulo", "=\"".$userSection[11]."\""]);
 		}
 
 		//validación campo 13
     	if(isset($userSection[12])) {
     		if(strlen(trim($userSection[12])) > 30){
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 13, "El campo debe tener un longitud menor o igual a 30 caracteres."]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 13, "El campo debe tener un longitud menor o igual a 30 caracteres.", "=\"".$userSection[12]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 13, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 13, "El campo no debe ser nulo", "=\"".$userSection[12]."\""]);
 		}
 
 		//validación campo 14
@@ -377,16 +386,16 @@ class FileValidator {
 				if(!checkdate($date[1], $date[2], $date[0]))
 				{
 					$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe corresponder a una fecha válida."]);
-				}	
+					array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe corresponder a una fecha válida.", "=\"".$userSection[13]."\""]);
+				}
     		}
     		else{
     			$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe tener el formato AAAA-MM-DD"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo debe tener el formato AAAA-MM-DD", "=\"".$userSection[13]."\""]);
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 14, "El campo no debe ser nulo", "=\"".$userSection[13]."\""]);
 		}
 
 		//validación campo 15
@@ -396,14 +405,14 @@ class FileValidator {
 				array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El campo debe tener un longitud igual a 1 caracteres."]);
     		}else{
     			//$exists = GenerosUser::where('id_genero',$userSection[14])->first();
-    			if((trim($userSection[14]) != 'M') || (trim($userSection[14]) != 'F') || (trim($userSection[14]) != 'I')){
+    			if((trim($userSection[14]) != 'M') && (trim($userSection[14]) != 'F') && (trim($userSection[14]) != 'I')){
     				$isValidRow = false;
-					array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El valor del campo no correponde a un género definido."]);
+					array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El valor del campo no correponde a un género definido.", "=\"".$userSection[14]."\""]);
     			}
     		}
 		}else{
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 15, "El campo no debe ser nulo", "=\"".$userSection[14]."\""]);
 		}
 
     }
@@ -414,7 +423,7 @@ class FileValidator {
 
     	if(!isset($userSection[15]) || (strlen(trim($userSection[15])) > 50)) {
     		$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no puede ser nulo ni puede tener una longitud mayor a 50 caracteres"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no puede ser nulo ni puede tener una longitud mayor a 50 caracteres", "=\"".$userSection[15]."\""]);
 		}
 
 		// Validacion campo 17 - TELEFONO DEL USUARIO
@@ -424,20 +433,20 @@ class FileValidator {
     		$phoneNumbers = explode("-", $userSection[16]);
 			if(count($phoneNumbers) > 2){
 				$isValidRow = false;
-				array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Solo pueden registrarse dos números telefónicos en el campo"]);
+				array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Solo pueden registrarse dos números telefónicos en el campo", "=\"".$userSection[16]."\""]);
 			  
 			} else {
 				if (count($phoneNumbers) == 2) {
 					
 					if(!ctype_digit($phoneNumbers[0]) || !ctype_digit($phoneNumbers[1])){
 						$isValidRow = false;
-						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos"]);
+						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos", "=\"".$userSection[16]."\""]);
 
 					} else {
 						if((strlen($phoneNumbers[0]) > 10) || (strlen($phoneNumbers[1]) > 10)){
 
 							$isValidRow = false;
-							array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben ser de máximo 10 dígitos"]);
+							array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben ser de máximo 10 dígitos", "=\"".$userSection[16]."\""]);
 
 						}
 
@@ -447,13 +456,13 @@ class FileValidator {
 					
 					if(!ctype_digit($phoneNumbers[0])){
 						$isValidRow = false;
-						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos"]);
+						array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben estar compuestos en su totalidad de dígitos numéricos", "=\"".$userSection[16]."\""]);
 
 					} else {
 						if((strlen($phoneNumbers[0]) > 10)){
 
 							$isValidRow = false;
-							array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben ser de máximo 10 dígitos"]);
+							array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Los números telefónicos deben ser de máximo 10 dígitos", "=\"".$userSection[16]."\""]);
 
 						}
 
@@ -468,7 +477,7 @@ class FileValidator {
 		} else {
 
 			$isValidRow = false;
-			array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+			array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$userSection[16]."\""]);
 
 		}
     	
@@ -544,7 +553,7 @@ class FileValidator {
 
 		if(count($this->wrong_rows) > 0){
 		  
-		  $filewrongname = $this->folder.'RegistrosErroneos.txt';
+		  $filewrongname = $this->folder.$this->fileName.'RM.txt';
 		  //dd('entro');
 		  $wrongfile = fopen($filewrongname, 'w');                              
 		  fprintf($wrongfile, chr(0xEF).chr(0xBB).chr(0xBF)); // darle formato unicode utf-8
@@ -557,19 +566,19 @@ class FileValidator {
 
 		if(count($this->detail_erros) > 1){
 		  //----se genera el archivo de detalles de error
-		  $detailsFilename =  $this->folder.'DetallesErrores.txt';
+		  $detailsFilename =  $this->folder.'DetallesErrores.csv';
 		  
 		  $detailsFileHandler = fopen($detailsFilename, 'w');
 		  fprintf($detailsFileHandler, chr(0xEF).chr(0xBB).chr(0xBF)); // darle formato unicode utf-8
 		  foreach ($this->detail_erros as $row) {
-		      fputcsv($detailsFileHandler, $row,',');              
+		      fputcsv($detailsFileHandler, $row,';');              
 		  }
 		  
 		  fclose($detailsFileHandler);
 		}
 
 		if(count($this->success_rows) > 0){
-		    $arrayIdsFilename = $this->folder.'RegistrosExitosos.txt';
+		    $arrayIdsFilename = $this->folder.$this->fileName.'RB.txt';
 		    
 		    $arrayIdsFileHandler = fopen($arrayIdsFilename, 'w');
 		    fprintf($arrayIdsFileHandler, chr(0xEF).chr(0xBB).chr(0xBF)); // darle formato unicode utf-8

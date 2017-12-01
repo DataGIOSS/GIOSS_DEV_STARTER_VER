@@ -131,12 +131,17 @@ class ARQ extends FileValidator {
           // Se eliminan los espacios que contengan los campos leidos de cada linea del archivo
           $this->dropWhiteSpace($data); 
           $isValidRow = true;
+          $temp_array = Array();
           Log::info("Empieza las validacionees - (ARQ Linea 129)");
           //Se hace la validación de cada sección del archivo 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
           $this->validateUserAddressAndPhone($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,2,true));
-          $this->validateARQ($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,17,14,true));
+          $this->validateARQ($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,17,14,true), $temp_array);
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           // Se valida la coherencia entre fechas
           if ($isValidRow){
@@ -303,7 +308,7 @@ class ARQ extends FileValidator {
     Log::error("Termina manageContent (ARQ - Linea 278)");
   }
 
-  private function validateARQ(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  private function validateARQ(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
     
     // Se valida el código de diagnóstico (Campo 18)
     Log::info("Inicia validateARQ (ARQ - Linea 284)");
@@ -524,6 +529,8 @@ class ARQ extends FileValidator {
     }
 
     Log::info("Termina validateARQ (ARQ - Linea 500)");
+
+    $temp_array = $consultSection;
   }
 
   protected function validateDates(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$firstRow ,$data)

@@ -24,7 +24,6 @@ class Eapbs extends Migration
                 $table->string('cod_eapb', 12)->nullable();
                 $table->string('nombre', 300)->nullable();
                 $table->integer('cod_mpio')->nullable();
-                $table->unique(['num_identificacion','cod_eapb'], 'eapbs_uniquekey');
             });
         }
     }

@@ -102,9 +102,10 @@
                                 <th style="text-align: center;">USUARIO</th>
                                 <th style="text-align: center;">FECHA DE CARGA</th>
                                 <th style="text-align: center;">HORA DE CARGA</th>
+                                {{-- <th style="text-align: center;">ANULAR CARGA</th> --}}
                             </thead>
                             <tbody id="loaded_files" style="font-family: 'Jura', sans-serif; font-size: 15px; text-align: center">
-                                
+
                             </tbody>
                         </table>
                         

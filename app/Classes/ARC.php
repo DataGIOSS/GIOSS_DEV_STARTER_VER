@@ -36,7 +36,7 @@ class ARC extends FileValidator {
     $this->version = substr($fileNameToken[0],58);
 
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
     
@@ -60,7 +60,7 @@ class ARC extends FileValidator {
       if($exists){
         Log::info("Entra al if (ARC - Linea 66)");
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualice la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualice la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       //Si dicho archivo aún no existe en la base de datos entonces ahí si se guarda y es sometido a las validaciones necesarias
       } else {
@@ -131,13 +131,17 @@ class ARC extends FileValidator {
           // Se eliminan los espacios que contengan los campos leidos de cada linea del archivo
           $this->dropWhiteSpace($data); 
           $isValidRow = true;
+          $temp_array = Array();
           Log::info("Empieza las validacionees - (ARC Linea 129)");
           //Se hace la validación de cada sección del archivo 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
           $this->validateUserAddressAndPhone($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,2,true));
-          $this->validateARC($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,17,57,true));
+          $this->validateARC($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,17,57,true), $temp_array);
 
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
           // Se valida la coherencia entre fechas
           if ($isValidRow){
             $this->validateDates($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, $firstRow,$data);
@@ -158,7 +162,7 @@ class ARC extends FileValidator {
             //Si el registro ya existe se marca como registro duplicado y el error se inserta al arreglo de errores y al arreglo de detalles de error
             if($exists){
               
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -349,7 +353,7 @@ class ARC extends FileValidator {
     Log::error("Termina manageContent (ARC - Linea 278)");
   }
 
-  private function validateARC(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  private function validateARC(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
     
     // Se valida la validez del registro (Campo 18)
     Log::info("Inicia validateARC (ARC - Linea 384)");
@@ -357,62 +361,62 @@ class ARC extends FileValidator {
     if (isset($consultSection[17])) {
       if (!preg_match("/^(([1-4])|(98)|(99))$/", $consultSection[17])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no corresponde a ningún código de validez de registro posible."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no corresponde a ningún código de validez de registro posible.", "=\"".$consultSection[17]."\""]);
       } 
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no puede ser nulo.", "=\"".$consultSection[17]."\""]);
     }
 
     // Se valida el código de diagnóstico principal (Campo 19)
     if (isset($consultSection[18])) {
       if (strlen(trim($consultSection[18])) != 4 || !ctype_alnum(trim($consultSection[18]))) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números.", "=\"".$consultSection[18]."\""]);
       } else {
         $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[18])->first();
           if (!$exists) {
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El valor de este campo no corresponde a un código de diagnóstico válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El valor de este campo no corresponde a un código de diagnóstico válido", "=\"".$consultSection[18]."\""]);
           }
         }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no puede ser nulo.", "=\"".$consultSection[18]."\""]);
     }
     
     // Se valida el descripción del diagnóstico principal (Campo 20)
     if (isset($consultSection[19])) {
       if (strlen(trim($consultSection[19])) > 50 || trim($consultSection[19]) == "") {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser vacío y debe tener una longitud menor o igual a cincuenta caracteres"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser vacío y debe tener una longitud menor o igual a cincuenta caracteres", "=\"".$consultSection[19]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no puede ser nulo.", "=\"".$consultSection[19]."\""]);
     }
     
     // Se valida el tipo de estudio (Campo 21)
     if (isset($consultSection[20])) {
       if (!preg_match("/^(([1-8])|(99))$/", $consultSection[20])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no corresponde a ningún código de tipo de tratamiento válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no corresponde a ningún código de tipo de tratamiento válido.", "=\"".$consultSection[20]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no puede ser nulo.", "=\"".$consultSection[20]."\""]);
     }
     
     // Se valida el motivo por el cual el usuario no tuvo consulta (Campo 22)
     if (isset($consultSection[21])) {
       if (!preg_match("/^(([1-5])|(98)|(99))$/", $consultSection[21])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, "El campo no correspone a ningún código de motivo válido"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no correspone a ningún código de motivo válido", "=\"".$consultSection[21]."\""]);
       }
       
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no puede ser nulo.", "=\"".$consultSection[21]."\""]);
     }
     
     // Se valida la fecha de informe hispatológico (Campo 23)
@@ -422,15 +426,15 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[22]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[22]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no puede ser nulo.", "=\"".$consultSection[22]."\""]);
     }
     
     // Se valida la fecha de la primera consulta (Campo 24)
@@ -440,48 +444,48 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[23]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[23]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo no puede ser nulo.", "=\"".$consultSection[23]."\""]);
     }
 
     // Se valida la Histología el Tumor (Campo 25)
     if (isset($consultSection[24])) {
       if(!preg_match("/^((1)|(2))?([1-9])?((10)|(20))?$/", $consultSection[24]) || strlen(trim($consultSection[24])) > 2 ) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo debe corresponder a código de histología válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo debe corresponder a código de histología válido.", "=\"".$consultSection[24]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo no puede ser nulo.", "=\"".$consultSection[24]."\""]);
     }
     
     // Se valida el grado de diferenciación (Campo 26)
     if (isset($consultSection[25])) {
       if (!preg_match("/^(([1-4])|(98)|(99))$/", $consultSection[25])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe corresponder a un grado de diferenciación válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe corresponder a un grado de diferenciación válido.", "=\"".$consultSection[25]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo no puede ser nulo.", "=\"".$consultSection[25]."\""]);
     }
     
     // Se valida la primera estadificacion (Campo 27)
     if (isset($consultSection[26])) {
       if(!preg_match("/^((1)|(2))?([0-9])?((10)|(20))?$/", $consultSection[26]) || strlen(trim($consultSection[26])) > 2) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo debe corresponder a código de estadificación válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo debe corresponder a código de estadificación válido.", "=\"".$consultSection[26]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no puede ser nulo.", "=\"".$consultSection[26]."\""]);
     }
 
     // Se valida la fecha de la primera estadificacion (Campo 28)
@@ -491,37 +495,37 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[27]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[27]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no puede ser nulo.", "=\"".$consultSection[27]."\""]);
     }
     
     // Se valida el resultado de la prueba HER2 (Campo 29)
     if (isset($consultSection[28])) {
       if (!preg_match("/^(([1-3])|(97))$/", $consultSection[28])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo debe corresponder a un valor válido de la prueba HER2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo debe corresponder a un valor válido de la prueba HER2.", "=\"".$consultSection[28]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo no puede ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo no puede ser nulo", "=\"".$consultSection[28]."\""]);
     }
     
     // Se valida la estadificacion de DUKES (Campo 30)
     if (isset($consultSection[29])) {
       if (!preg_match("/^(([1-4])|(98)|(99))$/", $consultSection[29])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 30, "El campo debe corresponder a un valor de estadificacioón DUKES válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 30, "El campo debe corresponder a un valor de estadificacioón DUKES válido.", "=\"".$consultSection[29]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 30, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 30, "El campo no puede ser nulo.", "=\"".$consultSection[29]."\""]);
     }
     
     // Se valida laa fecha de la estadificación de DUKES (campo 31)
@@ -531,48 +535,48 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[30]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[30]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 31, "El campo no puede ser nulo.", "=\"".$consultSection[30]."\""]);
     }
 
     // Se valia la estadificación clínica (Campo 32)
     if (isset($consultSection[31])) {
       if (!preg_match("/^(([1-4])|(98)|(99))$/", $consultSection[31])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 32, "El campo debe corresponder a un valor de estadificación clínica válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 32, "El campo debe corresponder a un valor de estadificación clínica válido.", "=\"".$consultSection[31]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 32, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 32, "El campo no puede ser nulo.", "=\"".$consultSection[31]."\""]);
     }
 
     // Se valida el valor de la clasificación GLEASON (Campo 33)
     if (isset($consultSection[32])) {
       if(!preg_match("/^([2-9])?(10)?$/", $consultSection[26]) || strlen(trim($consultSection[26])) > 2) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 33, "El valor no corresponde a un valor de la clasificacion GLEASON válido"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 33, "El valor no corresponde a un valor de la clasificacion GLEASON válido", "=\"".$consultSection[32]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 33, "El campo no puede ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 33, "El campo no puede ser nulo", "=\"".$consultSection[32]."\""]);
     }
 
     // Se valida la clasificación de riesgo (Campo 34)
     if (isset($consultSection[33])) {
       if (!preg_match("/^(([1-9])?|(10)|(11)|(12)|(13)|(97)|(98)|(99))$/", $consultSection[26]) || strlen(trim($consultSection[26])) > 2) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 34, "El campo no corresponde a una clasificación de riesgo válida"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 34, "El campo no corresponde a una clasificación de riesgo válida", "=\"".$consultSection[33]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 34, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 34, "El campo no puede ser nulo.", "=\"".$consultSection[33]."\""]);
     }
     
     // Se valida la fecha de clasificación del riesgo (Campo 35)
@@ -582,48 +586,48 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[34]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[34]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 35, "El campo no puede ser nulo.", "=\"".$consultSection[34]."\""]);
     }
     
     // Se valida el objetivo del tratamiento (Campo 36)
     if (isset($consultSection[35])) {
       if (!preg_match("/^(([1-2])|(99))$/", $consultSection[35])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 36, "El campo debe contener un valor de objetivo de tratamiento válido"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 36, "El campo debe contener un valor de objetivo de tratamiento válido", "=\"".$consultSection[35]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 36, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 36, "El campo no puede ser nulo.", "=\"".$consultSection[35]."\""]);
     }
 
     // Se valida el objetivo de intervención (Campo 37)
     if (isset($consultSection[36])) {
       if (!preg_match("/^(([1-6])|(99))$/", $consultSection[36])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 37, "El campo debe contener un valor de objetivo de intervención válido"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 37, "El campo debe contener un valor de objetivo de intervención válido", "=\"".$consultSection[36]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 37, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 37, "El campo no puede ser nulo.", "=\"".$consultSection[36]."\""]);
     }
     
     // Se validan los antecedentes de cancer primario (Campo 38)
     if (isset($consultSection[37])) {
       if (!preg_match("/^(([1-2])|(99))$/", $consultSection[37])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 38, "El campo debe contener un valor de antecedentes de cancer primario válido"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 38, "El campo debe contener un valor de antecedentes de cancer primario válido", "=\"".$consultSection[37]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 38, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 38, "El campo no puede ser nulo.", "=\"".$consultSection[37]."\""]);
     }
 
     // Se valida la fecha de diagnóstico de cancer primario (Campo 39)
@@ -633,296 +637,296 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[38]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[38]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 39, "El campo no puede ser nulo.", "=\"".$consultSection[38]."\""]);
     }
 
     // Se valida tipo de cancer antecedente (Campo 40)
     if (isset($consultSection[39])) {
       if (strlen(trim($consultSection[39])) != 4 || !ctype_alnum(trim($consultSection[39]))) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El campo debe tener una longitud igual a 4 caracteres y solo debe estar compuesto por letras y números.", "=\"".$consultSection[39]."\""]);
       } else {
         $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[39])->first();
           if (!$exists) {
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El valor de este campo no corresponde a un código de diagnóstico válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El valor de este campo no corresponde a un código de diagnóstico válido", "=\"".$consultSection[39]."\""]);
           }
         }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 40, "El campo no puede ser nulo.", "=\"".$consultSection[39]."\""]);
     }
 
     // Se valida si el usuario recibió o no quimioterapia (Campo 41)
     if (isset($consultSection[40])) {
       if (!preg_match("/^(([1-2])|(98))$/", $consultSection[40])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 41, "El campo debe contener un valor válido: 1, 2 o 98."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 41, "El campo debe contener un valor válido: 1, 2 o 98.", "=\"".$consultSection[40]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 41, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 41, "El campo no puede ser nulo.", "=\"".$consultSection[40]."\""]);
     }
 
     // Se validan las fases de quimioterapia que recibió el usuario (Campo 42)
     if (isset($consultSection[41])) {
       if (strlen(trim($consultSection[41])) > 2) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 42, "El campo debe tener una longitud menor o igual a 2 caracteres."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 42, "El campo debe tener una longitud menor o igual a 2 caracteres.", "=\"".$consultSection[41]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 42, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 42, "El campo no puede ser nulo.", "=\"".$consultSection[41]."\""]);
     }
     
     // Se valida si el usuario recibio prefase o citoreduccion (Campo 43)
     if (isset($consultSection[42])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[42])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 43, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 43, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[42]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 43, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 43, "El campo no puede ser nulo.", "=\"".$consultSection[42]."\""]);
     }
 
     // Se valida si el usuario recibio inducción (Campo 44)
     if (isset($consultSection[43])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[43])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 44, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 44, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[43]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 44, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 44, "El campo no puede ser nulo.", "=\"".$consultSection[43]."\""]);
     }
 
     // Se valida si el usuario recibio intensificación (Campo 45)
     if (isset($consultSection[44])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[44])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 45, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 45, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[44]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 45, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 45, "El campo no puede ser nulo.", "=\"".$consultSection[44]."\""]);
     }
 
     // Se valida si el usuario recibio consolidación (Campo 46)
     if (isset($consultSection[45])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[45])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 46, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 46, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[45]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 46, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 46, "El campo no puede ser nulo.", "=\"".$consultSection[45]."\""]);
     }
 
     // Se valida si el usuario recibio reinducción (Campo 47)
     if (isset($consultSection[46])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[46])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 47, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 47, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[46]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 47, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 47, "El campo no puede ser nulo.", "=\"".$consultSection[46]."\""]);
     }
 
     // Se valida si el usuario recibio mantenimiento (Campo 48)
     if (isset($consultSection[47])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[47])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 48, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 48, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[47]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 48, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 48, "El campo no puede ser nulo.", "=\"".$consultSection[47]."\""]);
     }
 
     // Se valida si el usuario recibio mantenimiento largo (Campo 49)
     if (isset($consultSection[48])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[48])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 49, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 49, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[48]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 49, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 49, "El campo no puede ser nulo.", "=\"".$consultSection[48]."\""]);
     }
 
     // Se valida si el usuario recibio quimioterapia diferente (Campo 50)
     if (isset($consultSection[49])) {
       if (!preg_match("/^(([1-2])|(97)|(99))$/", $consultSection[49])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 50, "El campo debe contener un valor válido: 1, 2, 97 o 99."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 50, "El campo debe contener un valor válido: 1, 2, 97 o 99.", "=\"".$consultSection[49]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 50, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 50, "El campo no puede ser nulo.", "=\"".$consultSection[49]."\""]);
     }
 
     // Se valida si el usuario fe sometido a cirugía (Campo 51)
     if (isset($consultSection[50])) {
       if (!preg_match("/^([1-3])$/", $consultSection[50])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 51, "El campo debe contener un valor válido: 1, 2, 3."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 51, "El campo debe contener un valor válido: 1, 2, 3.", "=\"".$consultSection[50]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 51, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 51, "El campo no puede ser nulo.", "=\"".$consultSection[50]."\""]);
     }
 
     // Se valida la ubicación teemporaal de la primera cirugía (Campo 52)
     if (isset($consultSection[51])) {
       if (!preg_match("/^(([1-4])|(98))$/", $consultSection[51])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 52, "El valor dado no corresponde a una ubicación temporal válida."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 52, "El valor dado no corresponde a una ubicación temporal válida.", "=\"".$consultSection[51]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 52, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 52, "El campo no puede ser nulo.", "=\"".$consultSection[51]."\"""=\"".$consultSection[51]."\""]);
     }
 
     // Se valida la motivación de la cirugía (Campo 53)
     if (isset($consultSection[52])) {
       if (!preg_match("/^(([1-7])|(98))$/", $consultSection[52])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 53, "El valor dado no corresponde a un valor válido para el motivo de la intervención quirúrgica."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 53, "El valor dado no corresponde a un valor válido para el motivo de la intervención quirúrgica.", "=\"".$consultSection[52]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 53, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 53, "El campo no puede ser nulo.", "=\"".$consultSection[52]."\""]);
     }
 
     // Se valida la ubicación teemporaal de la última cirugía (Campo 54)
     if (isset($consultSection[53])) {
       if (!preg_match("/^(([1-4])|(98))$/", $consultSection[53])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 54, "El valor dado no corresponde a una ubicación temporal válida."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 54, "El valor dado no corresponde a una ubicación temporal válida.", "=\"".$consultSection[53]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 54, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 54, "El campo no puede ser nulo.", "=\"".$consultSection[53]."\""]);
     }
 
     // Se valida el estado vital del usuario (Campo 55)
     if (isset($consultSection[54])) {
       if (!preg_match("/^(([1-2])|(98))$/", $consultSection[54])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 55, "El campo debe contener un valor válido: 1, 2 o 98."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 55, "El campo debe contener un valor válido: 1, 2 o 98.", "=\"".$consultSection[54]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 55, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 55, "El campo no puede ser nulo.", "=\"".$consultSection[54]."\""]);
     }
 
     // Se validan las características actuales de la primera radioterapia (Campo 56)
     if (isset($consultSection[55])) {
       if (!preg_match("/^(([1-3])|(98))$/", $consultSection[55])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 56, "El campo debe contener un valor válido: 1, 2, 3 o 98."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 56, "El campo debe contener un valor válido: 1, 2, 3 o 98.", "=\"".$consultSection[55]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 56, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 56, "El campo no puede ser nulo.", "=\"".$consultSection[55]."\""]);
     }
 
     // Se valida la motivación de finalización del primer esquema de radioterapia(Campo 57)
     if (isset($consultSection[56])) {
       if (!preg_match("/^(([1-7])|(98))$/", $consultSection[56])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 57, "El valor dado no corresponde a un valor válido para el motivo de finalización del primer esquema de radioterapia."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 57, "El valor dado no corresponde a un valor válido para el motivo de finalización del primer esquema de radioterapia.", "=\"".$consultSection[56]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 57, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 57, "El campo no puede ser nulo.", "=\"".$consultSection[56]."\""]);
     }
 
     // Se valida la ubicación tmporaal del último esquema de radioterapia (Campo 58)
     if (isset($consultSection[57])) {
       if (!preg_match("/^(([1-9])|(98))$/", $consultSection[57])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 58, "El valor dado no corresponde a una ubicación temporal válida."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 58, "El valor dado no corresponde a una ubicación temporal válida.", "=\"".$consultSection[57]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 58, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 58, "El campo no puede ser nulo.", "=\"".$consultSection[57]."\""]);
     }
 
     // Se valida el tipo de radioterapia (Campo 59)
     if (isset($consultSection[58])) {
       if (!preg_match("/^(([1-7])|(98))$/", $consultSection[58])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 59, "El valor dado no corresponde a un tipo de radioterapia válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 59, "El valor dado no corresponde a un tipo de radioterapia válido.", "=\"".$consultSection[58]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 59, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 59, "El campo no puede ser nulo.", "=\"".$consultSection[58]."\""]);
     }
 
     // Se validan las características del último esquema de radioterapia (Campo 60)
     if (isset($consultSection[59])) {
       if (!preg_match("/^(([1-3])|(98))$/", $consultSection[59])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 60, "El campo debe contener un valor válido: 1, 2, 3 o 98."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 60, "El campo debe contener un valor válido: 1, 2, 3 o 98.", "=\"".$consultSection[59]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 60, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 60, "El campo no puede ser nulo.", "=\"".$consultSection[59]."\""]);
     }
 
     // Se valida el motivo de finalización del último esquema de radioterapia (Campo 61)
     if (isset($consultSection[60])) {
       if (!preg_match("/^(([1-7])|(98))$/", $consultSection[60])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 61, "El valor dado no corresponde a un motivo de finalización válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 61, "El valor dado no corresponde a un motivo de finalización válido.", "=\"".$consultSection[60]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 61, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 61, "El campo no puede ser nulo.", "=\"".$consultSection[60]."\""]);
     }
 
     // Se valida si el usuario recibió transplantes (Campo 62)
     if (isset($consultSection[61])) {
       if (!preg_match("/^(([1-2])|(98))$/", $consultSection[61])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 62, "El campo debe contener un valor válido: 1, 2 o 98."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 62, "El campo debe contener un valor válido: 1, 2 o 98.", "=\"".$consultSection[61]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 62, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 62, "El campo no puede ser nulo.", "=\"".$consultSection[61]."\""]);
     }
 
     // Se valida el tipo de transplante (Campo 63)
     if (isset($consultSection[62])) {
       if (!preg_match("/^(([1-9])|(98))$/", $consultSection[62])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 63, "El valor dado no corresponde a un motivo de finalización válido."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 63, "El valor dado no corresponde a un motivo de finalización válido.", "=\"".$consultSection[62]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 63, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 63, "El campo no puede ser nulo.", "=\"".$consultSection[62]."\""]);
     }
 
     // Se valida la ubicación temporal del transplante (Campo 64)
     if (isset($consultSection[63])) {
       if (!preg_match("/^(([1-3])|(98))$/", $consultSection[63])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 64, "El valor dado no corresponde a una ubicación temporal del transplante válida."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 64, "El valor dado no corresponde a una ubicación temporal del transplante válida.", "=\"".$consultSection[63]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 64, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 64, "El campo no puede ser nulo.", "=\"".$consultSection[63]."\""]);
     }
 
     // Se valida la fecha del transplantre (Campo 65)
@@ -932,92 +936,92 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[64]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[64]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 65, "El campo no puede ser nulo.", "=\"".$consultSection[64]."\""]);
     }
 
     // Se valida si el usuario fue valorado (Campo 66)
     if (isset($consultSection[65])) {
       if (!preg_match("/^([1-3])$/", $consultSection[65])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 66, "El campo debe tener un valor válido, 1, 2 o 3."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 66, "El campo debe tener un valor válido, 1, 2 o 3.", "=\"".$consultSection[65]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 66, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 66, "El campo no puede ser nulo.", "=\"".$consultSection[65]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con médico especialista en cuidado paliativo (Campo 67)
     if (isset($consultSection[66])) {
       if (!preg_match("/^([1-2])$/", $consultSection[66])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 67, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 67, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[66]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 67, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 67, "El campo no puede ser nulo.", "=\"".$consultSection[66]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con profesional de la salud (Campo 68)
     if (isset($consultSection[67])) {
       if (!preg_match("/^([1-2])$/", $consultSection[67])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 68, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 68, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[67]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 68, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 68, "El campo no puede ser nulo.", "=\"".$consultSection[67]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con otro tipo de especialista (Campo 69)
     if (isset($consultSection[68])) {
       if (!preg_match("/^([1-2])$/", $consultSection[68])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 69, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 69, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[68]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 69, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 69, "El campo no puede ser nulo.", "=\"".$consultSection[68]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con médico general (Campo 70)
     if (isset($consultSection[69])) {
       if (!preg_match("/^([1-2])$/", $consultSection[69])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 70, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 70, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[69]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 70, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 70, "El campo no puede ser nulo.", "=\"".$consultSection[69]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con trabaador social (Campo 71)
     if (isset($consultSection[70])) {
       if (!preg_match("/^([1-2])$/", $consultSection[70])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 71, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 71, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[70]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 71, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 71, "El campo no puede ser nulo.", "=\"".$consultSection[70]."\""]);
     }
 
     // Se valida si el usuario recibió consulta con otro tipo de profesional en salud (Campo 72)
     if (isset($consultSection[71])) {
       if (!preg_match("/^([1-2])$/", $consultSection[71])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 72, "El campo debe tener un valor válido, 1 o 2."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 72, "El campo debe tener un valor válido, 1 o 2.", "=\"".$consultSection[71]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 72, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 72, "El campo no puede ser nulo.", "=\"".$consultSection[71]."\""]);
     }
 
     // Se valida la fecha  de consulta con médico o especialista (Campo 73)
@@ -1027,29 +1031,31 @@ class ARC extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[72]."\""]);
         }
       } else {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[72]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 73, "El campo no puede ser nulo.", "=\"".$consultSection[72]."\""]);
     }
 
     // Se valida el tipo de tratamiento (Campo 74)
     if (isset($consultSection[73])) {
       if (!preg_match("/^([1-3])$/", $consultSection[73])) {
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 74, "El campo debe tener un valor válido, 1, 2 o 3."]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 74, "El campo debe tener un valor válido, 1, 2 o 3.", "=\"".$consultSection[73]."\""]);
       }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 74, "El campo no puede ser nulo."]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 74, "El campo no puede ser nulo.", "=\"".$consultSection[73]."\""]);
     }
 
     Log::info("Termina validateARC (ARC - Linea 500)");
+
+    $temp_array = $consultSection;
 
   }
 
@@ -1059,7 +1065,7 @@ class ARC extends FileValidator {
     Log::info("Inicia validateDates (ARC - Linea 506)");
     if (strtotime($firstRow[3]) < strtotime($data[13])) {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado (línea 1, campo 4)", "=\"".$data[14]."\""]);
     }
 
     Log::info("Termina validateDates (ARC - Linea 577)");

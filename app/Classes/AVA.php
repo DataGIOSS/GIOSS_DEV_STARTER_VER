@@ -37,7 +37,7 @@ class AVA extends FileValidator {
     $this->version = substr($fileNameToken[0],58);
 
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
 
@@ -57,7 +57,7 @@ class AVA extends FileValidator {
 
       if($exists){
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       }else{
           //se define en primera instancia el objeto archivo
@@ -111,10 +111,15 @@ class AVA extends FileValidator {
         {
           $this->dropWhiteSpace($data); // se borran los espcaios en de cada campo
           $isValidRow = true;
+          $temp_array = Array();
 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
-          $this->validateAVA($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true));
+          $this->validateAVA($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true), $temp_array);
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           if ($isValidRow) // se valida la cohenrencia entre fechas
           { 
@@ -135,7 +140,7 @@ class AVA extends FileValidator {
 
             if($exists){
               
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -260,13 +265,13 @@ class AVA extends FileValidator {
       }
     
     } catch (\Exception $e) {
-      Log::info("Érror de ejecución ARCHIVO AVA ".print_r($e->getMessage(), true));
+      Log::info("Error de ejecución ARCHIVO AVA ".print_r($e->getMessage(), true));
     }
 
   }
 
 
-  private function validateAVA(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$consultSection) 
+  private function validateAVA(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$consultSection, &$temp_array) 
   {
 
     //validacion campo 16
@@ -275,16 +280,16 @@ class AVA extends FileValidator {
         $date = explode('-', $consultSection[15]);
         if(!checkdate($date[1], $date[2], $date[0])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[15]."\""]);
         }
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD", "=\"".$consultSection[15]."\""]);
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo", "=\"".$consultSection[15]."\""]);
     }
 
     //validacion campo 17
@@ -294,36 +299,36 @@ class AVA extends FileValidator {
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
     }
 
     //validacion campo 18
     if(isset($consultSection[17])) {
         if(!is_numeric($consultSection[17]) || strlen(trim($consultSection[17])) != 1){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un número de un dígito"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un número de un dígito", "=\"".$consultSection[17]."\""]);
         }else{
           switch ($consultSection[17]) {
             case '1':
               if (ctype_alpha(trim($consultSection[16]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética."]);
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética.", "=\"".$consultSection[16]."\""]);
               } else {
                 if (strlen(trim($consultSection[16])) > 8) {
                   $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres"]);
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres", "=\"".$consultSection[16]."\""]);
                 } else {
                   $exists = DB::table('vacuna_cups')->where('codigo_tipo_vacuna',$consultSection[16])->first();
                   if(!$exists){
                     $existsHomologo = DB::table('homologos_cups_codigos')->where('cod_homologo',$consultSection[16])->first();
                     if(!$existsHomologo){
                       $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna ni CUP ni homologo válido"]);
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna ni CUP ni homologo válido", "=\"".$consultSection[16]."\""]);
                     }else{
                       $esCup = DB::table('vacuna_cups')->where('codigo_tipo_vacuna', $existsHomologo->cod_cups)->first();
                       if (!$esCup) {
                         $isValidRow = false;
-                        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos."]);
+                        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos.", "=\"".$consultSection[16]."\""]);
                       } else {
                         $consultSection[16] = $exists->cod_cups;
                       }
@@ -337,24 +342,24 @@ class AVA extends FileValidator {
             case '4':
               if (ctype_alpha(trim($consultSection[16]))) {
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética."]);
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de código del tipo de vacuna no puede estar compuesto por una cadena totalmente alfabética.", "=\"".$consultSection[16]."\""]);
               } else {
                 if (strlen(trim($consultSection[16])) > 8) {
                   $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres"]);
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud de máximo 8 caracteres", "=\"".$consultSection[16]."\""]);
                 } else {
                   $exists = DB::table('homologos_cups_codigos')->where('cod_homologo',$consultSection[16])->first();
                   if(!$exists){
                     $existsCUP = DB::table('vacuna_cups')->where('codigo_tipo_vacuna', $consultSection[16])->first();
                     if (!$existsCup) {
                        $isValidRow = false;
-                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna CUP ni a un código de vacuna homologa válida"]);
+                       array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de vacuna CUP ni a un código de vacuna homologa válida", "=\"".$consultSection[16]."\""]);
                      }
                   }else{
                     $esCodigoCup = DB::table('vacuna_cups')->where('codigo_tipo_vacuna', $exists->cod_cups)->first();
                     if (!$esCodigoCup) {
                       $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos."]);
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código CUP del código homólogo recibido no fue encontrado en los registros de códigos válidos.", "=\"".$consultSection[16]."\""]);
                     } else {
                       $consultSection[16] = $exists->cod_cups;
                     }
@@ -366,28 +371,30 @@ class AVA extends FileValidator {
 
             default:
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El tipo de codificación solo puede recibir un valor igual a 1 ó 4."]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El tipo de codificación solo puede recibir un valor igual a 1 ó 4.", "=\"".$consultSection[16]."\""]);
 
           }
 
         }
     } else {
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
     }
 
     //validacion campo 19
     if(isset($consultSection[18])) {
         if(!ctype_digit($consultSection[18]) || (trim($consultSection[18]) < 1 || trim($consultSection[18]) > 5)) {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor numérico entre 1 y 5"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe tener un valor numérico entre 1 y 5", "=\"".$consultSection[18]."\""]);
         }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo", "=\"".$consultSection[18]."\""]);
     }
    
+    $temp_array = $consultSection;
+
   }
 
   protected function validateDates(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF,$firstRow ,$data)
@@ -396,19 +403,19 @@ class AVA extends FileValidator {
     
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la fecha de nacimiento sa inferior a la Fecha de la Aplicación de la Dosis de Vacunación 
     if (strtotime($data[15]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de la Aplicación de la Dosis de Vacunación  (campo 16)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de la Aplicación de la Dosis de Vacunación  (campo 16)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la Fecha de la Aplicación de la Dosis de Vacunación  esté entre la fecha de los periodos
     if ( (strtotime($firstRow[2]) > strtotime($data[15])) || (strtotime($firstRow[3]) < strtotime($data[15])) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de la Aplicación de la Dosis de Vacunación  (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) "]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de la Aplicación de la Dosis de Vacunación  (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) ", "=\"".$data[15]."\""]);
     }
 
   }

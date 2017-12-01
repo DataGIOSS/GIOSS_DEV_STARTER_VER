@@ -18,7 +18,7 @@
                         <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Creacion_Usuarios.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
 
                         <p style="text-align: justify;">
-                            Para la Creación de Usuarios es necesario que se diriga a la opción <strong><mark>GESTIONAR USUARIOS</mark></strong> que podrá
+                            Para la Creación de Usuarios es necesario que se dirija a la opción <strong><mark>GESTIONAR USUARIOS</mark></strong> que podrá
                             encontrar en el menú situado al lado izquierdo de esta ventana. Una vez allí debe ubicarse en la pestaña <strong><em>Creación de Usuarios 
                             del Aplicativo</em></strong> donde podrá proceder a asignar los valores correspondientes del nuevo usuario: Nombre, Apellido, Correo
                             Electrónico y Contraseña. Recuerde que todos los campos son obligatorios y si no han sido correctamente diligenciados el sistema 
@@ -43,7 +43,7 @@
 
                         <p style="text-align: justify;">
                             En esta pestaña usted encontrará un registro de todos los usuarios que han sido creados para el manejo del sistema. Toda la información
-                            de cada usuario así como el tipo que le fue asignado al momento de la creación. En esta misma interfaz usted podrá modificar la
+                            de cada usuario, así como el tipo que le fue asignado al momento de la creación. En esta misma interfaz usted podrá modificar la
                             información del usuario que desee (a excepción del usuario con el que ha ingresado y de un administrador general del sistema). En la 
                             parte derecha de cada registro podrá observar dos botones: uno para la edición de la información del usuario 
                             <img src="{{ asset('images/editar.png') }}" height="25px" width="25px"> y otro para Activar o Desactivar el usuario y permitir/denegar su acceso al sistema 
@@ -52,9 +52,9 @@
 
                         <p style="text-align: justify;">
                             Al ingresar a la opción de edición de usuario se desplegará un formulario donde se podrá diligenciar la información que se desee editar de
-                            la cuenta seleccionada. Solo hace falta diligenciar los campos cuya información requiere de algun tipo e actualización, los demás pueden 
-                            permanecer en blanco. Si los campos no son diligenciados correctamente se volverá a abrir el formuulario indicando los errores ocurridos,
-                            de lo contrario en la interfaz de Listado de Usuarios se indicará que la actualización de la informacion del usuario fue exitosa. 
+                            la cuenta seleccionada. Solo hace falta diligenciar los campos cuya información requiere de algún tipo de actualización, los demás pueden 
+                            permanecer en blanco. Si los campos no son diligenciados correctamente se volverá a abrir el formulario indicando los errores ocurridos,
+                            de lo contrario en la interfaz de Listado de Usuarios se indicará que la actualización de la información del usuario fue exitosa. 
                         </p>
 
                         <div class="jumbotron text-center" style="background-image: url('{{ asset('images/edicion_usuario.png') }}'); height: 300px; background-size: 1200px;width: 100%"></div>
@@ -74,7 +74,7 @@
                         <div class="jumbotron text-center" style="background-image: url('{{ asset('images/Carga_Archivos.png') }}'); height: 300px; background-size: 1200px; width: 100%"></div>
 
                         <p style="text-align: justify;">
-                            Para la Carga de Archivos, debe entrar a la opción <strong><mark style="background-color: #FFE7FFFF;">CARGAR ARCHIVOS</mark></strong> que también enontrará en el 
+                            Para la Carga de Archivos, debe entrar a la opción <strong><mark style="background-color: #FFE7FFFF;">CARGAR ARCHIVOS</mark></strong> que también encontrará en el 
                             menú desplegable a la izquierda de la ventana. En esta sección se le pedirá que indique el periodo comprendido por el archivo a cargar y que seleccione 
                             además el Archivo correspondiente y su Tipo.
                         </p>
@@ -189,9 +189,9 @@
 
                             <p style="text-align: justify;">
                                 Al hacer esto, el aplicativo realizará las primeras validaciones que corresponden al nombre del archivo, si allí existe alguna incongruencia se desplegará un <strong>
-                                Panel de Errores</strong> donde se le indicará lo que ha fallado, así mismo ocurrirá con la primera linea del archivo que contiene: <strong>Código de Habilitación de 
+                                Panel de Errores</strong> donde se le indicará lo que ha fallado, así mismo ocurrirá con la primera línea del archivo que contiene: <strong>Código de Habilitación de 
                                 la Entidad, Mes Reportado, Fecha de Inicio del Periodo de Corte, Fecha de Cierre del Periodo de Corte</strong> y el <strong>Número total de Registros Contenidos</strong>.
-                                Si el Archivo que se intentó cargar ha fallado en los parámetros del nombre o en la primera linea del archivo, no hace falta que usted modifique la <strong>Versión</strong>
+                                Si el Archivo que se intentó cargar ha fallado en los parámetros del nombre o en la primera línea del archivo, no hace falta que usted modifique la <strong>Versión</strong>
                                 del archivo cargado, ya que al fallar en las primeras validaciones este no es almacenado en los registros y puede ser cargado nuevamente.
                             </p>
 
@@ -201,7 +201,7 @@
                                 Una vez se cargue el archivo al aplicativo, este le mostrará al usuario el progreso de carga del archivo. Al finalizar el proceso en el mismo panel de progreso el
                                 usuario podrá encontrar el estado final de la carga del archivo, si el estado es <strong>FALLIDO</strong> es porque el aplicativo no encontró ningún registro que
                                 pasara correctamente las validaciones, si el resultado es <strong>REGULAR</strong> es porque se encontraron algunos registros buenos y otros incorrectos y pendientes
-                                por correegir, si el estado final de <strong>EXITOSO</strong> es porque todos los registros del archivo cargado fueron correctos y no hace falta cargar nuevamente
+                                por corregir, si el estado final de <strong>EXITOSO</strong> es porque todos los registros del archivo cargado fueron correctos y no hace falta cargar nuevamente
                                 este archivo.
                             </p>
 

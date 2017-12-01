@@ -374,9 +374,9 @@ function validateFirstRow(folderPath, tipoArchivo){
 
 	LeerArchivoPlanoDeServidor(folderPath, 'error_area');
 
-	$('#alert').fadeIn();
+	/*$('#alert').fadeIn();
 	$('#add_file').fadeIn();
-	$('#btnUpload').fadeIn();
+	$('#btnUpload').fadeIn();*/
 
 }
 
@@ -408,10 +408,10 @@ function load_table(){
 
             	if(msj[x].current_status != 'COMPLETED'){
             		document.getElementById('loading_table_img').style.display = 'inline';
-            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> <b>PROCESANDO </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr>';
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> <b>PROCESANDO </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr> '/*<td>  <button onclick="cancel_loading(this.id)" id="' + msj[x].nombre + '" type="button" class="btn btn-danger" data-toggle="modal" data-target="" data-whatever="@mdo" style="position: relative; width: 30px; height: 30px; border-radius: 100%; outline: none"><span id="disable_user_spn" class="fa fa-times-circle" style="font-size: 2.0em; position: absolute; display: block; top: 0.7%; left: -49%"></span></button> </td> </tr>'*/;
             		load_table();
             	} else {
-            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr>';
+            		registro_leido = '<tr id="' + id + '"> <td style="text-align: center; max-width: 150px; overflow-x: scroll; font-family: \'Jura\', sans-serif; font-size: 15px\'">' + msj[x].nombre + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].id_tema_informacion + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].total_registers + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].porcent + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].current_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px">' + msj[x].final_status + '</td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"><a href="' + msj[x].zipath + '"> <b>DESCARGAR </a></td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].usuario_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' +  msj[x].fecha_creacion + ' </td> <td style="text-align: center; font-family: \'Jura\', sans-serif; font-size: 15px"> ' + msj[x].hora_creacion + ' </td> </tr>'/* <td> <button onclick="cancel_loading(this.id)" id="' + msj[x].nombre + '" type="button" class="btn btn-danger" data-toggle="modal" data-target="" data-whatever="@mdo" style="position: relative; width: 30px; height: 30px; border-radius: 100%; outline: none" disabled><span id="disable_user_spn" class="fa fa-times-circle" style="font-size: 2.0em; position: absolute; display: block; top: 0.7%; left: -49%"></span></button> </td> </tr>'*/;
             	}
         		
         		if (document.getElementById(id) && msj[x].current_status != 'COMPLETED') {
@@ -423,7 +423,6 @@ function load_table(){
         			$('#loaded_files').append(registro_leido);
         		} else if (document.getElementById(id) && msj[x].current_status == 'COMPLETED') {
         			counter++;
-        			//document.getElementById(id).innerHTML = registro_leido;
         		}
 				
 				document.getElementById(id).innerHTML = registro_leido;
@@ -438,6 +437,10 @@ function load_table(){
 
 }
 
+function cancel_loading(file_id){
+	alert(file_id);
+}
+
 function update_table(consecutive){
 
 	interval_load = setInterval(load_table(consecutive), 500);
@@ -447,7 +450,7 @@ function update_table(consecutive){
 window.onload = function(){
 	
 	 load_table();
-} 
+}
 
 function stop_load_table(){
 	
@@ -455,7 +458,6 @@ function stop_load_table(){
 	clearInterval(interval_load);
 
 }
-
 
 async function consultStatusFiles(consecutive) {	
 	
@@ -469,10 +471,7 @@ async function consultStatusFiles(consecutive) {
         dataType: 'json',
         cache: false,
         async: true,
-        beforeSend: function() {
-        //console.log("Antes de ajax del consultStatusFiles ");
-           
-        },
+        beforeSend: function() {},
         success : function (msj) {
         	//console.log("Entra al SUCCESS");
         	//console.log("Longitud msj: " + msj.length);

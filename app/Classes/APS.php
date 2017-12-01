@@ -37,7 +37,7 @@ class APS extends FileValidator {
     $this->version = substr($fileNameToken[0],58);
 
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
 
@@ -57,7 +57,7 @@ class APS extends FileValidator {
 
       if($exists){
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       }else{
           //se define en primera instancia el objeto archivo
@@ -109,10 +109,15 @@ class APS extends FileValidator {
         {
           $this->dropWhiteSpace($data); // se borran los espcaios en de cada campo
           $isValidRow = true;
+          $temp_array = Array();
 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
-          $this->validateAPS($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,7,true));
+          $this->validateAPS($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,7,true), $temp_array);
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           if ($isValidRow) // se validan cohenrencia entre fechas
           { 
@@ -133,7 +138,7 @@ class APS extends FileValidator {
 
             if($exists){
               
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -266,7 +271,7 @@ class APS extends FileValidator {
 
   }
 
-  private function validateAPS(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  private function validateAPS(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
 
     //validacion campo 16
     if(isset($consultSection[15])) {
@@ -274,103 +279,94 @@ class APS extends FileValidator {
         $date = explode('-', $consultSection[15]);
         if(!checkdate($date[1], $date[2], $date[0])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[15]."\""]);
         }
        
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD", "=\"".$consultSection[15]."\""]);
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo", "=\"".$consultSection[15]."\""]);
     }
     
     //validacion campo 18
      if(isset($consultSection[17])) {
         
         switch ($consultSection[17]) {
+          
           case '1':
 
             //Adaptación de la validación inicial para garantizar la existencia del código y que corresponda  a un CUP.
             //Además se valida el tipo del dato recibido.
-            if (ctype_alpha(trim($consultSection[16]))) {
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
-              } else {
-                if(isset($consultSection[16])) {
-                    if(strlen(trim($consultSection[16])) > 8){
-                      $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 1 el campo debe tener una longitud menor o igual a 8 caracteres"]);
-                    } else {
-                      $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
-                      if(!$exists){
-                        $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
-                        if(!$exists){
+            if(isset($consultSection[16])) {
+              if (ctype_alpha(trim($consultSection[16]))) {
+                if(strlen(trim($consultSection[16])) <= 8){
+                    $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
+                    if(!$exists){
+                      $exists_Homologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
+                      if(!$exists_Homologo){
                           $isValidRow = false;
-                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo válido"]);
-                        }else{
-                          $esConsulta = DB::table('procedimiento_cups')->where('cod_procedimiento', $exists->cod_cups)->first();
-                          if(!$esConsulta){
-                            $isValidRow = false;
-                            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
-                          }
-                        }
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento CUP ni HOMÓLOGO válido", "=\"".$consultSection[16]."\""]);
+                      } else {
+                        $consultSection[16] = $exists_Homologo->cod_cups;
                       }
                     }
-                }else{
-                  $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+                } else {
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "ERROR INFORMATIVO: Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 8 caracteres", "=\"".$consultSection[16]."\""]);
                 }
+              } else {
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas.", "=\"".$consultSection[16]."\""]);
               }
+            } else {
+              $isValidRow = false;
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
+            }
+
+          break;
 
           case '4':
 
-            if (ctype_alpha(trim($consultSection[16]))) {
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
-              } else {
-                
-                if(isset($consultSection[16])) {
-                    if(strlen(trim($consultSection[16])) > 10){
-                      $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
-                    } else {
-                      $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
+            if(isset($consultSection[16])) {
+              if (ctype_alpha(trim($consultSection[16]))) {
+                if(strlen(trim($consultSection[16])) <= 10){
+                    $exists_Homologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[16])->first();
+                    if(!$exists_Homologo){
+                      $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
                       if(!$exists){
-                        $exists = DB::table('procedimiento_cups')->where('cod_procedimiento', $consultSection[16])->first();
-                        if(!$exists){
                           $isValidRow = false;
-                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento cups ni homólogo  válido"]);
-                        }
-                       }else{
-                          $esConsulta = DB::table('procedimiento_cups')->where('cod_procedimiento', $exists->cod_cups)->first();
-                          if(!$esConsulta){
-                            $isValidRow = false;
-                            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo no corresponde a un Código CUP de procedimiento válido."]);
-                          }
+                          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de procedimiento CUP ni HOMÓLOGO válido", "=\"".$consultSection[16]."\""]);
                       }
+                    } else {
+                      $consultSection[16] = $exists_Homologo->cod_cups;
                     }
-                }else{
-                  $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+                } else {
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "ERROR INFORMATIVO: Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 8 caracteres", "=\"".$consultSection[16]."\""]);
                 }
-
+              } else {
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 17, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas.", "=\"".$consultSection[16]."\""]);
               }
+            } else {
+              $isValidRow = false;
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
+            }
 
             break;
 
           default:
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un número con un valor de 1 ó 4"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser un número con un valor de 1 ó 4", "=\"".$consultSection[17]."\""]);
             break;
         }
 
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
     }
 
     //se valida que el procedimiento campo 17 sea quirurjico
@@ -385,14 +381,14 @@ class APS extends FileValidator {
           if(!$exists){
             $diagPrinConfirm = true;
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El valor no corresponde a un valor código de diagnóstico valido", "=\"".$consultSection[18]."\""]);
           }
         }
         
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo", "=\"".$consultSection[18]."\""]);
     }
 
     //validacion campo 20
@@ -400,13 +396,13 @@ class APS extends FileValidator {
         if($esQuirurjico){
           if(strlen(trim($consultSection[19])) > 50){
             $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo  debe tener una longitud menor o igual a 50"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo  debe tener una longitud menor o igual a 50", "=\"".$consultSection[19]."\""]);
           }
         }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo", "=\"".$consultSection[19]."\""]);
     }
 
     //validación campo 21
@@ -414,12 +410,12 @@ class APS extends FileValidator {
           $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[20])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El valor no corresponde a un valor código de diagnóstico valido", "=\"".$consultSection[20]."\""]);
           }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo", "=\"".$consultSection[20]."\""]);
     }
 
     //validación campo 22
@@ -427,17 +423,19 @@ class APS extends FileValidator {
 
       if(strlen(trim($consultSection[21])) != 1){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo de tener una longitud igual a 1"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo de tener una longitud igual a 1", "=\"".$consultSection[21]."\""]);
         }else{
           $exists = DB::table('ambito')->where('cod_ambito',$consultSection[21])->first();
           if(!$exists){
-            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor del campo no correponde a un Ambito valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor del campo no correponde a un Ambito valido", "=\"".$consultSection[21]."\""]);
           }
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo", "=\"".$consultSection[21]."\""]);
     }
+
+    $temp_array = $consultSection;
 
   }
 
@@ -447,19 +445,19 @@ class APS extends FileValidator {
 
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la fecha de nacimiento sa inferior a la Fecha de Realización Procedimiento 
     if (strtotime($data[15]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de Realización Procedimiento  (campo 16)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de Realización Procedimiento  (campo 16)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la Fecha de Realización Procedimiento  esté entre la fecha de los periodos
     if ( (strtotime($firstRow[2]) > strtotime($data[15])) || (strtotime($firstRow[3]) < strtotime($data[15])) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de Realización Procedimiento  (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) "]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de Realización Procedimiento  (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) ", "=\"".$data[15]."\""]);
     }
 
   }

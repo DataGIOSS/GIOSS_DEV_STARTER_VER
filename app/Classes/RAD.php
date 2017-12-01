@@ -38,7 +38,7 @@ class RAD extends FileValidator {
     $this->version = substr($fileNameToken[0],58);
 
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
 
@@ -58,7 +58,7 @@ class RAD extends FileValidator {
 
       if($exists){
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       }else{
           //se define en primera instancia el objeto archivo
@@ -111,10 +111,15 @@ class RAD extends FileValidator {
         {
           $this->dropWhiteSpace($data); // se borran los espcaios en de cada campo
           $isValidRow = true;
+          $temp_array = Array();
 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
-          $this->validateRAD($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true));
+          $this->validateRAD($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true), $temp_array);
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           if ($isValidRow) // se validan cohenrencia entre fechas
           { 
@@ -135,7 +140,7 @@ class RAD extends FileValidator {
 
             if($exists){
               
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -270,23 +275,23 @@ class RAD extends FileValidator {
 
   }
 
-  private function validateRAD(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  private function validateRAD(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
 
     //validacion campo 16
     if(isset($consultSection[15])) {
         if(strlen(trim($consultSection[15])) != 1){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo de tener una longitud igual a 1"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo de tener una longitud igual a 1", "=\"".$consultSection[15]."\""]);
         }else{
           $exists = DB::table('ambito')->where('cod_ambito',$consultSection[15])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El valor del campo no correponde a un Ambito valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El valor del campo no correponde a un Ambito valido", "=\"".$consultSection[15]."\""]);
           }
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo", "=\"".$consultSection[15]."\""]);
     }
 
     //validacion campo 17
@@ -296,27 +301,27 @@ class RAD extends FileValidator {
         $exists = DB::table('ayudas_diagnosticas_pruebas')->where('id_prueba', $consultSection[16])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a una prueba valida."]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a una prueba valida.", "=\"".$consultSection[16]."\""]);
           }
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener un longitud de 2 caracteres"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener un longitud de 2 caracteres", "=\"".$consultSection[16]."\""]);
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
     }
 
     //validacion campo 19
     if(isset($consultSection[18])) {
         if(strlen(trim($consultSection[18])) > 6 || trim($consultSection[18]) == ''){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 6 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe no debe ser vacio y debe tener un longitud no mayor a 6 caracteres", "=\"".$consultSection[18]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
     }
 
     //validacion campo 18
@@ -334,12 +339,12 @@ class RAD extends FileValidator {
                                         ->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimieto cups de ayudas diagnosticas válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimieto cups de ayudas diagnosticas válido", "=\"".$consultSection[17]."\""]);
           }else{
             $exists = DB::table('homologos_cups_codigos')->where('cod_procedimiento',$consultSection[17])->first();
             if(!$exists){
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimieto ni cups ni homólogo de ayudas diagnosticas válido"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimieto ni cups ni homólogo de ayudas diagnosticas válido", "=\"".$consultSection[17]."\""]);
             }else{
               $consultSection[17] = $exists->cod_cups;
             }
@@ -350,7 +355,7 @@ class RAD extends FileValidator {
           $exists = DB::table('homologos_cups_codigos')->where('cod_procedimiento',$consultSection[17])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimiento homólogo de ayudas diagnosticas válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de procedimiento homólogo de ayudas diagnosticas válido", "=\"".$consultSection[17]."\""]);
           }else{
             $consultSection[17] = $exists->cod_cups;
           }
@@ -358,24 +363,24 @@ class RAD extends FileValidator {
 
         default:
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser 1 , 4 ó 9"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo debe ser 1 , 4 ó 9", "=\"".$consultSection[17]."\""]);
           break;
       }
       
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
     }
 
     //validacion campo 20
     if(isset($consultSection[19])) {
         if(strlen(trim($consultSection[19])) > 100 || trim($consultSection[19]) == ''){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener una longitud menor a 100 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe no debe ser vacio y debe tener una longitud menor a 100 caracteres", "=\"".$consultSection[19]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo", "=\"".$consultSection[19]."\""]);
     }
 
     
@@ -388,17 +393,17 @@ class RAD extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[20]."\""]);
         }
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[20]."\""]);
       }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo" "=\"".$consultSection[20]."\""]);
     }
 
     //validacion campo 22
@@ -409,28 +414,30 @@ class RAD extends FileValidator {
         if(!checkdate($date[1], $date[2], $date[0]))
         {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[21]."\""]);
         }
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe tener el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[21]."\""]);
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo", "=\"".$consultSection[21]."\""]);
     }
 
     //validacion campo 23
     if(isset($consultSection[22])) {
         if(strlen(trim($consultSection[22])) > 20){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener un longitud no mayor a 20 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo debe tener un longitud no mayor a 20 caracteres", "=\"".$consultSection[22]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo", "=\"".$consultSection[22]."\""]);
     }
+
+    $temp_array = $consultSection;
 
   }
 
@@ -439,7 +446,7 @@ class RAD extends FileValidator {
 
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)", "=\"".$data[13]."\""]);
     }
 
   }

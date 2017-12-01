@@ -13,6 +13,7 @@ use App\Classes\RAD;
 use App\Classes\ATP;
 use App\Classes\ARQ;
 use App\Classes\ARC;
+use App\Classes\FileValidator;
 use App\Models\FileStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -87,6 +88,9 @@ class filesController extends Controller
 
             $routeFile = $folder.$file->getClientOriginalName();
             $fileName = $file->getClientOriginalName();
+
+            $FileValidator = new FileValidator($fileName);
+
             Storage::disk('archivos')->put($routeFile, \File::get($file));
             
             //try {

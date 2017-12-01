@@ -13,8 +13,23 @@ class tipoIdentEntidadSeeder extends Seeder
     public function run()
     {
         TipoIdentificacionEntidad::create([
-    		'id_tipo_ident' =>'NIT',
-    		'descripcion' => 'IDENTIFICACION TRIBUTARIA'
+    		'id_tipo_ident' =>'MU',
+    		'descripcion' => 'MUNICIPIO'
+        ]);
+
+        TipoIdentificacionEntidad::create([
+            'id_tipo_ident' =>'DE',
+            'descripcion' => 'DEPARTAMENTO'
+        ]);
+
+        TipoIdentificacionEntidad::create([
+            'id_tipo_ident' =>'DI',
+            'descripcion' => 'DEPARTAMENTO'
+        ]);
+
+        TipoIdentificacionEntidad::create([
+            'id_tipo_ident' =>'NI',
+            'descripcion' => 'DEPARTAMENTO'
         ]);
 
         TipoIdentificacionEntidad::create([

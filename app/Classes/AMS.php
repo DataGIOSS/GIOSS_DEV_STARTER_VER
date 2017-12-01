@@ -38,7 +38,7 @@ class AMS extends FileValidator {
     $this->version = substr($fileNameToken[0],58);
 
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
     
@@ -68,7 +68,7 @@ class AMS extends FileValidator {
       if($exists)
       {
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualizar la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       }//fin if existe
       else 
@@ -121,11 +121,15 @@ class AMS extends FileValidator {
         {
           $this->dropWhiteSpace($data); // se borran los espcaios en de cada campo
           $isValidRow = true;
-
+          $temp_array = Array();
 
           $this->validateEntitySection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,0,6));
           $this->validateUserSection($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,6,9,true));
-          $this->validateAMS($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,5,true));
+          $this->validateAMS($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,5,true), $temp_array);
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           if ($isValidRow) // se validan cohenrencia entre fechas
           { 
@@ -146,7 +150,7 @@ class AMS extends FileValidator {
 
             if($exists){
               
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -280,12 +284,12 @@ class AMS extends FileValidator {
       }
     
     } catch (\Exception $e) {
-      Log::error(print_r($e->getMessage(), true)."Error");
+      Log::error(print_r($e->getMessage(), true)." Error");
     }
 
   }
 
-  private function validateAMS(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  private function validateAMS(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
 
     //validacion campo 16
     if(isset($consultSection[15])) {
@@ -293,16 +297,16 @@ class AMS extends FileValidator {
         $date = explode('-', $consultSection[15]);
         if(!checkdate($date[1], $date[2], $date[0])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[15]."\""]);
         }  
       }
       else{
         $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe terner el formato AAAA-MM-DD", "=\"".$consultSection[15]."\""]);
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo", "=\"".$consultSection[15]."\""]);
     }
     Log::info("termino validacion camp 16 ");
 
@@ -310,12 +314,12 @@ class AMS extends FileValidator {
     if(isset($consultSection[16])) {
         if(strlen(trim($consultSection[16])) > 20){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud menor o igual a 20 caracteres"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo debe tener una longitud menor o igual a 20 caracteres", "=\"".$consultSection[16]."\""]);
         }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
     }
     //Log::info("termino validacion camp 17 ");
 
@@ -332,12 +336,12 @@ class AMS extends FileValidator {
                   $existsHomologo = DB::table('medicamentos_homologo')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsHomologo) {
                     $isValidRow = false;
-                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido", "=\"".ltrim($consultSection[16], '0')."\""]);
                   } else {
                     $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                     if(!$esCum){
                       $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código existente entre los códigos CUM"]);
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código existente entre los códigos CUM", "=\"".ltrim($consultSection[16], '0')."\""]);
                     } else {
                       $consultSection[16] = $existsHomologo->codigo_cum;
                     }
@@ -346,7 +350,7 @@ class AMS extends FileValidator {
               }
             } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío", "=\"".ltrim($consultSection[16], '0')."\""]);
             }
             
             break;
@@ -360,19 +364,19 @@ class AMS extends FileValidator {
                   $existsHomologo = DB::table('medicamentos_homologo')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsHomologo) {
                     $isValidRow = false;
-                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC, CUM ni Homólogo válido"]);
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento ATC, CUM ni Homólogo válido", "=\"".ltrim($consultSection[16], '0')."\""]);
                   } else {
                     $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                     if (!$esCum) {
                       $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código CUM válido."]);
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código homólogo entregado en este campo no corresponde a un código CUM válido.", "=\"".ltrim($consultSection[16], '0')."\""]);
                     }
                   }
                 }
               }
             } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo del medicamento no puede estar vacío", "=\"".ltrim($consultSection[16], '0')."\""]);
             }
 
             break;
@@ -386,33 +390,33 @@ class AMS extends FileValidator {
                   $existsAtc = DB::table('medicamentos_atc')->where('codigo_medicamento', ltrim($consultSection[16], '0'))->first();
                   if (!$existsAtc) {
                     $isValidRow = false;
-                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido"]);
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no corresponde a un codigo de medicamento CUM, ATC ni Homólogo válido", "=\"".ltrim($consultSection[16], '0')."\""]);
                   }
                 }
               } else {
                 $esCum = DB::table('medicamentos_cum')->where('codigo_medicamento', $existsHomologo->codigo_cum)->first();
                 if (!$esCum) {
                   $isValidRow = false;
-                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código Homólogo entregado no corresponde a un código CUM válido"]);
+                    array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El código Homólogo entregado en este campo no corresponde a un código CUM válido", "=\"".ltrim($consultSection[16], '0')."\""]);
                 }
               }
             } else {
               $isValidRow = false;
-              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo de medicamento no puede estar vacío"]);
+              array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de codigo de medicamento no puede estar vacío", "=\"".ltrim($consultSection[16], '0')."\""]);
             }
 
             break;
 
           default:
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un número con un valor entre 1 y 4"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un número con un valor entre 1 y 4", "=\"".ltrim($consultSection[18], '0')."\""]);
             break;
         }
 
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo", "=\"".ltrim($consultSection[18], '0')."\""]);
     }
     Log::info("termino validacion camp 18 ");
 
@@ -420,11 +424,11 @@ class AMS extends FileValidator {
     if(isset($consultSection[18])) {
         if(!ctype_digit(trim($consultSection[18])) || strlen(trim($consultSection[18])) > 3){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un valor entero de máximo 3 dígitos"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un valor entero de máximo 3 dígitos", "=\"".$consultSection[18]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo", "=\"".$consultSection[18]."\""]);
     }
 
     Log::info("termino validacion camp 19 ");
@@ -433,18 +437,20 @@ class AMS extends FileValidator {
     if(isset($consultSection[19])) {
         if(strlen(trim($consultSection[19])) != 1){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo de tener una longitud igual a 1"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo de tener una longitud igual a 1", "=\"".$consultSection[19]."\""]);
         }else{
           $exists = DB::table('ambito')->where('cod_ambito',$consultSection[19])->first();
           if(!$exists){
-            array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor del campo no correponde a un Ambito valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El valor del campo no correponde a un Ambito valido", "=\"".$consultSection[19]."\""]);
           }
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo", "=\"".$consultSection[19]."\""]);
     }
     Log::info("termino validacion camp 20 ");
+
+    $temp_array = $consultSection;
 
   }
 
@@ -453,19 +459,19 @@ class AMS extends FileValidator {
 
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la fecha de nacimiento sa inferior a la Fecha de Entrega de Medicamento
     if (strtotime($data[15]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de Entrega de Medicamentoa (campo 16)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la Fecha de Entrega de Medicamentoa (campo 16)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la Fecha de Entrega de Medicamento esté entre la fecha de los periodos
     if ( (strtotime($firstRow[2]) > strtotime($data[15])) || (strtotime($firstRow[3]) < strtotime($data[15])) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de Entrega de Medicamento (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) "]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La Fecha de Entrega de Medicamento (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) ", "=\"".$data[15]."\""]);
     }
 
   }

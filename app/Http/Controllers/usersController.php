@@ -145,7 +145,7 @@ class usersController extends Controller
                         [
                             'edit_name' => 'required | max: 255 |',
                             'edit_lastname' => 'required | max: 255',
-                            'edit_email' => 'required | email | max:255 | unique:users,email',
+                            'edit_email' => 'required | email | max:255 | unique:users, email',
                             'edit_tipo_usuario' => 'required | integer | between:1,2 | exists:roles,id'
                         ]
                     );

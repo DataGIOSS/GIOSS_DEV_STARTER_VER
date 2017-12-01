@@ -40,7 +40,7 @@ class AAC extends FileValidator {
     $this->fileName =  substr($fileNameToken[0],0,58);
     $this->version = substr($fileNameToken[0],58);
     $this->consecutive = $consecutive;
-    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción']);
+    $this->detail_erros = array(['No. línea archivo original', 'No. linea en archivo de errores','Campo', 'Descripción', 'Valor Registrado']);
     $this->wrong_rows =  array();
     $this->success_rows =  array();
   }
@@ -61,7 +61,7 @@ class AAC extends FileValidator {
       if($exists){
 
         $isValidFile = false;
-        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualice la version"]);
+        array_push($this->detail_erros, [0, 0, '', "El archivo ya fue gestionado. Por favor actualice la version", $this->fileName]);
         $fileid = $exists->id_archivo_seq;
       } else {
           //se define en primera instancia el objeto archivo
@@ -113,6 +113,7 @@ class AAC extends FileValidator {
           
           $this->dropWhiteSpace($data); // se borran los espacios de cada campo
           $isValidRow = true;
+          $temp_array = Array();
 
           Log::info("Empieza las validaciones (AAC - Linea 116)");
 
@@ -126,9 +127,13 @@ class AAC extends FileValidator {
 
           Log::info("Termina las validaciones de usuaro y empieza las validaciones del achivo (AAC - Linea 126)");
 
-          $this->validateAAC($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true));
+          $this->validateAAC($isValidRow, $this->detail_erros, $lineCount, $lineCountWF, array_slice($data,15,14,true), $temp_array);
 
           Log::info("Termina las validaciones del archivo (AAC - Linea 130)");
+
+          foreach ($temp_array as $key => $value) {
+            $data[$key] = $value;
+          }
 
           if ($isValidRow) // se validan coherencia entre fechas
           { 
@@ -150,7 +155,7 @@ class AAC extends FileValidator {
 
             if($exists){
               Log::info("La fila está duplicada (AAC - Linea 160)");
-              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado"]);
+              array_push($this->detail_erros, [$lineCount, $lineCountWF, '', "Registro duplicado", 0]);
               array_push($this->wrong_rows, $data);
               $this->updateStatusFile($lineCount);
               $lineCountWF++;
@@ -296,39 +301,40 @@ class AAC extends FileValidator {
 
   }
 
-  function validateAAC(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection) {
+  function validateAAC(&$isValidRow, &$detail_erros, $lineCount, $lineCountWF, $consultSection, &$temp_array) {
     Log::info("Empieza el llamado a las validaciones del archivo (AAC - Linea 320) -> Campo 16");
     if(isset($consultSection[15])) {
         if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $consultSection[15])){
           $date = explode('-', $consultSection[15]);
           if(!checkdate($date[1], $date[2], $date[0])){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida."]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe corresponder a un fecha válida.", "=\"".$consultSection[15]."\""]);
           } 
         }
         else{
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe tener el formato AAAA-MM-DD"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo debe tener el formato AAAA-MM-DD", "=\"".$consultSection[15]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "El campo no debe ser nulo", "=\"".$consultSection[15]."\""]);
     }
+    
     Log::info("----------------------- Campo 17 ---------------------------------");
     //validacion campo 17
     if(isset($consultSection[16])) {
         if(strlen(trim($consultSection[16])) != 1){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud igual a 1"]);
+        array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo de tener una longitud igual a 1", "=\"".$consultSection[16]."\""]);
         }else{
           $exists = DB::table('ambito')->where('cod_ambito',$consultSection[16])->first();
           if(!$exists){
-            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a un Ambito valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El valor del campo no correponde a un Ambito valido", "=\"".$consultSection[16]."\""]);
           }
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 17, "El campo no debe ser nulo", "=\"".$consultSection[16]."\""]);
     }
     
     Log::info("----------------------- Campo 18, 19, 20 ---------------------------------");
@@ -336,94 +342,79 @@ class AAC extends FileValidator {
     if(isset($consultSection[18])) {
         if(!is_numeric($consultSection[18]) || strlen(trim($consultSection[18])) != 1){
           $isValidRow = false;
-        array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un número de un dígito"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser un número de un dígito", "=\"".$consultSection[18]."\""]);
         }else{
           switch ($consultSection[18]) {
+            
             case '1':
+
+
+            if(isset($consultSection[17])) {
               if (ctype_alpha(trim($consultSection[17]))) {
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo de código de consulta no puede estar compuesto por una cadena totalmente alfabética."]);
-              } else {
-                if(isset($consultSection[17])) {
-                    if(strlen(trim($consultSection[17])) > 6){
-                      
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 6 caracteres"]);
-
+                if(strlen(trim($consultSection[17])) <= 8){
+                  $exists = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();
+                  if (!$exists) {
+                    $exists_Homologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
+                    if (!$exists_Homologo) {
+                      $isValidRow = false;
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta CUP ni HOMÓLOGO válido.", "=\"".$consultSection[17]."\""]);
+                    } else {
+                      $consultSection[17] = $exists_Homologo->cod_cups;
                     }
-
-                    $exists = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();
-                    
-                    if(!$exists){
-                      $existsHomologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
-                      if(!$existsHomologo){
-                        $isValidRow = false;
-                        array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo válido"]);
-                      }else{
-                        $esCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $existsHomologo->cod_cups)->first();
-                        if(!$esCup){
-                          $isValidRow = false;
-                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
-                        } else {
-                          $consultSection[17] = $existsHomologo->cod_cups;
-                        }
-                      }
-                    }
-                  
-                } else {
-                  $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
                   }
+                } else {
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "ERROR INFORMATIVO: Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 6 caracteres", "=\"".$consultSection[17]."\""]);
                 }
+              } else {
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo de código de consulta no puede estar compuesto por una cadena totalmente alfabética.", "=\"".$consultSection[17]."\""]);
+              }
+            } else {
+              $isValidRow = false;
+              array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
+            }
 
-              break;
+
+            break;
 
             case '4':
 
+              if(isset($consultSection[17])) {
               if (ctype_alpha(trim($consultSection[17]))) {
-                $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Este campo solo admite cadenas numéricas o alfanuméricas, no cadenas enteramente alfabéticas."]);
-              } else {
-                
-                if(isset($consultSection[17])) {
-                    if(strlen(trim($consultSection[17])) > 10){
+                if(strlen(trim($consultSection[17])) <= 10){
+                  $exists_Homologo = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
+                  if (!$exists_Homologo) {
+                    $exists = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();  
+                    if (!$exists) {
                       $isValidRow = false;
-                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "Ya que el Tipo de Codificación es igual a 4 el campo debe tener una longitud menor o igual a 10 caracteres"]);
-                    } else {
-                      $exists = DB::table('homologos_cups_codigos')->where('cod_homologo', $consultSection[17])->first();
-                      if(!$exists){
-                        $existsCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $consultSection[17])->first();
-                        if(!$existsCup){
-                          $isValidRow = false;
-                          array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta cups ni homólogo  válido"]);
-                        }
-                       }else{
-                          $esCup = DB::table('gioss_consulta_cups')->where('cod_consulta', $exists->cod_cups)->first();
-                          if(!$esCup){
-                            $isValidRow = false;
-                            array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El código homólogo no corresponde a un Código CUP de consulta válido."]);
-                          } else {
-                            $consultSection[17] = $exists->cod_cups;
-                          }
-                      }
+                      array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El valor del campo no corresponde a un codigo de consulta CUP ni HOMÓLOGO válido.", "=\"".$consultSection[17]."\""]);
                     }
-                }else{
-                  $isValidRow = false;
-                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo"]);
+                  } else {
+                      $consultSection[17] = $exists_Homologo->cod_cups;
+                  }
+                } else {
+                  array_push($detail_erros, [$lineCount, $lineCountWF, 18, "ERROR INFORMATIVO: Ya que el Tipo de Codificación es igual a 1 el campo debería tener una longitud menor o igual a 6 caracteres", "=\"".$consultSection[17]."\""]);
                 }
-
+              } else {
+                $isValidRow = false;
+                array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo de código de consulta no puede estar compuesto por una cadena totalmente alfabética.", "=\"".$consultSection[17]."\""]);
               }
+            } else {
+              $isValidRow = false;
+              array_push($detail_erros, [$lineCount, $lineCountWF, 18, "El campo no debe ser nulo", "=\"".$consultSection[17]."\""]);
+            }
 
-              break;
+            break;
 
             default:
                 $isValidRow = false;
-                array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser 1 o 4."]);
+                array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo debe ser 1 o 4.", "=\"".$consultSection[18]."\""]);
           }
 
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 19, "El campo no debe ser nulo", "=\"".$consultSection[18]."\""]);
     }
 
     Log::info("----------------------- Campo 20 ---------------------------------");
@@ -431,11 +422,11 @@ class AAC extends FileValidator {
     if(isset($consultSection[19])) {
         if(!preg_match("/^\d{2}$/", $consultSection[19])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo debe tener un valor numérico de 2 dígitos", "=\"".$consultSection[19]."\""]);
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 20, "El campo no debe ser nulo", "=\"".$consultSection[19]."\""]);
     }
 
     Log::info("----------------------- Campo 21 ---------------------------------");
@@ -444,44 +435,47 @@ class AAC extends FileValidator {
       if($consultSection[19] != 99 && $consultSection[19] != ''){
         if(strlen($consultSection[20]) > 50 || trim($consultSection[20]) == ''){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser vacío y debe tener una longitud menor o igual a 50"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser vacío y debe tener una longitud menor o igual a 50", "=\"".$consultSection[20]."\""]);
         }
       }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 21, "El campo no debe ser nulo", "=\"".$consultSection[20]."\""]);
     }
+
     Log::info("----------------------- Campo 22 ---------------------------------");
     //validacion campo 22
     if(isset($consultSection[21])) {
         if(strlen($consultSection[21]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser vacío y debe tener una longitud menor o igual a 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser vacío y debe tener una longitud menor o igual a 4 caracteres.", "=\"".$consultSection[21]."\""]);
         }else{
           $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico',$consultSection[21])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El valor no corresponde a un valor código de diagnóstico CIEX válido", "=\"".$consultSection[21]."\""]);
           }
         }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 22, "El campo no debe ser nulo", "=\"".$consultSection[21]."\""]);
     }
+
     Log::info("----------------------- Campo 23 ---------------------------------");
     //validacion campo 23
     if(isset($consultSection[22])) {
 
         if(strlen($consultSection[22]) > 50 || trim($consultSection[22]) == '') {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "Este campo no debe ser vacío ya que el campo 22 no es vacío y debe tener una longitud no mayor a 50 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 23, "Este campo no debe ser vacío ya que el campo 22 no es vacío y debe tener una longitud no mayor a 50 caracteres.", "=\"".$consultSection[22]."\""]);
         }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 23, "El campo no debe ser nulo", "=\"".$consultSection[22]."\""]);
     }
+
     Log::info("----------------------- Campo 24 ---------------------------------");
     //validacion campo 24
     if(isset($consultSection[23])) {
@@ -489,20 +483,21 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[23]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud menor o igual a 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo debe tener un longitud menor o igual a 4 caracteres.", "=\"".$consultSection[23]."\""]);
         }else{
           $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico', $consultSection[23])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico CIEX válido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El valor no corresponde a un valor código de diagnóstico CIEX válido", "=\"".$consultSection[23]."\""]);
           }
         }
       }
         
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 24, "El campo no debe ser nulo", "=\"".$consultSection[23]."\""]);
     }
+
     Log::info("----------------------- Campo 25 ---------------------------------");
     //validacion campo 25
     if(isset($consultSection[24])) {
@@ -510,13 +505,14 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[24]) > 50 || trim($consultSection[24]) == ''){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 25, "Ya que el campo 24 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 25, "Ya que el campo 24 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.", "=\"".$consultSection[24]."\""]);
         }
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 25, "El campo no debe ser nulo", "=\"".$consultSection[24]."\""]);
     }
+
     Log::info("----------------------- Campo 26 ---------------------------------");
     //validacion campo 26
     if(isset($consultSection[25])) {
@@ -524,19 +520,20 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[25]) > 4){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe tener un longitud menor o igual 4 caracteres."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo debe tener un longitud menor o igual 4 caracteres.", "=\"".$consultSection[25]."\""]);
         }else{
           $exists = DB::table('diagnostico_ciex')->where('cod_diagnostico',$consultSection[25])->first();
           if(!$exists){
             $isValidRow = false;
-            array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El valor no corresponde a un valor código de diagnóstico valido"]);
+            array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El valor no corresponde a un valor código de diagnóstico valido", "=\"".$consultSection[25]."\""]);
           }
         }
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 26, "El campo no debe ser nulo", "=\"".$consultSection[25]."\""]);
     }
+
     Log::info("----------------------- Campo 27 ---------------------------------");
     //validacion campo 27
     if(isset($consultSection[26])) {
@@ -544,19 +541,20 @@ class AAC extends FileValidator {
       {
         if(strlen($consultSection[26]) > 50 || trim($consultSection[26]) == ''){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 27, "Ya que el campo 26 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 27, "Ya que el campo 26 no es vacío este campo tampoco puede ser vacío debe tener una longitud menor o igual a 50 caracteres.", "=\"".$consultSection[26]."\""]);
         }
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 27, "El campo no debe ser nulo", "=\"".$consultSection[26]."\""]);
     }
+
     Log::info("----------------------- Campo 28 ---------------------------------      ".$consultSection[27]);
     //validacion campo 28
     if(isset($consultSection[27])) {
         if(!preg_match("/^([1-3])$/", trim($consultSection[27]))) {
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe tener una longitud igual a 1 caracter y debe corresponder a un tipo de diagnóstico válido."]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo debe tener una longitud igual a 1 caracter y debe corresponder a un tipo de diagnóstico válido.", "=\"".$consultSection[27]."\""]);
         }/*else{
           $exists = TipoDiagnostico::where('cod_tipo',$consultSection[27])->first();
           if (!$exists) {
@@ -566,15 +564,16 @@ class AAC extends FileValidator {
         }*/
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 28, "El campo no debe ser nulo", "=\"".$consultSection[27]."\""]);
     }
+
     Log::info("----------------------- Campo 29 ---------------------------------");
     //validacion campo 29
     if(isset($consultSection[28])) {
       if($consultSection[28] != '') {
         if(!preg_match("/^(([1-9])|(0[1-9])|(10)|(99))$/", $consultSection[28])){
           $isValidRow = false;
-          array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo debe ser un valor numérico de 2 dígitos y debe corresponder a una finalidad de consulta válida"]);
+          array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo debe ser un valor numérico de 2 dígitos y debe corresponder a una finalidad de consulta válida", "=\"".$consultSection[28]."\""]);
         }/*else{
           $exists = FinalidadConsultum::where('cod_finalidad',$consultSection[28])->first();
           if (!$exists) {
@@ -585,9 +584,10 @@ class AAC extends FileValidator {
       }
     }else{
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo no debe ser nulo"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 29, "El campo no debe ser nulo", "=\"".$consultSection[28]."\""]);
     }
 
+    $temp_array = $consultSection;
     //Log::info("Termina las validaciones de Método AAC (FileValidator - Linea 520)");
   }
 
@@ -596,19 +596,19 @@ class AAC extends FileValidator {
 
     if (strtotime($firstRow[3]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha final del periodo reportado  (línea 1, campo 4)", "=\"".$data[13]."\""]);
     }
 
     //se valida que la fecha de nacimiento sa inferior a la fecha de consulta
     if (strtotime($data[15]) < strtotime($data[13]) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha de consulta (campo 16)"]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 14, "La fecha de nacimiento (campo 14) debe ser inferior a la fecha de consulta (campo 16)"], "=\"".$data[13]."\"");
     }
 
     //se valida que la fecha de consulta esté entre la fecha de los periodos
     if ( (strtotime($firstRow[2]) > strtotime($data[15])) || (strtotime($firstRow[3]) < strtotime($data[15])) ){
       $isValidRow = false;
-      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La fecha de consulta (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4) "]);
+      array_push($detail_erros, [$lineCount, $lineCountWF, 16, "La fecha de consulta (campo 16) debe estar registrada entre el periodo reportado. fecha incial(línea 1, campo 3) y fecha final (línea 1, campo 4)", "=\"".$data[15]."\""]);
     }
 
   }

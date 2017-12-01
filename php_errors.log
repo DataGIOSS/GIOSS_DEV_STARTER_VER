@@ -4,3 +4,4 @@
 [24-Oct-2017 16:29:21 UTC] PHP Fatal error:  Call to a member function where() on null in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\vendor\psy\psysh\src\Psy\ExecutionLoop\Loop.php(90) : eval()'d code on line 1
 [24-Oct-2017 19:35:17 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\vendor\psy\psysh\src\Psy\ExecutionLoop\Loop.php(90) : eval()'d code on line 1
 [24-Oct-2017 21:34:24 UTC] PHP Fatal error:  Using $this when not in object context in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\vendor\psy\psysh\src\Psy\ExecutionLoop\Loop.php(90) : eval()'d code on line 1
+[29-Nov-2017 15:44:52 UTC] PHP Fatal error:  Class 'ipoIdentificacionEntidad' not found in C:\Bitnami\wappstack-5.6.30-2\apache2\htdocs\GIOSS_DEV_STARTER_VER\database\seeds\tipoIdentEntidadSeeder.php on line 35
